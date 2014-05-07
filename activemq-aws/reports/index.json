@@ -1,0 +1,4 @@
+{
+  "platforms":["AwsProvisionedIopsEbsOptimized", "AwsStandardEbs", "FusePostaMac"],
+  "products":["activemq-5.9.0-openwire"]
+}
