@@ -1,0 +1,90 @@
+---
+layout: post
+title: HawtIO on JBoss EAP (Part II)
+date: 2014-07-28 16:17:23.000000000 -07:00
+categories: []
+tags: []
+---
+<p>I <a href="http://www.christianposta.com/blog/?p=403">just posted an entry on running HawtIO on JBoss Wildfly 8.1</a> recently. From that post you <a href="http://hawt.io/articles/index.html">know how awesome HawtIO is</a>, and <a href="http://hawt.io/plugins/">all of the cool plugins it has</a> to make managing your JVM based technologies from a single dashboard... well... <em>hawt</em>....</p>
+<p><img src="/images/logo-450px.png" alt="hawtio" /></p>
+<p>However, I wanted to dedicate a post to running HawtIO on JBoss EAP for the same reasons outlined in the previous post:</p>
+<p>As we at <a href="https://www.redhat.com">Red Hat</a> roll out <a href="http://www.jboss.org/products/fuse/overview/">JBoss Fuse</a> and <a href="http://www.jboss.org/products/fsw/overview/">JBoss Fuse Serviceworks</a>, we're getting better at integrating the individual components. For example, a Fuse Service Works subscription gives you full access to A-MQ, Fuse, and all of its components, including HawtIO. Unfortunately, HawtIO isn't "officially" supported in EAP as of today, but that will be fixed in next releases. It's not a limitation of the technology, it's just there's so much there and Red Hat has stringent testing/compatibility requirements so we need to have all of the testing/certification done before we "support it" fully.</p>
+<p>BUT... there's really no reason to not use it anyway (at least Development and QA), while we wait for support. And there are lots of people already doing that. Just remember, it's not officially supported yet!</p>
+<p>So the rest of this blog is a step-by-step guide with best practices for getting HawtIO deployed and secured on your <a href="http://www.redhat.com/products/jbossenterprisemiddleware/application-platform/">JBoss EAP 6.x</a> application server. I will use <a href="http://hawt.io">HawtIO</a> 1.4.11 (latest release from the community) for this guide.</p>
+<p><img src="/images/as7_to_eap.png" alt="eap" /></p>
+<h2>HawtIO on JBoss EAP 6.1</h2>
+<p>This first section will discuss EAP 6.1 because it seems to work great <a href="http://www.christianposta.com/blog/?p=403">following the similar directions as those for deploying HawtIO on Wildfly 8.1</a>. Basically, if you <a href="http://www.christianposta.com/blog/?p=403">follow the instructions from the blog post on running on Wildfly, you'll get it working just fine</a>. To be very specific do these pieces:</p>
+<ul>
+<li>Remove the log4j.properties file to use EAP logging subsystem</li>
+<li>Rename distro to hawtio.war</li>
+<li>Create users in ApplicationRealm with roles including "admin"</li>
+<li>
+<p>Edit the <code>standalone.xml</code> file to account for the following settings:</p>
+<p><system-properties></p>
+<property name="hawtio.authenticationEnabled" value="true" />
+<property name="hawtio.realm" value="jboss-web-policy" />
+<property name="hawtio.role" value="admin" />
+</system-properties></p>
+</li>
+</ul>
+<p>I've also added [these instructions to the HawtIO documentation][http://hawt.io/getstarted/index.html] (the website should update with those changes soon).</p>
+<p>After successfully deploying <a href="http://hawt.io">HawtIO</a> to <a href="http://www.redhat.com/products/jbossenterprisemiddleware/application-platform/">JBoss EAP 6.1</a>, you should be greeted with a login page at this URL:</p>
+<p><a href="http://localhost:8080/hawtio">http://localhost:8080/hawtio</a></p>
+<p><img src="/images/02-hawtio-secured.png" alt="login-page" /></p>
+<h2>HawtIO on JBoss EAP 6.2</h2>
+<p>So unfortunately, getting <a href="http://hawt.io">HawtIO</a> to run on JBoss EAP 6.2 <a href="https://github.com/hawtio/hawtio/issues/1458">has some issues with JAAS</a> that I haven't been able to figure out. If you're a Wildfly 7/EAP 6.x wizard and wish to take a look <a href="https://github.com/hawtio/hawtio/issues/1458">have a peek at the github issue I have open</a>.</p>
+<p>Thankfully, however, HawtIO is quite versatile and doesn't have to be run as a web-app collocated on the container you want to manage. You can <a href="http://hawt.io/getstarted/index.html">run it standalone</a> as a <a href="http://hawt.io/getstarted/index.html">Chrome extension</a> or in a separate container that's not JBoss EAP. Effectively, you can use HawtIO's <em>Connect</em> page to remotely connect to the container you wish to manage.</p>
+<p>For example, <a href="https://oss.sonatype.org/content/repositories/public/io/hawt/hawtio-app/1.4.11/hawtio-app-1.4.11.jar">download the standalone distribution of HawtIO</a> which ends up just being an executable jar. Run it like this (make sure to add the params for the port change, because we don't want to conflict with the EAP ports if running on the same machine):</p>
+<pre><code>ceposta@postamachat(standalone) $ java -jar hawtio-app-1.4.11.jar --port 9091
+</code></pre>
+<p>This will bring up HawtIO running standalone (with an internal Jetty server! Woohoo!).</p>
+<p>Then click the "Connect" tab and you should see a page like this:</p>
+<p><img src="/images/03-hawtio-connect.png" alt="connect tab" /></p>
+<h3>Wait, what? Just connect?</h3>
+<p>"How would this even work"" you ask? "How can we connect to EAP and have HawtIO just manage it?"</p>
+<p>Well, the magic is this totally awesome little library named <a href="http://www.jolokia.org">Jolokia</a>.</p>
+<p><img src="/images/687474703a2f2f6c6162732e636f6e736f6c2e64652f77702d636f6e74656e742f75706c6f6164732f323031302f31302f6a6f6c6f6b69615f6c6f676f2e706e67" alt="jolokia" /></p>
+<p>Jolokia provides REST access to your JMX tree. So the way to get HawtIO to manage your JBoss EAP 6.2 container is to enable Jolokia on it and then use HawtIO's Connect tab to log in. If you haven't taken a look at Jolokia, you're missing out!! No more complicated JMX API/clients and query/filter API. Just use REST endpoints and curl. Simple.</p>
+<p><a href="http://www.jolokia.org/agent.html">Jolokia has a few options for deploying/enabling</a>. The most straight forward is a web app, but you could also attach as a JVM agent at startup time. We'll take the easy approach and deploy <a href="http://www.jolokia.org">Jolokia</a> as a webapp:</p>
+<h3>Rename distro</h3>
+<p>For this blog post, I'm using Jolokia 1.2.2. So when you download it, it has a name like this <code>jolokia-1.2.2.war</code>. Let's rename the distro so we don't take into account the version numbers to make it easier to get to the URL:</p>
+<pre><code>ceposta@postamachat(rename) $ mv jolokia-war-1.2.2.war jolokia.war
+</code></pre>
+<h3>Enable security for Jolokia</h3>
+<p>Next, we want to enable security for the jolokia web app. We'll do that <a href="http://www.jolokia.org/reference/html/agents.html">as described in the Jolokia documentation</a>. We'll need to edit the web.xml file that comes in the Jolokia jar and uncomment the section that's blocked out for security:</p>
+<pre><code>ceposta@postamachat(rename) $ vi jolokia.war 
+</code></pre>
+<p>Your config in WEB-INF/web.xml should have a security section like this:</p>
+<pre><code>163   &lt;!--
+164   Example Configuration for switching on BASIC security. The role 'Jolokia'
+165   must be mapped to real users with passwords on the Appserver side:
+166   --&gt; 
+167   &lt;login-config&gt;
+168     &lt;auth-method&gt;BASIC&lt;/auth-method&gt;
+169     &lt;realm-name&gt;Jolokia&lt;/realm-name&gt;
+170   &lt;/login-config&gt;
+171       
+172   &lt;security-constraint&gt;
+173     &lt;web-resource-collection&gt;
+174       &lt;web-resource-name&gt;Jolokia-Agent Access&lt;/web-resource-name&gt;
+175       &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+176     &lt;/web-resource-collection&gt;
+177     &lt;auth-constraint&gt; 
+178       &lt;role-name&gt;Jolokia&lt;/role-name&gt;
+179     &lt;/auth-constraint&gt;
+180   &lt;/security-constraint&gt;
+181       
+182   &lt;security-role&gt;
+183     &lt;role-name&gt;Jolokia&lt;/role-name&gt;
+184   &lt;/security-role&gt;
+185   
+186 &lt;/web-app&gt;
+</code></pre>
+<p>Now add a user <a href="http://www.christianposta.com/blog/?p=403">like we did in the previous blog</a> that has a role of "Jolokia". Note, make sure this user is added to the ApplicationRealm.</p>
+<h3>Connect to EAP 6.2</h3>
+<p>Now go back to your standalone HawtIO (we deployed it in the previous step at <a href="http://localhost:9091/hawtio">http://localhost:9091/hawtio</a>) and enter the connect params (path as follows):</p>
+<p><img src="/images/04-hawtio-connect2.png" /></p>
+<p>Click "Connect to remote server" and viola! You're conencted.</p>
+<h3>Where to go from here</h3>
+<p>You can also try to enable SSL over the http connection as well as maybe use DIGEST auth instead of the default BASIC auth. I'll leave that as an exercise for the reader :)</p>
+<p>If you have any questions about <a href="http://hawt.io">HawtIO</a>, please</p>

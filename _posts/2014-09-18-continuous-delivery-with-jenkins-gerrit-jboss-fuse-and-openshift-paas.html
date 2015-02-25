@@ -1,0 +1,24 @@
+---
+layout: post
+title: Continuous Delivery with Docker, Jenkins, JBoss Fuse and OpenShift PaaS
+date: 2014-09-18 17:40:50.000000000 -07:00
+categories: []
+tags: []
+---
+<p>I <a href="https://github.com/christian-posta/ceposta-devops-ose">recently put together an end-to-end demo</a> showing step-by-step how to set up a <a href="http://en.wikipedia.org/wiki/Continuous_delivery">Continuous Delivery</a> pipeline to help automate your deployments and shorten your cycle times for getting code from development to production. Establishing a proper continuous delivery pipeline is a discipline that requires more than just tools and automation, but having good tools and a head start on setting this up can't be understated.</p>
+<p>This project has two focuses:</p>
+<ol>
+<li>Show how you'd do CD with <a href="http://www.jboss.org/products/fuse/overview/">JBoss Fuse</a> and <a href="https://www.openshift.com">OpenShift</a></li>
+<li>Create a scripted, repeatable, pluggable and versioned demo so we can swap out pieces (like use JBoss Fuse 6.2/<a href="http://fabric8.io">Fabric8</a>/<a href="https://www.docker.io">Docker</a>/<a href="https://github.com/GoogleCloudPlatform/kubernetes">Kubernetes</a>, or <a href="http://www.redhat.com/openstack/">OpenStack</a>, or <a href="https://www.virtualbox.org">VirtualBox</a>, or <a href="http://www.go.cd">go.cd</a>, or <a href="https://travis-ci.org">travis-ci</a>, or other code review systems)</li>
+</ol>
+<p>We use <a href="https://www.docker.io">Docker</a> containers to set up all of the individual pieces and make it easier to script it and version it.</p>
+<p>See the videos of me doing the demo below, <a href="https://github.com/christian-posta/ceposta-devops-ose/blob/master/docs/setup-demo.md">or checkout the setup steps</a> and follow the script <a href="https://github.com/christian-posta/ceposta-devops-ose/blob/master/docs/demo.md">to recreate the demo yourself!</a></p>
+<h2>Part I</h2>
+<p><iframe src="//player.vimeo.com/video/106542288" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+<p><a href="http://vimeo.com/106542288">Continuous Delivery with JBoss Fuse on OpenShift Enterprise</a> from <a href="http://vimeo.com/user20787163">Christian Posta</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+<h2>Part II</h2>
+<p><iframe src="//player.vimeo.com/video/106547787" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+<p><a href="http://vimeo.com/106547787">Continuous Delivery with JBoss Fuse on OpenShift Enterprise Part II</a> from <a href="http://vimeo.com/user20787163">Christian Posta</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+<h2>Part III</h2>
+<p><iframe src="//player.vimeo.com/video/106548526" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+<p><a href="http://vimeo.com/106548526">Continuous Delivery with JBoss Fuse on OpenShift Enterprise part III</a> from <a href="http://vimeo.com/user20787163">Christian Posta</a> on <a href="https://vimeo.com">Vimeo</a>.</p>

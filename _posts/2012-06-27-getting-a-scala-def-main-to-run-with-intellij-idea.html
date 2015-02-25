@@ -1,0 +1,17 @@
+---
+layout: post
+title: Getting a Scala def main() to run with IntelliJ IDEA
+date: 2012-06-27 18:11:38.000000000 -07:00
+categories: []
+tags: []
+---
+<p>When you set up a run configuration to run a Scala object's main function, you have the option to run it as an Application. If you manually set up the Scala Facet on the module in which your object is, and point to a local Scala distribution, everything runs as expected. But if you are trying to run the main() function from an object in a Maven project, and your scala-library and scala-compiler are marked as "provided", the scala library won't be included on the classpath when you try to run it in IDEA. I understand, per <a href="http://youtrack.jetbrains.com/issue/SCL-2465">this issue ticket -- SCL-2465</a> that since a scala distribution is not included with IDEA, it won't put it onto the classpath by default, but there's got to be some way to notify the user that running an "Application" Run/Debug config is NOT like running a Java one. At the moment, it seems like it's supposed to happen seamlessly, but it doesn't. It chokes saying:</p>
+<p><code>Caused by: java.lang.ClassNotFoundException: scala.ScalaObject<br />
+    at java.net.URLClassLoader$1.run(URLClassLoader.java:202)<br />
+    at java.security.AccessController.doPrivileged(Native Method)<br />
+    at java.net.URLClassLoader.findClass(URLClassLoader.java:190)<br />
+    at java.lang.ClassLoader.loadClass(ClassLoader.java:306)<br />
+    at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:301)<br />
+    at java.lang.ClassLoader.loadClass(ClassLoader.java:247)<br />
+    ... 18 more</code></p>
+<p>To get around it, mark the library and compiler as "compile" scope in the maven pom.xml, but that sucks since it really isn't a compile dependency, it's a provided dependency (but apparently not when running in IDEA). Is there a way to specify a default Scala library to be included when running an Scala application when the scope is set to "provided"? i.e., is there a way for IDEA to "provide" it when running within its Run/Debug config mechanism?</p>

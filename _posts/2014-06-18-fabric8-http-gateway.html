@@ -1,0 +1,44 @@
+---
+layout: post
+title: Fabric8 HTTP Gateway
+date: 2014-06-18 06:42:13.000000000 -07:00
+categories: []
+tags: []
+---
+<p>I recently put together a quick <a href="https://github.com/christian-posta/camel-fabric-http-gateway">Github project to show the Fabric8 HTTP gateway</a> in action. It shows a sample project that you can use to test out the HTTP Gateway. The <a href="https://github.com/fabric8io/fabric8/tree/master/fabric/fabric8-karaf/src/main/resources/distro/fabric/import/fabric/profiles/example/camel">example/camel/cxf</a> profile that comes with <a href="http://fabric8.io">Fabric8</a> basically does the same thing now.</p>
+<h1>Fabric8 Gateway</h1>
+<p>The <a href="http://fabric8.io">Fabric8</a> project -- pronounced <strong>fabricate</strong> --  is a <a href="http://www.christianposta.com/blog/?p=376">practical DevOps framework</a> for services running on the JVM. Things like automated deployment and centralized configuration management come out of the box and are consistent regardless of JVM container (or no container -- microservices) you use.</p>
+<p>One of the other cool features that <a href="http://fabric8.io">Fabric8</a> gives you out of the box is the ability to dynamically lookup, load balance, and version your services (MQ, REST/http SOAP/http, etc). Clients that live within a "fabric" created by "fabric8" can automatically take advantage of this. Your external clients can too with the <a href="http://fabric8.io/gitbook/gateway.html">Fabric8 Gateway</a> feature. When combined with <a href="http://camel.apache.org">Apache Camel</a> routes that expose <a href="http://cxf.apache.org">CXF</a> you can get very powerful service discovery using Fabric8.</p>
+<p>The sample project comes with three simple REST implementations and deployments that you can use to exercise and test out the <a href="http://fabric8.io/gitbook/gateway.html">Gateway</a> for yourself.</p>
+<h2>How To</h2>
+<p>First, start by <a href="http://fabric8.io/getstarted/index.html">grabbing Fabric8</a> or its downstream, supported by Red Hat, cousin: <a href="http://www.jboss.org/products/fuse/overview/">JBoss Fuse</a>.</p>
+<h3>Start it up:</h3>
+<pre><code>fabric8-home$  ./bin/fabric8
+</code></pre>
+<h3>Or on JBoss Fuse:</h3>
+<pre><code>fuse-home$  ./bin/fuse
+</code></pre>
+<h3>Next, you'll need to build this project:</h3>
+<pre><code>project-home$  mvn clean install
+</code></pre>
+<p>And navigate to one of the sub-projects in the sample distro (example: beer-service)</p>
+<p>Now you'll have to invoke the fabric8-maven-plugin to install the profile into Fabric8/JBoss Fuse. See <a href="http://fabric8.io/gitbook/mavenPlugin.html">the fabric8-maven-plugin</a> for more details on what it does and how to set it up:</p>
+<pre><code>beer-service$  mvn fabric8:deploy
+</code></pre>
+<p>Now navigate to the web console (http://localhost:8181) and go to the <em>Wiki</em> tab.<br />
+You should see your profile there under the <em>loadbalancer</em> group:</p>
+<p><img src="/images/beer-service-wiki.png" alt="picture of profiles" /></p>
+<p>These profiles are the declarative description of what resources need to be deployed to a JVM container. You can <a href="http://fabric8.io/gitbook/profiles.html">read more about Fabric8 Profiles</a> to get a more thorough understanding. In this case, we're deploying some Camel routes and describing its dependencies on some features that provide automatically registering the CXF endpoints into the API registry.</p>
+<h3>Now create a new container with that profile.</h3>
+<p>This new container will host your <a href="https://github.com/christian-posta/camel-fabric-http-gateway/blob/master/beer-service/src/main/resources/OSGI-INF/blueprint/blueprint.xml">Camel routes</a> that implement this REST service functionality.</p>
+<p><img src="/images/create-new-beer.png" alt="picture of profiles" /></p>
+<h3>You should have a new beer container:</h3>
+<p><img src="/images/container-list-beer.png" alt="picture of profiles" /></p>
+<h3>Now add a new container and give it the <em>http gateway</em> profile:</h3>
+<p><img src="/images/create-new-gateway.png" alt="picture of profiles" /></p>
+<h3>Now you have your beercontainer and your http gateway container:</h3>
+<p><img src="/images/list-gateway-beer.png" alt="picture of profiles" /></p>
+<h3>Now you can ping the beer service through the gateway at: http://localhost:9000/cxf/beer:</h3>
+<p><img src="/images/final-output-beer.png" alt="picture of profiles" /></p>
+<p>If you have any questions about this that the screen shots don't capture, please let me know in the comments.<br />
+The <a href="http://fabric8.io/gitbook/gateway.html">HTTP Gateway</a> is a very powerful feature of <a href="http://fabric8.io">Fabric8</a>. For <a href="http://www.jboss.org/products/fuse/overview/">JBoss Fuse</a> this feature is in tech preview.</p>

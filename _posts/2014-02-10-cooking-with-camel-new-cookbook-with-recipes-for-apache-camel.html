@@ -1,0 +1,42 @@
+---
+layout: post
+title: 'Cooking with Camel: New cookbook with recipes for Apache Camel!'
+date: 2014-02-10 08:18:39.000000000 -07:00
+categories: []
+tags: []
+---
+<p>Word on the street is that Camel tastes good. Well, I can't vouch for that (as I haven't tried it...), but what I can vouch for is that working with <a href="http://camel.apache.org">Apache Camel</a> for integration projects is awesome! If you haven't bridled this beast of burden for some integration work, then I bet you've been wasting a lot of time :) ... And if you're looking for tried-and-true patterns or recipes for working with this integration library, then I <em>highly recommend</em> <a href="http://scott.cranton.com">Scott Cranton</a> and <a href="http://www.jakubkorab.net">Jakub Korab's</a> excellent book: <a href="http://www.amazon.com/Apache-Camel-Developers-Cookbook-Cranton/dp/1782170308">"Apache Camel Developer's Cookbook"</a></p>
+<div style="float: left; margin: 0 10px 10px 0;"><img src="/images/CamelCookbookCover.png" alt="" width="234" height="290" /></div>
+<p>Lest you remind me you already have <a href="http://www.davsclaus.com">Claus</a> and <a href="http://janstey.blogspot.com">Jon's</a> <a href="http://www.amazon.com/Camel-Action-Claus-Ibsen/dp/1935182366">Camel in Action book</a> (which everyone does...), I'd like to bring to your attention that the <a href="http://www.amazon.com/Apache-Camel-Developers-Cookbook-Cranton/dp/1782170308">Camel Cookbook</a> is actually a perfect complement to the <a href="http://www.amazon.com/Camel-Action-Claus-Ibsen/dp/1935182366">Camel in Action</a> book. So you don't have to pick one over the other! They go together...</p>
+<p><a href="http://www.amazon.com/Camel-Action-Claus-Ibsen/dp/1935182366">Camel in Action</a> is actually a gentle intro to Camel, followed by a deep exploration of its features, capabilities, and internal workings. Claus and Jon help bring their profoundly deep knowledge of the subject to the community and is the perfect place to start when you first pick up <a href="http://camel.apache.org">Apache Camel</a>. Once you've finished reading that book, you should be able to understand what Camel is, where it fits in a distributed-integration architecture, and how to develop integrations with its rich capabilities.</p>
+<div style="float: right; margin: 0 10px 10px 0;"><img style="margin-top: 10px; margin-bottom: 10px;" src="/images/ibsen_cover150.jpg" alt="" width="186" height="200" /></div>
+<p>But if you troll the Camel mailing lists, stack overflow, or even consider that some of us are <a href="http://www.redhat.com/products/jbossenterprisemiddleware/fuse/">in the business of providing enterprise support</a> for this capable library, you quickly realize that there are "right" ways to use the library or even "best practices". If nothing else, there are accepted ways that the library is used to solve common integration problems, and this book brings all of those "best practice" or "accepted practices" to the community in a nicely catalogued set of "recipes". You could spend days/months/years of trial and error combined with scrounging the webs for this info... or you could consider getting this book. I like to "get shit done"(TM) and if you're in the same boat, this book gets you there quicker.</p>
+<h4>Chapter 1: Structuring Routes</h4>
+<p>How best to structure your routes for reusability, asynchronous communication, pros/cons of Java DSL, Spring DSL (keep in mind all examples are in both Java DSL and Spring DSL), and controlling route lifecycle.</p>
+<h4>Chapter 2: Message Routing</h4>
+<p>Recipes for common and often used EIPs for routing: Content Based Routing, Filter, WireTap, RecipientList/Multicast, Throttler, Dynamic Router and more!</p>
+<h4>Chapter 3: Routing to your code</h4>
+<p>What are some of the best ways to abstract your code (so it doesn't have hard dependencies on Camel framework code) and how to participate in translation/transformations. Why use Processor vs Bean? And other gold nuggets...</p>
+<h4>Chapter 4: Transformation</h4>
+<p>Expressions, XQuery/XSLT, JAXB, JSON, parsing fixed-format/fixed-length files, etc, etc</p>
+<h4>Chapter 5: Splitting and Aggregating</h4>
+<p>The Composed Message Pattern + tricks for splitting in parallel, splitting very large files, and things to keep in mind when doing aggregations, etc.</p>
+<h4>Chapter 6: Parallel Processing</h4>
+<p>Increase throughput and load-balancing by taking advantage of Camel's threading model, asynchronous APIs,  and EIPs.</p>
+<h4>Chapter 7: Error Handling and Compensation</h4>
+<p>Often overlooked area of Camel, understand fine details about Dead Letter Channel, retry, dynamic completion actions, at more...</p>
+<h4>Chapter 8: Transactions and Idempotency</h4>
+<p>Transactions, XA, messaging, idempotent consumers, complete with great examples..</p>
+<h4>Chapter 9: Testing</h4>
+<p>Using the mock component, testing in Spring, testing in Blueprint/OSGI, auto mocks, using AOP, validation under heavy load...</p>
+<h4>Chapter 10: Monitoring and Debugging</h4>
+<p>Often overlooked aspects, different styles of logging you can take advantage of out of the box, tracing, JMX, breakpoints</p>
+<h4>Chapter 11: Security</h4>
+<p>Encrypting messages, parts of mesasges, authentication/authorization + Spring Security (same concepts for Apache Shiro)</p>
+<h4>Chapter 12: Web Services</h4>
+<p>The finer details of using contract-first webservices, CXF component, proxying services.</p>
+<h3>Source Code!</h3>
+<p>Last but not least, you can get a wealth of knowledge <a href="https://github.com/CamelCookbook/camel-cookbook-examples">from the accompanying source code</a>. To be honest, a lot of times I grab a book from Packt-pub, the source code that goes along with the book is thin, half the time doesn't even compile, and overall kinda shoddy. But the source code that goes along with the book is easily worth the price of the book... All examples and recipes have a maven subproject full with unit tests and both Java DSL and Spring DSL samples.</p>
+<h3>Conclusion?!</h3>
+<p>I was honored to be asked to be an official reviewer of the book, so you may even find a short blurb in there about me (ha! that's all I have these days... working on writing a book soon though!) I had intended to bring my own knowledge on the subject to improve the book... but these guys were spot on with the material and the market they were trying to serve... therefore I had little to add :)</p>
+<p>The book is pure gold and worth every bit of its sticker price. If you have an option to pick it up, I recommend it.</p>

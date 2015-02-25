@@ -1,0 +1,234 @@
+---
+layout: post
+title: Easier way to create custom Spring Config Namespaces using xbean-spring
+date: 2012-01-04 18:48:36.000000000 -07:00
+categories: []
+tags: []
+---
+<div>
+<p>Over the weekend I was debugging a peculiar issue with <a href="http://activemq.apache.org/" target="_blank">ActiveMQ</a> (turned out to indeed be a bug that had been reported a few months ago: <a href="https://issues.apache.org/jira/browse/AMQ-3359" target="_blank">https://issues.apache.org/jira/browse/AMQ-3359</a> ) and I became curious about how the components were being loaded up, wired together, and eventually started by the infrastructure code. If there is any interest in that, and I have time, I may blog about that later, but I stumbled upon a pretty cool way of creating your own custom namespaces for spring application context configuration files. Well, I stumbled upon how it’s done in ActiveMQ. I didn’t see much documentation online about how they did it, so I loaded up the remote debugger and figured it out.</p>
+<p>Spring XML configuration can be quite verbose if you’re using the basic constructs of <em>beans</em> and <em>properties</em>. Solutions such as autowiring to try to keep the config files smaller just add confusion especially if you’re new to a project that uses a lot of autowiring. A better solution is to use namespaces that allow you to create your own XML elements and keep the syntax more concise and clear.</p>
+<p>The Spring documentation has always been a valuable part of using the Spring Framework, and adding custom namespaces and hooking it into the config files is clearly explained . <a href="http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/extensible-xml.html#extensible-xml-introduction" target="_blank">See the appendix of the online documentation to see the details</a>, but basically you follow some conventions, create a schema for your new elements, create your own namespace handler and bean definition parsers. It’s not difficult, but it’s more manual steps and parsing classes than you should have to create.</p>
+<p>That is where xbean-spring comes into play.</p>
+<p>The <a href="http://geronimo.apache.org/xbean/index.html" target="_blank">xbean-spring project</a> (and its accompanying ant and maven plugins) allows you to create your own namespaces for spring configuration files while taking care of all of the boilerplate steps for you. It allows you to map a set of pojo java beans, using annotations, to the your custom spring config elements and handles creating the XSD, hooking into the namespace handlers, and parsing the bean with a bean definition parser. In other words, all you do is annotate your existing java beans and let xbean-spring take care of the rest. This makes creating your own custom xml configuration elements much easier, and as previously mentioned, using custom xml configuration namespaces allows your configuration to be much more concise and readable.</p>
+<p>Add the following dependency to your pom.xml for xbean-spring:</p>
+<p><code><br />
+</code></p>
+<pre><code>
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.xbean&lt;/groupId&gt;
+            &lt;artifactId&gt;xbean-spring&lt;/artifactId&gt;
+            &lt;version&gt;${xbean-version}&lt;/version&gt;
+        &lt;/dependency&gt;
+
+
+</code></pre>
+<p><code><br />
+</code>&nbsp;</p>
+<p>First thing you need to do to enable xbean-spring is annotate your classes with the xbean-spring annotations. The project relies on comment/JavaDoc style annotations and uses the <a href="http://qdox.codehaus.org/" target="_blank">awesome QDox project</a> to parse out these annotations (not necessary to know, but interesting none-the-less).</p>
+<p>Here’s an example spring application context with a custom namespace and config elements:<br />
+<code><br />
+</code></p>
+<pre><code>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://christianposta.com/schema/core http://christianposta.com/schema/core/core.xsd&quot;&gt;
+
+    &lt;simple xmlns=&quot;http://christianposta.com/schema/core&quot; myProperty=&quot;testMe&quot;&gt;
+
+        &lt;simpleController&gt;
+            &lt;simpleController controllerName=&quot;testMeToo&quot; /&gt;
+        &lt;/simpleController&gt;
+
+        &lt;controllers&gt;
+            &lt;complexController pattern=&quot;testPattern&quot; /&gt;
+            &lt;complexController pattern=&quot;testPattern2&quot; /&gt;
+            &lt;complexController pattern=&quot;testPattern3&quot; /&gt;
+        &lt;/controllers&gt;
+
+    &lt;/simple&gt;
+&lt;/beans&gt;
+
+
+</code></pre>
+<p><code><br />
+</code>&nbsp;</p>
+<p>Enabling this custom namespace requires three pretty straight forward and easy things none of which require writing custom XSDs or parsers.</p>
+<ol>
+<li>Annotate the pojos you want to map to these custom elements</li>
+<li> Add the maven xbean-spring plugin to your pom.xml file, configure it</li>
+<li>Create your spring config file and use the xbean-spring ApplicationContext subclasses</li>
+</ol>
+</div>
+<div>
+<p>Here are the steps for creating the above spring config <a href="http://www.christianposta.com/source/xbean-spring-code.tar">(source code is included)</a>, or as a git repo <a href="https://github.com/christian-posta/xbean-spring-example" target="_blank"> at github.com</a>.</p>
+<h3>1) Annotate the pojos</h3>
+<p>For this sample, I’ve put together three pojos:<br />
+<code>com.christianposta.postaprojects.xbeanspring.SimpleBean</code>, which will represent the top-level element (&lt;simple /&gt;). The code is below, but the only thing required for the xbean-spring integration is the <code>@org.apache.xbean.XBean</code> annotation in the comments. And since this is the root element, there is another prop to set. See the code:<br />
+<code><br />
+</code></p>
+<pre><code>[java]
+
+/**
+ * @org.apache.xbean.XBean element=&amp;quot;simple&amp;quot; rootElement=&amp;quot;true&amp;quot;
+ */
+public class SimpleBean {
+
+    private String myProperty;
+    private SimpleController simpleController;
+    private List&amp;lt;ComplexController&amp;gt; controllers;
+
+    public String getMyProperty() {
+        return myProperty;
+    }
+
+    public void setMyProperty(String myProperty) {
+        this.myProperty = myProperty;
+    }
+
+    public SimpleController getSimpleController() {
+        return simpleController;
+    }
+
+    public void setSimpleController(SimpleController simpleController) {
+        this.simpleController = simpleController;
+    }
+
+    public List&amp;lt;ComplexController&amp;gt; getControllers() {
+        return controllers;
+    }
+
+    /**
+     * @org.apache.xbean.Property alias=&amp;quot;controllers&amp;quot; nestedType=&amp;quot;com.christianposta.postaprojects.xbeanspring.ComplexController&amp;quot;
+     */
+    public void setControllers(List&amp;lt;ComplexController&amp;gt; controllers) {
+        this.controllers = controllers;
+    }
+}
+
+[/java]
+
+</code></pre>
+<p><code><br />
+</code>&nbsp;</p>
+<p>There are three javabean properties in this class, each demonstrating a different type of configuration. The myProperty field maps to the “myProperty” attribute of the simple element: &lt;simple myProperty=”value” /&gt;. The simpleController field maps to a complex type which is a child of the &lt;simple&gt; element. For xbean-spring to know this, and map it properly, add the <code>@org.apache.xbean.XBean</code> annotation to the <code>com.christianposta.postaprojects.xbeanspring.SimpleController</code> class. Then xbean-spring will figure it out automatically and know that the &lt;simpleController&gt; element maps to that bean:</p>
+<p><code><br />
+</code></p>
+<pre><code>[java]
+/**
+ * @org.apache.xbean.XBean
+ */
+public class SimpleController {
+
+    private String controllerName;
+
+    public String getControllerName() {
+        return controllerName;
+    }
+
+    public void setControllerName(String controllerName) {
+        this.controllerName = controllerName;
+    }
+}
+
+[/java]
+
+</code></pre>
+<p><code><br />
+</code><br />
+The last property, controllers, is a little more complex, but still very straight forward. Above the setter/mutator for that property, is another xbean annotation that specifies to what type to map the <code>java.util.List</code>. The <code>@org.apache.xbean.Property</code> annotation along with the <code>nestedType</code> attribute let xbean-spring figure out how to map the elements from &lt;controllers&gt;&lt;complexController/&gt;&lt;/controllers&gt; to the <code>com.christianposta.postaprojects.xbeanspring.ComplexController</code> class. That class also needs the <code>@org.apache.xbean.XBean</code> annotation to participate:<br />
+<code><br />
+[java]<br />
+/**<br />
+ * Sample ComplexController bean<br />
+ * @org.apache.xbean.XBean<br />
+ */<br />
+public class ComplexController {<br />
+    private String pattern;</p>
+<p>    public String getPattern() {<br />
+        return pattern;<br />
+    }</p>
+<p>    public void setPattern(String pattern) {<br />
+        this.pattern = pattern;<br />
+    }<br />
+}</p>
+<p>[/java]</p>
+<p></code>&nbsp;</p>
+<p>After figuring out how you want the structure of your custom namespace to look, including all sub-elements and attributes, and after applying all the annotations, then you’re done with step #1. No code, no XSD, no parsers. Easy.</p>
+<h3>2) Add the xbean-spring maven plugin to pom.xml</h3>
+<p>Upon running maven to compile your code, you need the xbean-spring plugin to do the magic of binding the xbean annotations to all of the spring boilerplate code (building the XSD, the spring.handlers, and the spring.schemas files). Add the following plugin declaration to your pom.xml:<br />
+<code><br />
+</code></p>
+<pre><code>
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.xbean&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-xbean-plugin&lt;/artifactId&gt;
+                &lt;version&gt;${xbean-version}&lt;/version&gt;
+                &lt;executions&gt;
+                    &lt;execution&gt;
+                        &lt;phase&gt;process-classes&lt;/phase&gt;
+                        &lt;configuration&gt;
+                            &lt;namespace&gt;http://christianposta.com/schema/core&lt;/namespace&gt;
+                            &lt;schema&gt;${basedir}/target/classes/core.xsd&lt;/schema&gt;
+                            &lt;outputDir&gt;${basedir}/target/classes&lt;/outputDir&gt;
+                            &lt;generateSpringSchemasFile&gt;true&lt;/generateSpringSchemasFile&gt;
+                            &lt;strictXsdOrder&gt;false&lt;/strictXsdOrder&gt;
+                        &lt;/configuration&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;mapping&lt;/goal&gt;
+                        &lt;/goals&gt;
+                    &lt;/execution&gt;
+                &lt;/executions&gt;
+            &lt;/plugin&gt;
+
+
+</code></pre>
+<p><code><br />
+</code><br />
+An explanation of the config options for the plugin:<br />
+<strong>namespace</strong>: this is the default namespace that’s used for the XSD and the elements from it. It should match what you declare in your spring config file for your new namespace&nbsp;</p>
+<p><strong>schema</strong>: this is the location and name to put the generated schema</p>
+<p><strong>outputDir</strong>: this is where the xbean-spring and spring boilerplate properties files will go (under META-INF mostly, but some others under the /classes root)</p>
+<p><strong>generateSpringSchemasFile</strong>: whether to generate spring.schemas file. optional if you want to supply your own</p>
+<p><strong>strictXsdOrder</strong>: available from xbean-spring 3.9 and above, allows the namespace elements to be in any order or strict order.</p>
+<p>After running any of the maven lifecyles that runs the "compile" lifecycle (e.g., package, install), you'll see in the target/classes/ folder all of the artifacts produced by xbean-spring that hook into the spring namespace system for building custom namespaces. You'll see the XSD is generated and located wherever you specified in the <strong>schema</strong> property of the plugin. You'll also notice that target/classes/META-INF also contains the spring.handlers and spring.schemas properties files that are required by spring. These were generated by the plugin.</p>
+<h3>3) Create your applicationContext file and load up the Spring Context</h3>
+<p>See the applicationContext from above. You also need to use the xbean-spring aware ApplicationContext classes. There are four of them, and they map to the ApplicationContext classes found within spring, but with added support for xbean-spring:</p>
+<p><code><br />
+org.apache.xbean.spring.context.ClassPathXmlApplicationContext<br />
+org.apache.xbean.spring.context.FileSystemXmlApplicationContext<br />
+org.apache.xbean.spring.context.ResourceXmlApplicationContext<br />
+org.apache.xbean.spring.context.XmlWebApplicationContext<br />
+</code><br />
+Like I said, they’re exactly the same as the ones that come with spring, but with added support for xbean. Note, the only one that doesn’t have a counterpart in the core spring is ResourceXmlApplicationContext.</p>
+<p>See this unit test from the accompanying source code:<br />
+<code><br />
+</code></p>
+<pre><code>[java]
+    @Test
+    public void testBeanGetsCreated() {
+
+        // Got to use the XBean version of the Application Context
+        ApplicationContext context = new ClassPathXmlApplicationContext(&amp;quot;/applicationContext-test.xml&amp;quot;);
+        assertEquals(1, context.getBeansOfType(SimpleBean.class).size());
+
+        SimpleBean bean = context.getBean(SimpleBean.class);
+        assertEquals(&amp;quot;testMe&amp;quot;, bean.getMyProperty());
+
+        SimpleController controller = bean.getSimpleController();
+        assertEquals(&amp;quot;testMeToo&amp;quot;, controller.getControllerName());
+
+        List&amp;lt;ComplexController&amp;gt; controllers = bean.getControllers();
+        assertEquals(3, controllers.size());
+
+    }
+[/java]
+
+</code></pre>
+<p><code><br />
+</code>&nbsp;</p>
+<p>That’s it! Feel free to look at the source code for the xbean-spring project: <a href="http://svn.apache.org/repos/asf/geronimo/xbean/trunk/xbean-spring/">http://svn.apache.org/repos/asf/geronimo/xbean/trunk/xbean-spring/</a></p>
+<p>Please feel free to comment if you know of more options and more advanced xbean mapping. I realize there are more complicated mappings, so please advise!</p>
+</div>

@@ -1,0 +1,47 @@
+---
+layout: post
+title: Using pysvn to get a tag name for current working directory
+date: 2011-04-04 03:26:47.000000000 -07:00
+categories:
+- python
+tags:
+- python
+- svn
+---
+<p>Recently, I needed an way to report the version of the application I'm working on to the users of the application.</p>
+<p>I wanted to avoid manually updating a settings file or some similar configuration file that the application could read and runtime and report the version. This would be a manual step that would eventually be forgotten at some point, or overlooked.</p>
+<p>I tag each of my deployments in SVN, so I figured there must be some way to associate the tagname (which represented the version) to the version that's displayed to the users. When you run the 'svn info' command, it does display the working directory's URL path to the svn repo. I decided to ask around for suggestions, as I didn't necessarily want to roll new code to parse that URL path if some useful utility existed.</p>
+<p>Luckily, someone did recommend a library that provided an svn binding for python. I explored <a title="PySvn" href="http://pysvn.tigris.org/">pysvn</a> and found it provided exactly what I needed. The <a title="PySvn documentation" href="http://pysvn.tigris.org/docs/pysvn_prog_guide.html">documentation</a> for pysvn is outstanding. It gave all the examples and descriptions that I needed to easily write a function to retrieve the tag name from the working directory's svn URL.</p>
+<p>My first step was to install the pysvn bindings. Unfortunately, I didn't see it available in PyPI, so I had to download and install it (thankfully on Ubuntu, it's a simple sudo apt-get python-svn call, as <a title="Download instructions" href="http://pysvn.tigris.org/project_downloads.html">described here</a>).</p>
+<p>I used the pysvn libraries to retrieve the working directory's svn URL, the builtin urlparse library to parse the path from the full url, and finally the posixpath library to get the 'basename' which is the tagname.</p>
+<p>Here's my final code for doing so:</p>
+<pre class="">
+import pysvn
+import urlparse, posixpath
+
+URLPARSE_PATH_INDEX = 2
+
+def find_basepath_name():
+    # initialize the pysvn Client object, which contains all the functions for
+    # working with the svn repo, including checkout, add, and status
+    client = pysvn.Client()
+
+    # grab the info from the current working directory
+    entry = client.info('.')
+
+    # parse the results of the URL to which the working directory is associated
+    url_details = urlparse.urlparse(entry.url)
+
+    # grab the 'path' component of the parsed url
+    path = url_details[URLPARSE_PATH_INDEX]
+
+    # use the posixpath module to correctly parse out the basename
+    basename = posixpath.basename(path)
+    return basename
+
+    
+    
+if __name__ == '__main__':
+    basename = find_basepath_name()
+    print basename
+</pre>

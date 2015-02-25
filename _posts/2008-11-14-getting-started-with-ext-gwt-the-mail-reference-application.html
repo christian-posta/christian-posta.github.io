@@ -1,0 +1,417 @@
+---
+layout: post
+title: 'Getting started with Ext-GWT: The Mail reference application'
+date: 2008-11-14 12:49:50.000000000 -07:00
+categories: []
+tags:
+- ajax
+- Ext-GWT
+- gwt
+- java
+- mvc
+---
+<p>For this entry, being the first, I would like to help the Ext-GWT community (especially those newly introduced to the framework) grasp a firm understanding of the reference "Mail" application, specifically the MVC structure found in this app. I have found that understanding these reference applications (especially the MVC) goes a long way toward using the Ext-GWT framework in a manner for which it was intended.</p>
+<h3>Some pre-requisites</h3>
+<ul>
+<li>Familiarity with the <a href="http://en.wikipedia.org/wiki/Model-view-controller">MVC design pattern</a></li>
+<li>Knowing how to put together a Google Web Toolkit application. See the <a http://code.google.com/webtoolkit/">GWT Documentation, as it is very good.</li>
+<li>Having downloaded the Ext-GWT (GXT) framework from <a href="http://www.extjs.com/products/gxt/download.php">Ext JS</a>. I will be using the code from the gxt-1.1.3 release.</li>
+<li>A brief perusal of the GXT code base and mail application source code</li>
+</ul>
+<p>Also, see the Ext-GWT <a href="http://extjs.com/helpcenter/index.jsp">documentation center</a> for more details on setting up a project using the framework. <a href="http://www.extjs.com/forum/member.php?u=4759">Darrell Meyer</a>, the lead developer for the framework, has put together some very good tutorials for setting up your workspace in Eclipse and what requirements are necessary for getting a project up and running.</p>
+<h3>Stepping through the source structure</h3>
+<p>Let's get started by stepping through the source code to get an understanding of where everything is, what its role is, and finally, to transition us to the MVC discussion.</p>
+<p>To see the actual source for the reference application, move to the root of the GXT distribution (we'll call that GXT_HOME) and navigate to GXT_HOME/samples/mail. From there you can click into the 'src' folder and see the directory structure for the app, com/extjs/gxt/samples/mail. You'll notice that the structure follows the recommended <a href="http://code.google.com/docreader/#p=google-web-toolkit-doc-1-5&s=google-web-toolkit-doc-1-5&t=DevGuideDirectoriesPackageConventions">GWT application structure</a>.</p>
+<h4>com/extjs/gxt/samples/mail</h4>
+<pre name="code" class="xml:nocontrols:nogutter">
+/client/ 
+/public/ 
+/server/ 
+/Mail.gwt.xml
+</pre>
+<p>You'll find the GWT application <a href="http://code.google.com/docreader/#p=google-web-toolkit-doc-1-5&s=google-web-toolkit-doc-1-5&t=DevGuideModules">Module XML</a> file here. If you understand the GWT module XML document, what it does and why it's used, you'll see that for the mail reference application, there isn't anything too complicated:</p>
+<pre name="code" class="xml:nocontrols">
+<module>
+  <inherits name="com.extjs.gxt.samples.resources.Resources" />
+  <stylesheet src="Mail.css" />
+  <servlet path="/service" class="com.extjs.gxt.samples.mail.server.MailServiceImpl" />
+  <entry-point class="com.extjs.gxt.samples.mail.client.Mail" />
+</module>
+</pre>
+<p>From line 2 we can see we inherit a GXT module named 'Resources'. From line 4 we see that there is a GWT-RPC servlet defined for the path '/service'. Lastly, we can see from line 5 that our entry-point class is com.extjs.gxt.samples.mail.client.Mail.</p>
+<h4>/com/extjs/gxt/samples/mail/client</h4>
+<pre name="code" class="xml:nocontrols:nogutter">
+/model/
+/mvc/
+/widget/
+/AppEvents.java
+/Mail.java
+/MailService.java
+/MailServiceAsync.java									
+</pre>
+<p>This is the folder for our GWT/GXT client-side source. The GWT entry-point class, Mail.java, is here along with our GWT-RPC MailService (MailService.java and MailServiceAsync.java). There is also another class, AppEvents.java, that is used to enumerate the different application events that can be passed to our mvc controllers (discussed below).</p>
+<h4>/com/extjs/gxt/samples/mail/client/model</h4>
+<pre name="code" class="xml:nocontrols:nogutter">
+/MailModel.java								
+</pre>
+<p>This is the only one model object <i>defined</i> for this application. Of course, in your applications, you will probably define quite a few more. I say <i>defined</i> because there are other client-side models used for this application: MailItem and Folder. These models are defined in the GXT Resources module (see the Mail.gwt.xml for how the Resources module is included).</p>
+<p>The models described here, and used on the client side, should (in my opinion) be used only for client-side organizing of data structures (grids), forms, and other user-interface components (trees, tables, combo boxes, etc). These should not be the same domain objects used in your business-layer. GXT is a client-side, user-interface framework, and models defined for the client side should serve client-side purposes.</p>
+<p>MailModel.java source code:</p>
+<pre name="code" class="java:nocontrols">
+public class MailModel extends BaseTreeModel {
+
+  private Folder inbox;
+  private Folder sent;
+  private Folder trash;
+
+  public MailModel() {
+    inbox = new Folder("Inbox");
+    sent = new Folder("Sent Items");
+    trash = new Folder("Trash");
+
+    List items = TestData.getMailItems();
+    int count = items.size();
+
+    List<mailitem> inlist = new ArrayList<mailitem>();
+    List<mailitem> sentlist = new ArrayList<mailitem>();
+
+    for (int i = 0; i < count; i++) {
+      MailItem item = (MailItem) items.get(i);
+      if (i < (count / 2)) {
+        inlist.add(item);
+      } else {
+        sentlist.add(item);
+      }
+    }
+
+    inbox.set("children", inlist);
+    sent.set("children", sentlist);
+    trash.set("children", new ArrayList());
+
+    add(inbox);
+    add(sent);
+    add(trash);
+
+  }			
+  
+  ...
+  
+}
+  				
+</mailitem></mailitem></mailitem></mailitem></pre>
+<p>If you take a look at the MailModel.java class, you'll notice that its primary purpose is to model the mail part of the application (with Tasks and Contacts being the other parts). It has an inbox, sent, and trash folders. In this simplistic application, also notice that the mail items are being populated right here in the model, line 12, and that the inbox/sent folders are being populated with a simple for-loop line 18-25). This will most likely NOT be the case for your applications, as you'll probably want to populate the models with some server-side data.</p>
+<h4>/com/extjs/gxt/samples/mail/client/mvc</h4>
+<pre name="code" class="xml:nocontrols:nogutter">
+/AppController.java
+/AppView.java		
+/ContactController.java		
+/ContactFolderView.java		
+/ContactView.java		
+/MailController.java		
+/MailFolderView.java		
+/MailView.java	
+/TaskController.java		
+/TaskFolderView.java		
+/TaskView.java								
+</pre>
+<p>You'll find all of our MVC controllers and views in this folder. The AppController is the main controller responsible for setting up our entire app. I will go into more detail on this and the other controllers in the MVC section (below).</p>
+<h4>/com/extjs/gxt/samples/mail/client/widget</h4>
+<pre name="code" class="xml:nocontrols:nogutter">
+/ContactPanel.java
+/LoginDialog.java		
+/MailItemPanel.java		
+/MailListPanel.java		
+/TaskPanel.java							
+</pre>
+<p>This folder contains all of the application-specific widgets. As GXT is a framework, expect to extend and customize application-specific widgets as your application requires. For this app, the widgets that are used to organize the mail list (MailListPanel.java), display the contents of a mail item (MailItemPanel.java), display contacts, and display tasks are defined here. The LoginDialog widget is the widget you first see when logging in to the application.</p>
+<p>Each of these widgets will be instantiated by the views responsible for displaying their respective data.</p>
+<p>For the most part, these widgets are fairly simple. I will say a few things about the LoginDialog widget. The LoginDialog widget extends from the GXT class <a href="http://extjs.com/helpcenter/topic/com.extjs.gxt.help/html/reference/api/com/extjs/gxt/ui/client/widget/Dialog.html">Dialog</a> and expects a username/password (you can enter anything with at least 4 characters) and will allow you to login only after it has been validated (has at least 4 chars and the username has a value). You can see that this behavior is enabled from the source code of the LoginDialog.java widget:</p>
+<pre name="code" class="java:nocontrols:nogutter">
+public class LoginDialog extends Dialog {
+
+...
+	public LoginDialog() {
+	  ...
+	    KeyListener keyListener = new KeyListener() {
+	      public void componentKeyUp(ComponentEvent event) {
+	        validate();
+	      }
+	
+	    };	 
+	  ...
+	}
+	
+  protected void validate() {
+    login.setEnabled(hasValue(userName) && hasValue(password) && password.getValue().length() > 3);
+  }	
+...
+
+}						
+</pre>
+<p>Once you click the "Login" button, the "onSubmit" method will be called which runs a timer (to simulate a user logging in... again.. this is trivial because it's a sample app. In your app, you can do your login logic here) and then hides the LoginDialog widget: </p>
+<pre name="code" class="java:nocontrols:nogutter">
+  @Override
+  protected void createButtons() {
+  
+  	...
+  	login = new Button("Login");
+  	login.disable();
+  	login.addSelectionListener(new SelectionListener<buttonevent>() {
+      public void componentSelected(ButtonEvent ce) {
+        onSubmit();
+      }
+    });
+    
+    ...
+   }
+   
+   ...
+   
+  protected void onSubmit() {
+    buttonBar.getStatusBar().showBusy("Please wait...");
+    buttonBar.disable();
+    Timer t = new Timer() {
+
+      @Override
+      public void run() {
+        LoginDialog.this.hide();
+      }
+
+    };
+    t.schedule(2000);
+  } 
+						
+</buttonevent></pre>
+<p>If you're wondering how the LoginDialog widget gets displayed, it's part of the MVC execution. See below.</p>
+<h3>Understanding the GXT Model-View-Controller</h3>
+<p>The main structure of the mail application is controlled by the GXT MVC implementation. The overview functionality is as follows: the dispatcher fires an application event (one of the events enumerated in /client/AppEvents.java) to all of the controllers. If the controller can handle that particular event, it does. If it can't handle the event it doesn't do anything. The controller is responsible for executing logic and updating any models. The views that are connected to these<br />
+controllers will update accordingly after a model is updated.</p>
+<p>For all of this to happen, the dispatcher must register the controllers to which it can fire events. Going back to our /client/Mail.java entry-point class, the dispatcher is initialized and<br />
+the controllers are passed to it: </p>
+<pre name="code" class="java:nocontrols:nogutter">
+public class Mail implements EntryPoint {
+
+  public void onModuleLoad() {
+    ...
+    Dispatcher dispatcher = Dispatcher.get();
+    dispatcher.addController(new AppController());
+    dispatcher.addController(new MailController());
+    dispatcher.addController(new TaskController());
+    dispatcher.addController(new ContactController());
+    ...
+  }
+}
+						
+</pre>
+<p>At this point, we have the four controllers registered with the dispatcher. Now that the dispatcher has controllers, it can fire events to these controllers:</p>
+<pre name="code" class="java:nocontrols:nogutter">
+public class Mail implements EntryPoint {
+
+  public void onModuleLoad() {
+    ...
+    
+	dispatcher.dispatch(AppEvents.Login);
+	
+    ...
+  }
+}
+						
+</pre>
+<p>Again notice, the event we fire is derived from our AppEvents.java file; in this case we're firing the 'Login' event.</p>
+<p>Only controllers that can handle the 'Login' event will service this event. Which controllers are that? The ones that explicitly register for this event. In the case of the mail application, the AppController is the only controller that can handle 'Login' events. We can tell this by looking at the constructor for the AppController:</p>
+<pre name="code" class="java:nocontrols:nogutter">
+public class AppController extends Controller {
+
+  private AppView appView;
+  private MailServiceAsync service;
+
+  public AppController() {
+    registerEventTypes(AppEvents.Init);
+    registerEventTypes(AppEvents.Login);
+    registerEventTypes(AppEvents.Error);
+  }
+  
+  ...
+}						
+</pre>
+<p>You might want to be aware of what's going on in the background: before the dispatcher queries a controller to determine whether it can handle a particular event, the dispatcher determines whether or not the controller is initialized. If it's not initialized, the <code>initialize()</code> method will be called on the controller. Inside this method is where you want to put all logic associated with setting up the controller. See the example in the AppController.initialize() method:</p>
+<pre name="code" class="java:nocontrols:nogutter">
+	
+  public void initialize() {
+    appView = new AppView(this);
+  }
+					
+</pre>
+<p>Although this initialization is trivial, it is called once when the controller is initialized, and is the suggested place to put all initialization code. Hopefully that explains the mysterious <code>initialize()</code> method in the Controller classes.</p>
+<p>In this example, since the AppController can handle <code>Login</code> events, the event is passed to the controller's <code>handleEvent(AppEvent event)</code> method. This is a method that must be implemented when extending the GXT <a href="http://extjs.com/helpcenter/topic com.extjs.gxt.help/html/reference/api/com/extjs/gxt/ui/client/mvc/Controller.html">Controller class</a>. Inside the <code>handleEvent</code> method, you can determine what type of event occurred and deal with it accordingly: </p>
+<pre name="code" class="java:nocontrols:nogutter">
+public class AppController extends Controller {
+  ...	
+  public void handleEvent(AppEvent event) {
+    switch (event.type) {
+      case AppEvents.Init:
+        onInit(event);
+        break;
+      case AppEvents.Login:
+        onLogin(event);
+        break;
+      case AppEvents.Error:
+        onError(event);
+        break;
+    }
+  }
+  ...
+  
+  protected void onError(AppEvent ae) {
+    System.out.println("error: " + ae.data);
+  }
+
+  private void onInit(AppEvent event) {
+    forwardToView(appView, event);
+    service = (MailServiceAsync) Registry.get("service");
+    service.getMailFolders("darrell", new AsyncCallback<folder>() {
+      public void onFailure(Throwable caught) {
+        Dispatcher.forwardEvent(AppEvents.Error, caught);
+      }
+
+      public void onSuccess(Folder result) {
+        Dispatcher.forwardEvent(AppEvents.NavMail, result);
+      }
+    });
+
+  }
+
+  private void onLogin(AppEvent event) {
+    forwardToView(appView, event);
+  }  
+  
+} 					
+</folder></pre>
+<p>When the <code>Login</code> event is handled by the controller, it is processed and then forwarded to the appropriate view. This again is trivial for the sample app. In a more complicated app, processing of the models would occur here, and forwarding to the view would only be necessary for some specific view-only logic. In this case, the event <i>is</i> forwarded to the view, however, you might notice something from looking at the source: views also implement a <code>handleEvent</code> method, but the AppView class doesn't seem to be able to handle <code>Login</code> events: </p>
+<pre name="code" class="java:nocontrols:nogutter">
+	
+public class AppView extends View {
+  public AppView(Controller controller) {
+    super(controller);
+  }
+  ...
+  
+  protected void handleEvent(AppEvent event) {
+    switch (event.type) {
+      case AppEvents.Init:
+        initUI();
+        break;
+
+    }
+  }  
+}
+					
+</pre>
+<p>What happened? Very similarly that the controllers have their <code>initialize</code> method called before they are available to handle any events, the Views are also initialized before they handle any events. This happens only once if the view is not initialized. Thus, in this case, the <code>initialize()</code> method on the AppView class was called before the <code>Login</code> event was forwarded. You can see in the <code>initialize()</code> method, the view sets up the LoginDialog panel before adding anything else to the screen. Firing the <code>Login</code> event really had the effect of only initializing the view. The view did not directly handle the event (although it could have):</p>
+<p><pre name="code" class="java:nocontrols:nogutter">
+	
+public class AppView extends View {
+  ...
+  protected void initialize() {
+    LoginDialog dialog = new LoginDialog();
+    dialog.setClosable(false);
+    dialog.addListener(Events.Hide, new Listener<windowevent>() {
+      public void handleEvent(WindowEvent be) {
+        Dispatcher.forwardEvent(AppEvents.Init);
+      }
+    });
+    dialog.show();
+  } 
+  ...
+}					
+</windowevent></pre>
+<p>Notice that a framework listener for the Events.Hide framework event is added to the LoginDialog widget. That means when the <code>dialog.hide()</code> method is called (as it will be in the <code>onSubmit</code> method from the LoginDialog.java class), the Events.Hide event will fire and this listener will be called. Inside the listener you can see that once the login has taken place, a new event, <code>Init</code> will be fired by the dispatcher to its controllers. The process for querying the controllers and forwarding the event to the appropriate controller happens again. Notice the event is being fired with the <code>Dispatcher.forwardEvent(AppEvent e)</code> call instead of the <code>Dispatcher.dispatch()</code> method. They both accomplish the same task, but I believe the <code>Dispatcher.forwardEvent</code> is the recommended way to make calls to the dispatcher from within controllers or views. </p>
+<p>When the <code>Init</code> event is fired, the controllers are again queried to determine which controllers can handle this event. In the mail app, all of the controllers can handle the <code>Init</code> event. In the AppController, the <code>onInit()</code> method gets called for an <code>Init</code> event, and this does two things: forwards the event to a view (which does all of the logic for instantiating the actual widgets) and calls a GWT-RPC service method to get the mail folders from the server. When the response is sent back from the server, a new event is fired: <code>NavMail</code>.</p>
+<pre name="code" class="java:nocontrols:nogutter">
+
+public class AppController extends Controller {
+  ...
+  private void onInit(AppEvent event) {
+    forwardToView(appView, event);
+    service = (MailServiceAsync) Registry.get("service");
+    service.getMailFolders("darrell", new AsyncCallback<folder>() {
+      public void onFailure(Throwable caught) {
+        Dispatcher.forwardEvent(AppEvents.Error, caught);
+      }
+
+      public void onSuccess(Folder result) {
+        Dispatcher.forwardEvent(AppEvents.NavMail, result);
+      }
+    });
+
+  }
+  ...
+}
+</folder></pre>
+<p>The NavMail event is fired along with a folder obeject. The controller/view that handles this event can use this folder as the default folder to expand</p>
+<p>The AppView instantiating the widgets: </p>
+<pre name="code" class="java:nocontrols:nogutter">
+
+public class AppView extends View {
+  ...
+  protected void handleEvent(AppEvent event) {
+    switch (event.type) {
+      case AppEvents.Init:
+        initUI();
+        break;
+
+    }
+  }
+  ...
+  private void initUI() {
+    viewport = new Viewport();
+    viewport.setLayout(new BorderLayout());
+
+    createNorth();
+    createWest();
+    createCenter();
+
+    // registry serves as a global context
+    Registry.register("viewport", viewport);
+    Registry.register("west", west);
+    Registry.register("center", center);
+
+    RootPanel.get().add(viewport);
+  }  
+
+}
+</pre>
+<p>Additionally, note that the AppController is just one of the controllers that handles the <code>Init</code> event. The other controllers also handle the event, and set up their views and models accordingly.</p>
+<p>
+When the <code>NavMail</code> event is fired, the only controller that can handle that event, the MailController, forwards it on to its two views: MailView and MailFolderView. MailView sets up the widgets to display the list of mail (MailListPanel) and the mail-item content (MailItemPanel); MailFolderView loads the mail items associated with the folder that was passed along with the event when the NavMail event is handled.</p>
+<pre name="code" class="java:nocontrols:nogutter">
+
+public class MailFolderView extends View {
+  ...
+  protected void handleEvent(AppEvent event) {
+    switch (event.type) {
+      case AppEvents.Init:
+        initUI();
+        break;
+    }
+
+    if (event.type == AppEvents.NavMail) {
+      Folder f = (Folder) event.data;
+      if (f != null) {
+        loader.addListener(Loader.Load, new LoadListener() {
+          @Override
+          public void loaderLoad(LoadEvent le) {
+            loader.removeLoadListener(this);
+          }
+        });
+        loader.load(f);
+      }
+
+    }
+  }
+  ...
+}
+</pre>
+<p>
+Note that the reason you see the mail widgets and mail items when you login is because all of these events (Login, Init, NavMail, executed and the controllers and views worked as designed: the controllers handled the events, the views updated their widgets (or the widgets updated themselves).</p>
+<p>If I have left something out, or you feel something should have been explained in more detail, please leave me a comment!</p></p></p>

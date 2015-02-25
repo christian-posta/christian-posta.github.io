@@ -1,0 +1,35 @@
+---
+layout: post
+title: Lean distribution of ActiveMQ
+date: 2013-01-28 07:59:19.000000000 -07:00
+categories: []
+tags: []
+---
+<p>I saw a question on the mailing list asking for a simple, stripped-down, version of <a href="http://activemq.apache.org">ActiveMQ</a>. The default version 5.7.0 distribution and all of its runtime dependencies come in at about 44MB. I was able to get a working, "lean" version going at about 7.4MB.</p>
+<p>First of course, some of the requirements:</p>
+<p>Only one protocol would be used (the native <a href="http://activemq.apache.org/openwire.html">OpenWire</a>), no <a href="http://activemq.apache.org/web-console.html">web console</a>, no <a href="http://activemq.apache.org/security.html">security</a>, no <a href="http://camel.apache.org">camel</a>, etc, etc. Simple, JMS provider with no frills.</p>
+<p>Here's what my $ACTIVEMQ_BASE/lib folder looks like</p>
+<ul>
+<li>activemq-console-5.7.0.jar</li>
+<li>activemq-core-5.7.0.jar</li>
+<li>geronimo-j2ee-management_1.1_spec-1.0.1.jar</li>
+<li>geronimo-jms_1.1_spec-1.1.1.jar</li>
+<li>jcl-over-slf4j-1.6.6.jar</li>
+<li>kahadb-5.7.0.jar</li>
+<li>slf4j-api-1.6.6.jar</li>
+<li>optional/activemq-spring-5.7.0.jar</li>
+<li>optional/log4j-1.2.17.jar</li>
+<li>optional/slf4j-log4j12-1.6.6.jar</li>
+<li>optional/spring-aop.3.0.7.RELASE.jar</li>
+<li>optional/spring-asm.3.0.7.RELASE.jar</li>
+<li>optional/spring-beans.3.0.7.RELASE.jar</li>
+<li>optional/spring-context.3.0.7.RELASE.jar</li>
+<li>optional/spring-core.3.0.7.RELASE.jar</li>
+<li>optional/spring-expression.3.0.7.RELASE.jar</li>
+<li>optional/spring-jms.3.0.7.RELASE.jar</li>
+<li>optional/spring-oxm.3.0.7.RELASE.jar</li>
+<li>optional/spring-tx.3.0.7.RELASE.jar</li>
+<li>optional/xbean-spring-3.11.1.jar</li>
+</ul>
+<p>Give it a shot! If someone spots more dependencies that can safely be removed, let me know!</p>
+<p>UPDATED: As Gary pointed out, all the spring deps can be eliminated if doing embedded broker. I've put together an example here: <a href="https://github.com/christian-posta/camel-sandbox/tree/master/activemq-stripped">at my github repo</a> </p>

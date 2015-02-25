@@ -1,0 +1,60 @@
+---
+layout: post
+title: 'Meet Fabric8: An open-source integration platform based on Camel and ActiveMQ'
+date: 2014-05-27 12:29:28.000000000 -07:00
+categories: []
+tags: []
+---
+<h2>Fabric8</h2>
+<p>Fabric8 is a <em>Apache 2.0 Licensed</em> upstream community for the <a href="http://www.jboss.org/jbossfuse">JBoss Fuse</a> product from <a href="http://www.jboss.org/jbossfuse">Red Hat</a>.</p>
+<p>It's is an integration platform based on <a href="http://activemq.apache.org">Apache ActiveMQ</a>, <a href="http://karaf.apache.org">Camel</a>, <a href="http://cxf.apache.org">CXF</a>,<a href="http://karaf.apache.org">Karaf</a>, <a href="http://hawt.io">HawtIO</a> and others.</p>
+<p>It provides automated configuration and deployment management to help make deployments easy, reproducible, and less human-error prone.</p>
+<p>The latest GA version of <a href="http://www.jboss.org/jbossfuse">JBoss Fuse (v6.1</a>), was recently released and is based on <a href="http://fabric8.io">v1.0 of Fabric8</a><img src="/images/fabric8_logo.svg" alt="fabric8 logo" /></p>
+<p><a href="http://fabric8.io">Fabric8</a> unifies and packages those open-source projects to help you build integrations between systems and also tackle non-functional requirements like managing your deployments, service discovery, failover, load balancing, centralized configuration, automation, and more! It also <a href="http://www.christianposta.com/blog/?p=375">gives a clear path to cloud deployments, such as on PaaS</a> The best part is it's familiar to people who already use <a href="http://karaf.apache.org">Camel</a> or <a href="http://activemq.apache.org">ActiveMQ</a> which are the most popular open-source integration libraries and messaging platforms respectively.</p>
+<p>You can get more info from the <a href="http://fabric8.io/#/site/book/doc/index.md?chapter=overview_md">community docs</a>, chat with the developers on  <a href="http://freenode.net">IRC on freenode</a>, and the <a href="https://groups.google.com/forum/#!forum/fabric8">mailing list at google-groups</a>.</p>
+<h3>Awesome, so what does Fabric8 give me?</h3>
+<p><a href="http://fabric8.io">Fabric8</a> provides a LOT of functionality ... but a couple of key pieces of functionality that I'd like to mention in this blog post, pieces that you'd otherwise have to build out yourself if you use the constituent projects directly, are:</p>
+<pre><code>* Automated deployment and provisioning
+* Polycontainer support
+* Centralized management
+* Service discovery
+* Load balancing
+* High availability
+* Master/slave failover coordination</code>
+<code><img class="alignnone" title="Fabric Diagram" src="/images/fabric-diagram.png" alt="" width="771" height="469" />
+</code></pre>
+<p>With Fabric8, you build your integration pieces, deploy them and manage them (together this creates a "fabric") where nodes represent containers with provisioned pieces of your software (deployments) and the endpoints (HTTP, MQ, SOAP/REST) are registered in a repository for dynamic lookup.</p>
+<h3>A DevOpsy story</h3>
+<p>Think for a moment about what your current build and release process looks like...</p>
+<p>For Java shops you probably have <a href="http://maven.apache.org">Maven</a> to build your source code, <a href="http://subversion.apache.org">subversion</a> or <a href="http://git-scm.com">git</a> to provide version control and change management around your source code, and maybe <a href="http://jenkins-ci.org">Jenkins</a> for managing your builds, right? And that's a very powerful set of tools for Java developers.</p>
+<p>But a build and release process is more than using a few tools regardless of how powerful they are.</p>
+<p>Getting your code to production involves a lot more on the operations side that developers either don't get or are oblivious to. What containers does your code run in? What operating systems? What supporting software needs to be around? Are these environments carefully crafted and manually configured with behemoth containers that are brittle to change, are different depending on which environment they run in (DEV/QA/UAT/PROD, etc), ??</p>
+<p>Successful IT shops  <a href="http://en.wikipedia.org/wiki/DevOps">embrace the DevOps movement</a> and its principles of communication and automation to create an environment that is easily scripted/automated, reproducible, and removes as much human and manual configuration as possible.</p>
+<p>A dev person thinks in terms of code and app servers.</p>
+<p>An ops person might be thinking in terms of managing VMs, servers, OSs, network, etc.</p>
+<p>But therein lies a gap. What tools do developers have to automate deploying containers, provisioning their applications, configure those apps, and visualize/manage this from a central location?</p>
+<p>Ops folks are familiar with <a href="http://puppetlabs.com/community/overview">Puppet</a>/<a href="http://www.getchef.com/community/">Chef</a>/<a href="http://www.ansible.com/home">Ansible</a>/<a href="http://puppetlabs.com/mcollective">MCollective</a>/<a href="http://capistranorb.com">capistrano</a>... and using these tools in concert with Fabric8 will give you a very deep and powerful stack for automation and configuration management to help you achieve consistent and reproducible deployments to production to implement a <a href="http://en.wikipedia.org/wiki/Continuous_delivery">continuous delivery</a> model.</p>
+<h2>So what's the value that Fabric8 adds?</h2>
+<h4>Consistency across containers</h4>
+<p>A consistent way of configuring your deployments with <a href="http://fabric8.io/#/site/book/doc/index.md?chapter=profiles_md">Profiles</a> that works across java containers (<a href="http://karaf.apache.org">Karaf</a>, <a href="http://tomcat.apache.org">Tomcat</a>, <a href="http://www.wildfly.org">Wildfly</a>, <a href="http://tomee.apache.org/apache-tomee.html">TomEE</a>), micro-service frameworks (<a href="https://dropwizard.github.io/dropwizard/">Dropwizard</a>, <a href="http://projects.spring.io/spring-boot/">Spring Boot</a>, <a href="http://vertx.io">Vert.x</a>), and plain-jain Java Main (PJJM, TM :)) based apps.</p>
+<h4>Visualizations</h4>
+<p>A unified web console based on <a href="http://hawt.io">HawtIO</a> to manage your profiles, deployments, brokers, services, etc. There are even rich visualizations for your Camel routes and debugging and tracing when there are problems.</p>
+<h4>Discovery</h4>
+<p>For all the deployments within a Fabric, Fabric8 can not only manage them but also register them into a run-time registry that clients can use to automatically find the set of HTTP endpoints (SOAP/REST, etc) they need, or MQ services (brokers, master/slave pairs, network of brokers, etc). Additionally, external clients can also use the registry to discover services.</p>
+<h4>Deep understanding about your running services</h4>
+<p>While the familiar Ops tools like those mentioned above are great at getting software onto disk for sets of machines they cannot give a rich understanding about the services running. For example, with the Camel plugin for Fabric8, you can track #s of exchanges completed, those failed, amount of time an endpoint is taking to complete exchanges, etc. With the ActiveMQ plugin you can visualize your queues/producers/consumers, send messages to queues, move messages from DLQ, etc. Additionally, there are plugins for ElasticSearch/Kibana for even deeper understanding of business/integration processed implemented by your code/Camel routes.</p>
+<h4>Familiarity</h4>
+<p>Fabric8 uses tools that are already familiar to Java developers writing distributed integration services or applications. For example, all of the configurations (Profiles) are stored in git. The provisioning mechanisms use Maven. The coordination services use [Apache Zookeeper][zk], etc.</p>
+<h4>Manage deployments in the cloud or across hybrid clouds</h4>
+<p>Fabric8 has built in support for deploying and provisioning to IaaS or PaaS out of the box. There's even support for Docker based containers which you can then ship and use in any environment :) </p>
+<h2>What about ServiceMix?</h2>
+<p><a href="http://servicemix.apache.org">ServiceMix</a> is also an open-source ESB based on Apache Camel and ActiveMQ. So how does this relate to Fabric8?</p>
+<p><a href="http://servicemix.apache.org">ServiceMix</a> is the genesis of the current JBoss Fuse/Fabric8. It started off 9 or so years ago as an implementation of an EnterpriseServiceBus (ESB) based on the <a href="http://en.wikipedia.org/wiki/Java_Business_Integration)">Java Business Integration</a> spec. It's goal was to provide a pluggable component architecture with a normalized messaging backbone that would adhere to standard interfaces and canonical XML data formats. ServiceMix gained a lot of popularity, despite JBI being a overly ceremonious spec (lots and lots of XML descriptors, packaging demands, etc). But, despite most products/projects offering integration services as a large, complex container, the need for routing, transformation, integrating with external systems, etc. shows up outside of that complex "ESB" environment as well :)</p>
+<p>Around the SMX 3.x and 4.x timeframe, the project underwent some major refactoring. The JBI implementation was ripped out and simplified with routing/mediation DSL that would later become <a href="http://karaf.apache.org">Apache Camel</a>. This way the "heart" of the "ESB" could be used in other projects (ActiveMQ, stand alone, etc). Additionally, the core container also moved away from JBI and toward OSGi. Still later, the actual OSGi container was refactored out into its own project, now known as <a href="http://karaf.apache.org">Karaf</a>. So ServiceMix became less its own project and really a packaging of other projects like ActiveMQ, Karaf (which used to be core SMX) and Camel (which used to be core SMX). The older versions of JBoss Fuse (Fuse ESB/Fuse Enterprise) where basically a hardening of SMX which was already a repackaging of some Apache projects. Additionally a lot of the core developers working on SMX also moved toward contributing to the constituent pieces and not necessarily the core SMX.</p>
+<p>Fabric8 takes the "ESB" or "integration" spirit of ServiceMix and adds a nice management UI (<a href="http://hawt.io">HawtIO</a>), and all of the DevOpsy stuff I mentioned above, and <a href="http://www.christianposta.com/blog/?p=375">paints a  clear path toward large-scale deployments and even moving to cloud/hybrid cloud architectures</a>.</p>
+<p>If you want more info from the community, <a href="http://www.davsclaus.com">Claus Ibsen</a> wrote a <a href="http://www.davsclaus.com/2014/02/to-servicemix-or-not-to-servicemix.html">nice blog post</a>.</p>
+<p>And a <a href="http://servicemix.396122.n5.nabble.com/To-servicemix-or-not-to-servicemix-td5718935.html;cid=1391848093882-21">rather long discussion in the SMX community found here</a>:</p>
+<h3>Next steps</h3>
+<p>If you develop systems/enterprise integrations with <a href="http://karaf.apache.org">Camel</a>, <a href="http://cxf.apache.org">CXF</a>, or <a href="http://activemq.apache.org">ActiveMQ</a> and deploy into OSGi (<a href="http://karaf.apache.org">karaf</a>), Servlet (<a href="http://tomcat.apache.org">Tomcat</a>), Java EE (<a href="http://www.wildfly.org">Wilffly</a>) or stand alone (<a href="http://vertx.io">Vert.x</a>, <a href="http://projects.spring.io/spring-boot/">Spring Boot</a>, <a href="https://dropwizard.github.io/dropwizard/">DropWizard</a>), then you should definitely take a look at <a href="http://fabric8.io">Fabric8</a>.</p>
+<p>Start by <a href="http://fabric8.io/#/site/book/doc/index.md?chapter=getStarted_md">downloading the latest release</a> and <a href="https://groups.google.com/forum/#!forum/fabric8">give us your feedback</a>!!</p>
+<p>In subsequent posts, I'll continue to dive into the functionality of Fabric8 and how you can use it to build robust, scalable integrations AND have a consistent and reproducible environment for deploying your integrations.</p>

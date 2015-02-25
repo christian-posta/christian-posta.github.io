@@ -1,0 +1,35 @@
+---
+layout: post
+title: What is ActiveMQ?
+date: 2011-12-27 22:08:15.000000000 -07:00
+categories:
+- ActiveMQ
+tags:
+- activemq
+- apache
+- esb
+- java
+- messaging
+---
+<div>
+<p>Although the <a href="http://activemq.apache.org/" target="_blank">Active MQ website</a> already gives a pithy, to-the-point explanation of ActiveMQ, I would like to add some more context to their definition.</p>
+<p>From the ActiveMQ project’s website:</p>
+<blockquote><p>“ActiveMQ is an open sourced implementation of JMS 1.1 as part of the J2EE 1.4 specification.”</p></blockquote>
+<p>Here’s my take: ActiveMQ is an open-source, messaging software which can serve as the backbone for an architecture of distributed applications built upon messaging. The creators of ActiveMQ were driven to create this open-source project for two main reasons:</p>
+<ol>
+<li>The available existing solutions at the time were proprietary/very expensive</li>
+<li>Developers with the Apache Software Foundation were working on a fully J2EE compliant application server (Geronimo) and they needed a JMS solution that had a license compatible with Apache’s licensing.</li>
+</ol>
+<p>Since its inception, ActiveMQ has turned into a strong competitor of the commercial alternatives, such as WebSphereMQ, EMS/TIBCO and SonicMQ and is deployed in production in some of the top companies in industries ranging from financial services to retail.</p>
+<p>Using messaging as an integration or communication style leads to many benefits such as:</p>
+<ol>
+<li>Allowing applications built with different languages and on different operating systems to integrate with each other</li>
+<li>Location transparency - client applications don’t need to know where the service applications are located</li>
+<li>Reliable communication - the producers/consumers of messages don’t have to be available at the same time, or certain segments along the route of the message can go down and come back up without impacting the message getting to the service/consumer</li>
+<li>Scaling - can scale horizontally by adding more services that can handle the messages if too many messages are arriving</li>
+<li>Asynchronous communication - a client can fire a message and continue other processing instead of blocking until the service has sent a response; it can handle the response message only when the message is ready</li>
+<li>Reduced coupling - the assumptions made by the clients and services are greatly reduced as a result of the previous 5 benefits. A service can change details about itself, including its location, protocol, and availability, without affecting or disrupting the client.</li>
+</ol>
+<p>Please see <a href="http://eaipatterns.com/ramblings/74_messaging.html" target="_blank">Gregor Hohpe's description about messaging </a>or the book he and Bobby Woolf wrote <a href="http://www.amazon.com/gp/product/B000OZ0N9E/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&amp;tag=christianc0aa-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=B000OZ0N9E" target="_blank">about messaging-based enterprise application integration.</a></p>
+<p>There are other advantages as well (hopefully someone can add other benefits or drawbacks in the comments), and ActiveMQ is a free, open-source software that can facilitate delivering those advantages and has proven to be highly reliable and scalable in production environments.</p>
+</div>

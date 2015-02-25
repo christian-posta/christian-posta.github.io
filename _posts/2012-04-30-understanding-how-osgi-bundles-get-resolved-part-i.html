@@ -1,0 +1,66 @@
+---
+layout: post
+title: Understanding how OSGI bundles get resolved part I
+date: 2012-04-30 18:45:22.000000000 -07:00
+categories:
+- OSGI
+tags:
+- osgi
+---
+<p>I'd like to review how OSGI bundles get resolved and use <a href="http://karaf.apache.org/">Apache Karaf</a> to demonstrate. <a href="http://karaf.apache.org/">Karaf</a> is a full-featured OSGI container based on the <a href="http://felix.apache.org/">Apache Felix</a> kernel and is the corner stone for the <a href="http://servicemix.apache.org/">Apache ServiceMix</a> integration container. For part one, I will discuss how bundles are resolved by an OSGI framework. In part two, I'll demonstrate each rule using Apache Karaf. Let's get started.</p>
+<h2>Bundle Resolution Rules</h2>
+<p>An OSGI <a href="http://en.wikipedia.org/wiki/OSGi#Life-cycle">bundle's lifecycle</a> defines the possible states and transitions for a bundle. We will be discussing the "Resolved" state of a bundle which means the state it can reach after being "Installed" and when all of its required dependencies are satisfied. Traditional Java classloading is susceptible to runtime ClassCastExceptions where two classes with the same fully-qualified name from two different class loaders become mixed up and one is used in the wrong classpath space. One of the main goals of OSGI is to avoiding this kind of runtime exception by resolving all dependencies at deploy time with the idea being failing "fast" at deploy time will be easier to debug than trying to track down classloading issues at runtime. Think about how annoying some of the class not found or class cast exceptions are to debug in a Weblogic deployment, for example. OSGI solves this. For a bundle to reach the "Resolved" state, it must have it's dependencies fulfilled. Think of the "fail fast" approach to bundle resolution like this: if you use a spring application, and one of your beans cannot be wired properly because a bean definition is missing, you will know this at deploy time instead of when a customer is calling your code. The same principle is applied with OSGI; instead of object-level wiring dependencies, we are wiring module and class-loading dependencies.</p>
+<p>A trivial explanation of a bundle having its dependencies resolved could go like this: if a bundle imports (Import-Package) a specific package, that package must be made available by another bundle's exports (Export-Package). If bundle A has <em>Import-Package: org.apache.foo</em> then there must be a bundle deployed that has an <em>Export-Package: org.apache.foo</em></p>
+<h3>For every Import-Package package declaration, there must be a corresponding Export-Package with the same package</h3>
+<p>Bundles can also attach other attributes to the packages it imports or exports. What if we added a version attribute to our example:</p>
+<p><code>Bundle-Name: Bundle A<br />
+Import-Package: org.apache.foo;version="1.2.0"</code></p>
+<p>This means, Bundle A has a dependency on package <em>org.apache.foo</em> with a <em>minimum</em> version of 1.2.0. Yes, you read correctly. Although with OSGI you can specify a range of versions, if you don't specify a range but rather use a fixed version, it will result in a meaning of "a minimum" of the fixed value. <strong>If there is a higher version for that same package, the higher version will be used</strong>. So bundle A will not resolve correctly unless there is a corresponding bundle B that exports the required package:</p>
+<p><code>Bundle-Name: Bundle B<br />
+Export-Package: org.apache.foo;version="1.2.0"</code></p>
+<p>Note that the reverse is not true... If Bundle B exported version 1.2.0, Bundle A is <em>not</em> required to specify a version 1.2.0. It can use this import and resolve just fine:</p>
+<p><code>Bundle-Name: Bundle A<br />
+Import-Package: org.apache.foo</code></p>
+<p>This is because <em>imports</em> declare the versions they need. An exported version does not specify anything an importing bundle must use (which holds for any attributes, not just version).</p>
+<h3>Import-Package dictates exactly what version (or attribute) it needs, and a corresponding Export-Package with the same attribute must exist</h3>
+<p>What happens if you have a scenario where Bundle A imports a package and it specifies a version that is provided by two bundles:</p>
+<p><code>Bundle-Name: Bundle A<br />
+Import-Package: org.apache.foo;version="1.2.0"</code></p>
+<p><code>Bundle-Name: Bundle B<br />
+Export-Package: org.apache.foo;version="1.2.0"</code></p>
+<p><code>Bundle-Name: Bundle C<br />
+Export-Package: org.apache.foo;version="1.2.0"</code></p>
+<p>Which one bundle does Bundle A use?<br />
+The answer is it depends on which bundle (B or C) was installed first.</p>
+<h3>Bundles installed first are used to satisfy a dependency when multiple packages with the same version are found</h3>
+<p>Things can get a little more complicated when hot deploying bundles after some have already been resolved. What if you install Bundle B first, then try to install Bundle A and the following Bundle D together:</p>
+<p><code>Bundle-Name: Bundle D<br />
+Export-Package: org.apache.foo;version="1.3.0"</code></p>
+<p>As we saw from above, the version declaration in Bundle A (1.2.0) means a minimum version of 1.2.0; so if a higher version was available then it would select that (version 1.3.0 from Bundle D in this case). However, that brings us to another temporal rule for the bundle resolution:</p>
+<h3>Bundles that have already been resolved have a higher precedence that those not resolved</h3>
+<p>The reason for this is the OSGI framework tends to favor reusability for a given bundle. If it's resolved, and new bundles need it, then it won't try to have many other versions of the same package if it doesn't need to.</p>
+<h2>Bundle "uses" directive</h2>
+<p>The above rules for bundle resolution are still not enough and the wrong class could still be used at runtime resulting in a class-cast exception or similar. Can you see what could be missing?</p>
+<p>What if we had this scenario. Bundle A exports a package, <em>org.apache.foo</em>, that contains a class, FooClass. FooClass has a method that returns an object of type BarClass, but BarClass is not defined in the bundle's class space, it's imported like this:</p>
+<p>[java]<br />
+public class FooClass {<br />
+    public BarClass execute(){ ... }<br />
+}<br />
+[/java]</p>
+<p><code>Bundle-Name: Bundle A<br />
+Import-Package: org.apache.bar;version="3.6.0"<br />
+Export-Package: org.apache.foo;version="1.2.0"</code></p>
+<p>So far everything is fine as long as there is another bundle that properly exports <em>org.apache.bar</em> with the correct version.</p>
+<p><code>Bundle-Name: Bundle B<br />
+Export-Package: org.apache.bar;version="3.6.0"</code></p>
+<p>These two bundles will resolve fine. Now, if we install two more bundles, Bundle C and Bundle D that look like this:</p>
+<p><code>Bundle-Name: Bundle C<br />
+Import-Package: org.apache.foo;version="1.2.0", org.apache.bar;version="4.0.0"</code></p>
+<p><code>Bundle-Name: Bundle D<br />
+Export-Package: org.apache.bar;version="4.0.0"</code></p>
+<p>We can see that Bundle C imports a package, <em>org.apache.foo</em> from Bundle A. Bundle C can try to use FooClass from org.apache.foo, but when it gets the return value, a type of BarClass, what will happen? Bundle A expects to use version 3.6.0 of BarClass, but bundle C is using version 4.0.0. So the classes used are not consistent within bundles at runtime (i.e., you could experience some type of mismatch or class cast exception), but everything will still resolve just fine at deploy time following the rules from above. What we need is to tell anyone that imports <em>org.apache.foo</em> that we use classes from a specific version of <em>org.apache.bar</em>, and if you want to use <em>org.apache.foo</em> you must use the same version that we import. That's exactly what the <strong>uses</strong> directive does. Let's change bundle A to specify exactly that:</p>
+<p><code>Bundle-Name: Bundle A<br />
+Import-Package: org.apache.bar;version="3.6.0"<br />
+Export-Package: org.apache.foo;version="1.2.0"";uses:=org.apache.bar</code></p>
+<p>Given the new configuration for Bundle A, the bundles would not resolve correctly from above. Bundle C could not resolve, because it imports <em>org.apache.foo</em> but the "uses" constraint on Bundle A specifies that C must use the same version that A does (3.6.0) for <em>org.apache.bar</em>, otherwise the bundle will not resolve when trying to deploy. The solution to this is change the version in Bundle C for <em>org.apache.bar</em> to be 3.6.0.</p>
+<p>If my examples were not clear or there is some misunderstanding, please leave a comment.</p>

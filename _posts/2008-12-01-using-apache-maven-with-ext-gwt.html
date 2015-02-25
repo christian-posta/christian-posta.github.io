@@ -1,0 +1,257 @@
+---
+layout: post
+title: Using Apache Maven with Ext-GWT (part I)
+date: 2008-12-01 19:56:46.000000000 -07:00
+categories:
+- Ext-GWT
+- Maven
+tags:
+- codehaus
+- Ext-GWT
+- gwt
+- gwt-maven
+- Maven
+- sonatype
+---
+<p><a href="http://maven.apache.org/">Apache Maven</a> is a popular project-management tool that allows you to model your projects in XML and then streamline the development lifecycle by taking advantage of dependency management and convention over configuration. I use Maven for all of my new projects, and I have had the chance to use Maven to manage my GWT projects. The purpose of<br />
+this blog entry is to demonstrate to the GXT community how to get Maven up and running to manage one of their projects.</p>
+<p>First, I'd like to point out that the folks over at <a href="http://www.sonatype.com">Sonatype</a> have put together a <a href="http://books.sonatype.com/maven-book/reference/public-book.html">terrific book</a> detailing the use of Maven. I definitely recommend browsing through the first few chapters to get a better understanding of <a href="http://books.sonatype.com/maven-book/reference/introduction.html#section-whatIsMaven">what Maven is</a>, <a href="http://books.sonatype.com/maven-book/reference/installation.html">how to use it</a>, and <a href="http://books.sonatype.com/maven-book/reference/simple-project.html">examples</a> of Maven projects. Sonatype also put together the <a href="http://m2eclipse.sonatype.org/">m2eclipse</a> plugin for integrating and managing your Maven projects in Eclipse. Point your Eclipse update manager to <a href="http://m2eclipse.sonatype.org/update/">http://m2eclipse.sonatype.org/update/</a></p>
+<p>Second, I'd like to thank the Charlie Collins and the creators of the <a href="http://code.google.com/p/gwt-maven/">gwt-maven</a> plugin. They did a good job of putting together an easy-to-use plugin for GWT projects. I use the gwt-maven plugin in the example that follows.</p>
+<p>I'd like to also mention that the purpose of this blog entry is not to convince anyone to use Maven. I'll leave that to the Maven documentation. This blog entry is simply an introduction to using Maven with GXT/GWT. There are plenty of other build mechanisms out there that could arguably be used in a comparable fashion. For example, the developers of GXT use <a href="http://ant.apache.org">Apache ANT</a> for their build environment. Combining ANT with <a href="http://ant.apache.org/ivy">Apache IVY</a> provides a suitable alternative to some of the features discussed in this blog.</p>
+<h3>Getting Started</h3>
+<p>To get started, <a href="code/gxt-mail-maven.zip">download the code</a> for this project. It is simply the Ext-GWT mail reference application with a Maven POM and directory structure used to build the project with Maven. I recommend you browse through the code briefly to get an cursory understanding of the directory structures. We will start by examining the POM for the project, so you may want to get familiar with that too.</p>
+<h3>Building the project</h3>
+<p>You'll need to have Apache Maven installed properly before you can build the project. Go to <a href="http://maven.apache.org/">http://maven.apache.org/</a> to download Maven.</p>
+<p>After downloading the <a href="code/gxt-mail-maven.zip">source code</a> and extracting it to a suitable directory, you can kick off the build lifecycle by typing the following Maven command from the directory that contains the pom.xml file:</p>
+<pre name="code" class="xml:nocontrols:nogutter">
+mvn install
+</pre>
+<p>Maven will do its thing to compile, run tests, and package the project; the build should end succesfully. Maven requires access to the internet to download dependencies, so verify you're connected.</p>
+<p>After a succesfull install, look in the "target" directory to find the "mail.war" file.</p>
+<p>To run the project in GWT hosted mode, type the following command at the prompt:</p>
+<pre name="code" class="xml:nocontrols:nogutter">
+mvn gwt:gwt
+</pre>
+<p>NOTE: unfortunately, running the hosted mode with the "gwt" prefix no longer works. A competing gwt maven plugin from<a href="http://mojo.codehaus.org/gwt-maven-plugin/index.html">codehaus</a> has caused a clash with the "gwt" prefix. See the last section of this post for more.</p>
+<h3> The pom.xml</h3>
+<p>At the root of the project is the Maven POM file. This file is the Project Object Model that is used to model the project including the Maven plugins and project dependencies. For more info on a Maven POM, see the <a href="http://maven.apache.org/pom.html">reference documentation</a>. We'll step through the pom.xml file that comes with this project to explain each of its materially important xml entries.</p>
+<pre name="code" class="xml:nocontrols">
+
+	<modelversion>4.0.0</modelversion>
+
+	<groupid>com.extjs.samples</groupid>
+	<artifactid>gxt-mail</artifactid>
+	<packaging>war</packaging>
+	<version>1.1.3</version>
+
+	<name>GXT Mail compiled with Maven</name>
+</pre>
+<p>This section contains the basic Maven POM coordinates to identify the project. Nothing too special about this part, but it's necessary.</p>
+<pre name="code" class="xml:nocontrols">
+	<properties>
+		<gwtversion>1.5.2</gwtversion>
+		<gwtmodule>com.extjs.gxt.samples.mail.Mail</gwtmodule>
+		<gwthostpage>index.html</gwthostpage>
+	</properties>
+</pre>
+<p>This section contains project-specific properties, including the version of GWT to use, the name of the GWT module to compile, and the name of the host html page for the GWT module. If you'd like to use this POM to compile your own GWT project, you can replace these project properties to fit your own specs.</p>
+<pre name="code" class="xml:nocontrols">
+	<pluginrepositories>
+		<pluginrepository>
+			<id>gwt-maven-plugins</id>
+			<url>
+                http://gwt-maven.googlecode.com/svn/trunk/mavenrepo/
+            </url>
+		</pluginrepository>
+	</pluginrepositories>
+</pre>
+<p><a href="http://code.google.com/p/gwt-maven/issues/detail?id=44&can=1&q=central">At the moment</a>, gwt-maven has its plugins hosted at their repository at Google Code. This section contains the plugin repository for gwt-maven.</p>
+<pre name="code" class="xml:nocontrols">
+	<dependencies>
+		<dependency>
+			<groupid>com.extjs</groupid>
+			<artifactid>gxt</artifactid>
+			<version>1.1</version>
+		</dependency>
+		<dependency>
+			<groupid>com.google.gwt</groupid>
+			<artifactid>gwt-servlet</artifactid>
+			<version>${gwtVersion}</version>
+			<scope>runtime</scope>
+		</dependency>
+		
+		...
+		
+		<dependency>
+			<groupid>junit</groupid>
+			<artifactid>junit</artifactid>
+			<version>4.1</version>
+			<scope>test</scope>
+		</dependency>				
+	</dependencies>
+</pre>
+<p>This section models the project's dependencies. You'll see that the Ext-GWT library, the GWT jars, and other ancillary dependencies are listed here. NOTE: The GXT jar on the <a href="http://www.mvnrepository.com/">Maven Central Repository</a> is outdated. See the section below on how to manually install the jar to your local repository.</p>
+<pre name="code" class="xml:nocontrols">
+	<build>
+		<finalname>mail</finalname>
+		<plugins>
+
+		...
+		
+		</plugins>
+		
+	</build>
+</pre>
+<p>This section is probably the most important as far as configuring Maven to compile GWT sources (actually, the stuff I left out of this section is the most important). We look at the plugin configuration below, but I wanted to point out that the "finalName" element contains the name of the war file that will be produced. If you do not define a "finalName," the project name and its POM coordinates will be used to derive the war filename. </p>
+<p>Each of the following four sections will be the plugins described in the "plugins" section.</p>
+<pre name="code" class="xml:nocontrols">
+			<plugin>
+				<groupid>com.totsp.gwt</groupid>
+				<artifactid>maven-googlewebtoolkit2-plugin</artifactid>
+				<version>2.0-beta25</version>
+				<configuration>
+					<loglevel>INFO</loglevel>
+					<compiletargets>
+						<value>${gwtModule}</value>
+					</compiletargets>
+					<runtarget>${gwtModule}/${gwtHostPage}</runtarget>
+					<style>DETAILED</style>
+					<noserver>false</noserver>
+					<extrajvmargs>-Xmx512m</extrajvmargs>
+					<gwtversion>${gwtVersion}</gwtversion>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>mergewebxml</goal>
+							<goal>compile</goal>
+							<goal>test</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+</pre>
+<p>This is the gwt-maven plugin declaration and its associated configuration. Lines 5-15 specify the configuration parameters including the GWT compile target (which is our GWT module name), the run-time target (including the host page), and finally the version of GWT to use.</p>
+<p>The "executions" element enumerates the plugin goals to run:</p>
+<ul>
+<li>mergewebxml - this goal takes the web.xml file in the src/main/webapp/WEB-INF/ directory and merges it with the GWT module xml (*.gwt.xml) file. It will automatically generate a servlet mapping in the web.xml file for each servlet defined in the GWT module xml file.</li>
+<li>compile - this goal invokes the GWT compiler on the source code</li>
+<li>test - this goal invokes the testing framework (JUnit) on the project tests if they exist (there are no tests defined for this project)</li>
+</ul>
+<p>The gwt-maven plugin contains other goals. See the <a href="http://gwt-maven.googlecode.com/svn/docs/maven-googlewebtoolkit2-plugin/plugin-info.html">documentation</a> for more details.</p>
+<pre name="code" class="xml:nocontrols">
+			<plugin>
+				<groupid>org.apache.maven.plugins</groupid>
+				<artifactid>maven-dependency-plugin</artifactid>
+				<executions>
+					<execution>
+						<id>unpack</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactitems>
+								<artifactitem>
+									<groupid>com.google.gwt</groupid>
+									<artifactid>gwt-dev</artifactid>
+									<version>${gwtVersion}</version>
+									<classifier>${platform}-libs</classifier>
+									<type>zip</type>
+									<overwrite>false</overwrite>
+								</artifactitem>
+							</artifactitems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+</pre>
+<p>Since the GWT libraries are specific for each platform (windows, linux, mac, etc), Maven will need to decide which platform we are using (using the "profiles" entries below) and then use the maven-dependency-plugin to unpack the correct jar for the gwt native libraries. This is the "automatic" mode for unpacking the platform jars. See the <a href="http://gwt-maven.googlecode.com/svn/docs/maven-googlewebtoolkit2-plugin/setup.html">documentation</a> for more details. </p>
+<pre name="code" class="xml:nocontrols">
+			<plugin>
+				<groupid>org.apache.maven.plugins</groupid>
+				<artifactid>maven-war-plugin</artifactid>
+				<configuration>
+					<webxml>target/web.xml</webxml>
+					<warsourceexcludes>.gwt-tmp/**</warsourceexcludes>
+				</configuration>
+			</plugin>
+</pre>
+<p>Since we use a "merged" web.xml file, we'll need to tell the maven-war-plugin which web.xml to use. Othewise, it will just use the one in src/main/webapp/WEB-INF. We can also choose to exclude some of the gwt temp files.</p>
+<p>Another note about the web.xml file and the mergewebxml goal. The web.xml file in the src/main/webapp/WEB-INF directory DOES NOT contain any of the servlet mappings for the GWT RPC servlets; the mappings will be generated automatically by mergewebxml. The reason for this is the plugin also uses the web.xml file in the src/main/webapp/WEB-INF directory for the hosted-mode tomcat. The plugin automatically addes the "GWTShellServlet" servlet to properly serialize objects in hosted mode. If you also have your own GWT-RPC servlets mapped, it doesn't work properly in hosted mode. This is something I've <a href="http://code.google.com/p/gwt-maven/issues/detail?id=144&can=1&q=RPC">inquired about</a> at the gwt-maven project web page.</p>
+<pre name="code" class="xml:nocontrols">
+			<plugin>
+				<groupid>org.apache.maven.plugins</groupid>
+				<artifactid>maven-compiler-plugin</artifactid>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+</pre>
+<p>For the last plugin, we tell the javac compiler to use a source and target of Java 1.5</p>
+<pre name="code" class="xml:nocontrols">
+	<profiles>
+		<profile>
+			<id>gwt-dev-windows</id>
+			<properties>
+				<platform>windows</platform>
+
+			</properties>
+			<activation>
+				<activebydefault>true</activebydefault>
+				<os>
+					<family>windows</family>
+				</os>
+			</activation>
+		</profile>
+		
+		...
+		
+		<profile>
+			<id>gwt-dev-linux</id>
+			<properties>
+				<platform>linux</platform>
+			</properties>
+			<activation>
+				<activebydefault>false</activebydefault>
+				<os>
+					<name>linux</name>
+				</os>
+			</activation>
+		</profile>
+	</profiles>
+</pre>
+<p>Finally, we use Maven activation profiles to let the project know which platform on which we're developing. The activation takes place if the "activation" element's entries are true (for example, if the platform is of the "windows" family, the property "platform" will be usable with the value of "windows").</p>
+<h3>Deploy</h3>
+<p>After running the "mvn install" command, browse to the "target" directory to find the mail.war file. Deploy this file to your application server and browse to (for example) "http://hostname:port/mail/com.extjs.gxt.samples.Mail/". </p>
+<h3>Installing GXT jars locally</h3>
+<p>At this point, the GXT jars are not updated on the Maven Central Repository. You may want to install the jar into your local repository so that you can reference it from the POM. Follow these steps to install into your local repository:</p>
+<ol>
+<li><a href="http://www.extjs.com/products/gxt/download.php">Download</a> the GXT library</li>
+<li>Unpack the GXT library to a suitable directory</li>
+<li>From the directory that contains the "gxt.jar" file, type the following command:
+<pre name="code" class="xml:nocontrols">
+mvn install:install-file -Dfile=gxt.jar -DgroupId=com.extjs -DartifactId=gxt -Dversion=${version.number}
+</pre>
+<p>where ${version.number} is the GXT library version number.
+</li>
+</ol>
+<p>After installing the GXT library locally, you can change the dependency entry in the POM:</p>
+<pre name="code" class="xml:nocontrols">
+	<dependencies>
+		<dependency>
+			<groupid>com.extjs</groupid>
+			<artifactid>gxt</artifactid>
+			<version>${version.number}</version>
+		</dependency>
+		
+		...
+</dependencies></pre>
+<h3>gwt-maven-plugin at mojo.codehaus.org</h3>
+<p>A new project has evolved over at the mojo.codehaus.org website that will provide a GWT plugin. The owners of the code at the <a href="http://code.google.com/p/gwt-maven/">Google Code's gwt-maven project</a> (the plugin used above) have decided to work with <a href="http://mojo.codehaus.org/gwt-maven-plugin/team-list.html">Nicolas De Loof</a> at codehaus to <a href="http://groups.google.com/group/gwt-maven/browse_thread/thread/ddc495363520dd58">merge the two projects</a>.</p>
+<p>At the time the codehaus gwt maven plugin was uploaded to the Maven central repository, the goal used in the Google Code' gwt-maven plugin to run the hosted-mode GWT shell no longer worked. Use the following goal (with the complete plugin name) to run hosted mode with the gwt-maven plugin: </p>
+<pre name="code" class="xml:nocontrols:nogutter">
+mvn com.totsp.gwt:maven-googlewebtoolkit2-plugin:gwt
+</pre>
+<p>I encourage any of you interested to pay close attention to the <a href="http://mojo.codehaus.org/gwt-maven-plugin/">Maven project at codehaus</a>. Although it is not as mature as the Maven project at Google Code, it does perform some common GWT tasks (compile, eclipse configs, etc) and from what I can tell from my initial investigation, it may end up being much easier to use.</p>

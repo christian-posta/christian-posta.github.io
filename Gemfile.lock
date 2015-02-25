@@ -13,10 +13,13 @@ GEM
     colorator (0.1)
     execjs (2.2.2)
     fast-stemmer (1.0.2)
+    fastercsv (1.5.5)
     ffi (1.9.6)
     ffi (1.9.6-x64-mingw32)
     ffi (1.9.6-x86-mingw32)
     hitimes (1.2.2)
+    hitimes (1.2.2-x86-mingw32)
+    hpricot (0.8.6)
     jekyll (2.5.1)
       classifier-reborn (~> 2.0)
       colorator (~> 0.1)
@@ -35,6 +38,10 @@ GEM
     jekyll-coffeescript (1.0.1)
       coffee-script (~> 2.2)
     jekyll-gist (1.1.0)
+    jekyll-import (0.5.3)
+      fastercsv
+      jekyll (>= 1.4)
+      nokogiri
     jekyll-paginate (1.1.0)
     jekyll-sass-converter (1.2.1)
       sass (~> 3.2)
@@ -48,6 +55,13 @@ GEM
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9)
     mercenary (0.3.4)
+    mini_portile (0.6.2)
+    nokogiri (1.6.6.2)
+      mini_portile (~> 0.6.0)
+    nokogiri (1.6.6.2-x64-mingw32)
+      mini_portile (~> 0.6.0)
+    nokogiri (1.6.6.2-x86-mingw32)
+      mini_portile (~> 0.6.0)
     octopress (3.0.0.rc.15)
       jekyll (~> 2.0)
       mercenary (~> 0.3.2)
@@ -91,6 +105,8 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
+  hpricot
   jekyll
+  jekyll-import
   jekyll-sitemap
   octopress (~> 3.0.0.rc.12)

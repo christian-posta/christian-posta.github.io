@@ -1,0 +1,35 @@
+---
+layout: post
+title: 'From inside the code: Camel Routing Engine Part I'
+date: 2013-08-18 20:06:38.000000000 -07:00
+categories: []
+tags: []
+---
+<p>So I've recently re-kindled my interest in how <a href="http://camel.apache.org/">Apache Camel</a> works. Camel is such a powerful integration tool and is very widely used, but anytime I put it to work, I can't help but think "well, how the hell does it do all that!!" ... guess I just have knack for not just accepting that it's wonderful.. I want to know why.</p>
+<p><img class="alignleft" src="/images/apache-camel-logo.jpg" alt="Camel pic" width="279" height="279" /></p>
+<p>If you've followed some of my posts in the past, you'll remember I do have a blog post that dives into <a href="http://www.christianposta.com/blog/?p=249">how the Camel DSL API works</a>. More specifically, how can you just magically type "from(..)" "choice(..)" "simple(..)" etc and the DSL is just smart enough to know what you mean and how to string everything together. If you're interested in how that all works, please take a peak at that post. Be forewarned, there is a couple UML class diagrams in there that are quite verbose and long.</p>
+<p>So if you recall from the previous post, the DSL (whether it's the Java DSL, or XML, or Scala, or any others) has a very specific role. It helps the author of the integration route express very clearly his/her intent and then build that into an abstraction called a <strong>RouteDefinition</strong>. The RouteDefinition is kind of the "blueprint" of your route, and knows about all of your <a href="http://camel.apache.org/processor.html" target="_blank">processors</a>, <a href="http://camel.apache.org/eip.html" target="_blank">EIPs</a>, and <a href="http://camel.apache.org/components.html">components</a>. You can consider any time you call <em>from(..)</em> to be the start of a new <strong>RouteDefinition</strong>. The rest of the route gives it its shape. So for every <em>from(..)</em> there is a one-to-one mapping to <strong>RouteDefinition</strong>.</p>
+<p>So when the CamelContext starts up, it gathers up all of the <strong>RouteDefinition</strong>(s) and begins to build a route from them. Take a look at <em>DefaultCamelContext#doStartCamel</em> for the entry point to all of this. Among other important things, like putting together the registry, endpoints, starting basic services, management, etc, etc.. you'll see a call to <em>DefaultCamelContext#startRouteDefinitions</em>. This tells the RouteDefinitions to build <strong>Route</strong> objects, which are the actual Consumers (input) + <a href="http://camel.apache.org/pipes-and-filters.html">Pipeline</a> of processors (output) that route exchanges.</p>
+<p>The next block goes into a little more detail about how this all works. Just like in previous blog posts about the internal workings of Camel, this detail is mostly for me: i.e., in the future when I have forgotten half of this, I want a refresher. And some people who'd like to contribute to Camel may find this interesting. For all others.. Feel free to skip this block.</p>
+<p>-- Start detailed section --</p>
+<p>The DefaultCamelContext will loop through each <strong>RouteDefinition</strong> and will try to build a list of <strong>Route</strong>S and <strong>RouteContext</strong>S.</p>
+<p>Quick Detour:<br />
+What is a <strong>RouteContext</strong> though? In simple terms, you can think of it as the brains of the Route, and a place where the route-specific configurations live (stream caching? tracing? handle faults? etc, etc). It knows about the "from" consumer, the rest of the pipeline, the intercept strategies, route policy, and is able to construct the Route that will operate on exchanges.</p>
+<p>It can be kind of confusing because there are a chain of calls to methods named "addRoutes()" when really they are building RouteContexts and building Routes. But look that aside for a moment. So the call to <em>RouteDefinition#addRoutes(..)</em> will return a list of <strong>RouteContext</strong> objects. It will also populate a List of (initially empty) routes. The multiplicity here is basically n to n. Because you can have multiple <em>inputs</em> to a RouteDefinition (e.g., by stringing together multiple from(..).from(..)), a single 1-to-1 RouteContext to Route can be expected, with a single pair PER from(). So in the previous example, there would be two RouteContexts and two Routes in the List. In the call to addRoutes(..) it also tries to turn the output definitions into real Processors. The Processors are the meat of the <strong>Route</strong> object. Each processor is built based on its respective definition (e.g., ChoiceDefinition, LogDefinition), but ultimately gets wrapped in a Channel object and added to the RouteContext.</p>
+<p><img src="/images/sequence.png" alt="Sequence diagram" /></p>
+<p>So to wrap this up, The <strong>RouteDefinition</strong> will create the Route, RouteContext, and will also turn the individual output definitions into Processors. After these are created, a <strong>RouteService</strong> is created from the newly minted Route + RouteContext pairs, and this is established with the CamelContext for later starting and controlling the lifecycle of the route.</p>
+<p>-- End detailed section --</p>
+<p><img src="/images/blocks.png" alt="Blocks" /></p>
+<p>So ...once we have the <strong>RouteService</strong> initialized, we need to start the routes, depending on whether they are auto-start up or not and their order. Take a look at <em>DefaultCamelContext#doStartCamel</em> once more, and toward the bottom is the call to <em>DefaultCamelContext#doStartOrResumeRoutes</em>. This will loop through our <strong>RouteService</strong>S and identify the correct startup order for the routes and then start them.</p>
+<p>Routes are started in two phases:</p>
+<ul>
+<li>WarmUp<br />
+In warm up phase, we look through all of the routes and start all of the "outputs" or processors/eips. Camel takes care to make sure<br />
+this happens first, because we do NOT want to have the "inputs" or consumers started before all of the "outputs" are available.</li>
+<li>Start/Resume<br />
+Start the consumer! This is endpoint/component specific. For example, the JMS Consumer will begin listening to a destination.</li>
+</ul>
+<p>Note, at all parts of these stages in the lifecycle, there are callbacks that can be invoked so that you can plug in to this lifecycle and add your own custom startup code to coordinate with your application. Take a look at the Camel API for the type of callbacks available <a href="http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/spi/LifecycleStrategy.html">LifecylceStrategy</a></p>
+<p>And there you have it. This is how route definitions are converted to actual routes and then started.</p>
+<p>In Part II, I hope to go into how the processors are chained together, including a little more advanced chaining with the AsyncProcessor.</p>
+<p>Stay tuned!</p>

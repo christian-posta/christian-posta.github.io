@@ -1,0 +1,133 @@
+---
+layout: post
+title: 'Part II: Managing large deployments of MQ and ESB with Fuse Fabric'
+date: 2012-06-25 13:40:42.000000000 -07:00
+categories: []
+tags: []
+---
+<p>In the <a href="http://www.christianposta.com/blog/?p=253">last blog post</a> I introduced <a href="http://fusesource.com/products/fuse-fabric/">Fuse Fabric</a>, an overview of the problems it is intended to solve, and the components that it uses to accomplish pain-free management of large deployments of <a href="http://fusesource.com/products/fuse-mq-enterprise/">ActiveMQ</a> and <a href="http://fusesource.com/products/fuse-esb-enterprise/">ServiceMix/ESB</a> containers. In this post, I'd like to dive deeper and do more of a tutorial of how to use it. This post could get long, so brave it as time permits. Otherwise, the <a href="http://www.christianposta.com/blog/?p=253">previous post</a> should be sufficient to get the idea of Fuse Fabric.</p>
+<p>Let's review some of the pain points of deploying large integration solutions based on messaging:</p>
+<ul>
+<li>Installation - installing apps, routes, services, containers</li>
+<li>Configuration - configuring apps, network of brokers, master/slave failover, web service endpoints</li>
+<li>Upgrading - new versions of apps, routes, containers</li>
+<li>Introspection - high-level overviews of machine usage, route details, MQ queue/topic stats, etc</li>
+</ul>
+<p>Imagine a solution where you have 10+ brokers, ESB containers, or Web Service deployments (more like 100+) and you can see how each of those pain points would really be painful.</p>
+<h3>Starting Fuse Fabric</h3>
+<p>As I mentioned in the <a href="http://www.christianposta.com/blog/?p=253">previous blog post</a>, the recommendation from <a href="http://www.fusesource.com/">FuseSource</a> is to use the <a href="http://fusesource.com/products/fuse-management-console/">Fuse Management Console</a> which consists of the Fuse Fabric shell as well as a slick web-based application that uses Fabric under to covers to accomplish the management and configuration goals of Fabric through a much sexier and intuitive point-and-click interface. The Fuse Fabric shell is free, but the web application requires a FuseSource subscription (although you can <a href="http://fusesource.com/contact">request a trial</a> trial key, which I recommend). If you are already a subscribing customer, you can start using it right now.</p>
+<p>Once you've <a href="http://fusesource.com/products/fuse-management-console/">downloaded Fuse Management Console</a> (henceforth referred as FMC), untar it and navigate to it's root directory. Listing the directory reveals the following contents:</p>
+<p><img src="/images/ls-fmc-distro.png" alt="Listing of FMC directory" /></p>
+<p>The <strong>bin</strong> folder contains all of the scripts necessary to start FMC.</p>
+<ul>
+<li>fmc - starts up a local shell allowing you to create a fabric or join an existing one</li>
+<li>fmc-admin - perform basic admin functions (stop, start, create, destroy, change ports) on an instance</li>
+<li>fmc-client - attach a shell to a running FMC container</li>
+<li>fmc-shell - start a simple Karaf shell (no Fabric)</li>
+<li>fmc-start - start the root FMC as a service (no interactive shell)</li>
+<li>fmc-stop - stop the root FMC container</li>
+<li>karaf - core script for running the underlying karaf shell</li>
+</ul>
+<p>Other folders of interest:</p>
+<ul>
+<li>etc/ - all of the configuration files for the root container</li>
+<li>data/ - logs, bundle cache, zookeeper files (once registry started)</li>
+<li>instances/ - (once container started) child containers</li>
+<li>fabric/ - profiles and other fabric-related files</li>
+<li>system/ - acts as a local maven repo where bundles will first be retrieved</li>
+</ul>
+<p>For this tutorial, we'll use the default bin script to start the container and shell:</p>
+<p><code>./bin/fmc</code></p>
+<p>When you run this command, FMC will load all bundles, features, and configuration necessary to bootstrap the root container. Depending on your machine, it could take a while to load up. Once it's ready, you should see the welcome screen. Note the URL that's displayed: http://localhost:8107/ This is the URL to use to connect to the FMC web application.</p>
+<p><img src="/images/fmc-welcome.png" alt="FMC Welcome screen" /></p>
+<h3>Fabric Commands</h3>
+<p>We won't go into detail of all available commands, but this is a Karaf container so most commands available to Karaf should work. Note that there is <em>Tab completion</em> (start typing a few characters and hit Tab to see what commands are available) which is very useful. We will use the fabric sub-shell to accomplish a lot of the steps in this tutorial, so let's see what commands are available:</p>
+<p><code>FMC:karaf@FuseManagementConsole&gt; fabric:&lt;hit Tab here&gt;</code></p>
+<p><img src="/images/fmc-fabric-subshell.png" alt="FMC fabric subshell" /></p>
+<p>Note some of the commands of interest:</p>
+<ul>
+<li>fabric:create</li>
+<li>fabric:container-create-ssh</li>
+<li>fabric:profile-list</li>
+<li>fabric:mq-create</li>
+</ul>
+<p>Just as a helpful pointer, the shell allows you to see documentation for each of the commands by typing <em>--help</em> after a command:</p>
+<p><code>FMC:karaf@FuseManagementConsole&gt; fabric:create --help</code></p>
+<p>Also, there is <a href="http://fuse.fusesource.org/fabric/docs/commands/commands.html">online documentation</a> for each of the commands.</p>
+<p>Since we don't have a fabric registry (haven't created one, nor joined one), none of the fabric commands for creating a container or listing a profile will be available. So we must create a fabric registry. Do so with the following:</p>
+<p><code>FMC:karaf@FuseManagementConsole&gt; fabric:create</code></p>
+<p>You will not see output after executing this command. It should return to the prompt if executed successfully. To see some kind of detail about what happened, you can check out the log and you'll notice that some <a href="http://zookeeper.apache.org/">Zookeeper</a> threads were created, among a few other things. You shouldn't see any stack traces.</p>
+<p><code>FMC:karaf@FuseManagementConsole&gt; log:display</code></p>
+<p><img src="/images/fabric-create-log.png" alt="FMC fabric subshell" /></p>
+<p>Now we should be able to see a list of profiles or list of containers:</p>
+<p><code>FMC:karaf@FuseManagementConsole&gt; fabric:profile-list</code></p>
+<p><code>FMC:karaf@FuseManagementConsole&gt; fabric:container-list</code></p>
+<p><code>FMC:karaf@FuseManagementConsole&gt; fabric:ensemble-list</code></p>
+<p>Take a moment to see the list of profiles, containers, and containers in the ensemble. The profiles list will show all profiles that ship by default with FMC. The only containers in the container's list and ensemble list should be the FuseManagementConsole container.</p>
+<p>Take a moment to explore some of the other Fabric commands and review what they do with the --help command option.</p>
+<p>You may be interested to know that some of the commands that start with <em>fabric:</em> have shortcuts allowing you to leave off the <em>fabric:</em> subshell prefix, that is, you can write <em>container-list</em> instead of <em>fabric:container-list</em>. You will notice this for a lot of the fabric commands, and I will point them out when appropriate.</p>
+<h3>Creating Containers</h3>
+<p>For this tutorial we'll create containers locally as well as remotely by SSH. If I do a part III of this series, I will show creating containers in the cloud (Amazon EC2 with the jclouds project).</p>
+<p>So let's start.</p>
+<p>The <em>fabric:container-create</em> command is the general version of the command to create containers either locally, remotely through SSH, or remotely in the cloud. It can be abbreviated by leaving out the <em>fabric:</em> subshell identifier: <em>create-container</em>. I recommend that you use the more specific convenience commands for creating local, ssh, or cloud deployments: <em>container-create-child</em>, <em>container-create-ssh</em>, <em>container-create-cloud</em> to create respective containers. We'll start with local containers:</p>
+<p><code>FMC:karaf@FuseManagementConsole&gt; container-create-child FuseManagementConsole TestContainer</code></p>
+<p>You can make a call to --help for any of the commands you're interested in. In this case, we created a new local container named TestContainer which is a child of the parent FuseManagementConsole. A child container is a local container that is a separate JVM on the same host as the root container. You will find the local containers in the $FMC_HOME/instances folder.</p>
+<p><img src="/images/fmc-create-child.png" alt="Create child container" /></p>
+<p>Now when you do a container-list, you should see our TestContainer:</p>
+<p><code>FMC:karaf@FuseManagementConsole&gt; container-list</code></p>
+<p><img src="/images/ls-new-container.png" alt="List of new container" /></p>
+<p>You will see the new container listed, but it doesn't have any profiles! By default, if you don't specify any profiles, the <em>default</em> profile will be applied. We could have applied a profile when we created the container with this command:</p>
+<p><code>FMC:karaf@FuseManagementConsole&gt; container-create-child --profile camel FuseManagementConsole TestContainer</code></p>
+<p>This would have applied the <em>camel</em> profile. To apply multiple profiles, specify the <em>--profile</em> switch multiple times.</p>
+<p>But since we didn't do that initially, we can apply a profile with this command:</p>
+<p><code>FMC:karaf@FuseManagementConsole&gt; container-change-profile TestContainer camel</code></p>
+<p>This command replaces <em>all</em> profiles on the specified container (TestContainer) with the specified profile (camel). You can specify multiple profiles by delimiting them with a space:</p>
+<p><code>FMC:karaf@FuseManagementConsole&gt; container-change-profile TestContainer camel mq</code></p>
+<p>You can do the same thing for remote containers. For remote containers (ssh), you'll need to have a username/password or public/private keys set up for authentication. In our example, we'll use public key authentication.</p>
+<p><code>FMC:karaf@FuseManagementConsole&gt; container-create-ssh --host ec2-174-129-120-160.compute-1.amazonaws.com --profile camel --user ec2-user --private-key /home/ec2-user/.ssh/postakey.pem TestRemoteContainer</code></p>
+<p><img src="/images/fmc-create-ssh.png" alt="List of new ssh container" /></p>
+<h3>Exploring Profiles</h3>
+<p>We saw how to create child and remote containers (will save cloud containers for a next blog entry), but what about profiles? Let's explore profiles a little bit.</p>
+<p><code>FMC:karaf@FuseManagementConsole&gt; profile-list</code></p>
+<p><img src="/images/ls-fmc-profiles.png" alt="List of default profiles" /></p>
+<p>We used the convenience command <em>profile-list</em> instead of the full-blown <em>fabric:profile-list</em> command, and the profiles that are listed are the ones that ship with FMC by default. Let's take a closer look at the <strong>example-camel</strong> profile:</p>
+<p><code>FMC:karaf@FuseManagementConsole&gt; profile-display example-camel</code></p>
+<p><img src="/images/display-example-camel.png" alt="Display of the example-camel profile" /></p>
+<p>We can see three main things from displaying the profile:</p>
+<ol>
+<li>the parent profile for example-camel is the <em>karaf</em> profile</li>
+<li>a specific repo for Karaf <em>features</em> is listed</li>
+<li>a specific feature is installed</li>
+</ol>
+<p>If you remember back to the <a href="http://www.christianposta.com/blog/?p=253">previous post</a>, profiles apply functionality or configuration to the container. In this case, the functionality that's applied is a camel route defined in the <em>fabric-camel-demo</em> feature.</p>
+<p>It just so happens we can take a look at that demo <a href="https://github.com/fusesource/fuse/tree/master/fabric/fabric-examples/fabric-camel-demo">here at github</a></p>
+<p>The camel route <a href="https://github.com/fusesource/fuse/blob/master/fabric/fabric-examples/fabric-camel-demo/src/main/resources/OSGI-INF/blueprint/fabric-camel-demo.xml">for the example is here</a>:</p>
+<p><script src="http://gist-it.appspot.com/github/fusesource/fuse/raw/master/fabric/fabric-examples/fabric-camel-demo/src/main/resources/OSGI-INF/blueprint/fabric-camel-demo.xml"></script></p>
+<p>This simple camel route sends a message with the current timestamp to a queue named <em>camel-test</em>. You may want to know to what broker it is sending this message? If you look at the connection factory, the broker URL that's being used is <strong>discovery:(fabric:default)</strong>. Have you seen that before?</p>
+<p>Clients can connect to ActiveMQ brokers in the Fabric by using the new <em>discovery</em> protocol. Specifically, the broker URL above says "connect me to a broker in the <em>default</em> group in the Fabric". <a href="http://www.linkedin.com/in/markbr">Mark Brooks</a> has an awesome tutorial for <a href="http://fusebyexample.blogspot.com/2012/06/simplify-your-activemq-connections.html">connecting clients to brokers in the Fabric at the Fuse By Example Blog</a>.</p>
+<p>Let's get back to the <em>example-camel</em> profile. We saw that it has a feature repo and a specific feature defined. We also saw that it has a parent profile (the <em>karaf</em> profile). Here's a command to overlay the parent profile details with the current profile:</p>
+<p><code>FMC:karaf@FuseManagementConsole&gt; profile-display --overlay example-camel</code></p>
+<p><img src="/images/display-camel-example-overlay.png" alt="Display of the example-camel profile with overlay" /></p>
+<p>This shows all features and feature repos associated with the profile including the inherited ones. Let's go ahead and apply the profile to the local container we created earlier:</p>
+<p><code>FMC:karaf@FuseManagementConsole&gt; container-change-profile TestContainer camel example-camel</code></p>
+<p>This will remove any profiles already associated with the TestContainer container and apply the camel and  example-camel profiles. Once the new profile is applied, the Fabric Agent on the TestContainer will try to provision all of the required configurations, features, and bundles.</p>
+<p>The question becomes now... is that camel route running? The direct answer is yes, it is. But... we don't have any brokers set up, so what is it sending messages to?</p>
+<p>Let's set up a broker.</p>
+<h3>Set up a Message Broker</h3>
+<p>We can create a broker by applying the <em>mq</em> profile to a container, eg:</p>
+<p><code>FMC:karaf@FuseManagementConsole&gt; container-change-profile TestRemoteContainer mq</code></p>
+<p>However, we're going to use the <em>mq-create</em> fabric command to set up the broker.</p>
+<p><code>FMC:karaf@FuseManagementConsole&gt; mq-create --assign-container TestRemoteContainer mq-test</code></p>
+<p>The mq-create command is specific to configuring brokers. You can assign broker groups for master/slave HA setups, networks of brokers, and specify which store or broker configuration files to use. It's a handy command for administering message brokers. The command above assigned the <em>mq-test</em> profile which is a new profile that is a child of the mq-base profile to the TestRemoteContainer. Use mq-create command to create mq profiles. By default, the broker will be assigned to the "default" group. This will allow the camel route from the <em>example-camel</em> profile to connect to the broker through the <em>discovery:(fabric:default)</em> URL.</p>
+<p>To see an example of setting up networks of brokers, see <a href="http://www.linkedin.com/in/markbr">Mark Brooks</a>' blog post <a href="http://fusebyexample.blogspot.com/2012/06/using-fuse-management-console-and-fuse.html">on FuseByExample</a></p>
+<h3>Updating to a new version</h3>
+<p>Upgrading to a new version of a profile is just as easy as applying any version. A use case for upgrading profiles could look like this:</p>
+<p>You have a camel route deployed in production, but you've made some changes, added some new functionality. Let's say the example-camel profile from earlier (1.0) has some changes and now requires the camel-scala component.</p>
+<p>First we want to make a new copy of the profiles and increment the version:</p>
+<p><code>FMC:karaf@FuseManagementConsole&gt; fabric:version-create 1.1</code></p>
+<p>This creates a copy of the 1.0 profiles that are ready to use for 1.1.</p>
+<p><code>FMC:karaf@FuseManagementConsole&gt; fabric:profile-edit --features camel-scala example-camel 1.1</code></p>
+<p>With this command, we edit the profile to include the camel-scala feature. Now let's upgrade the TestContainer:</p>
+<p><code>FMC:karaf@FuseManagementConsole&gt; fabric:container-upgrade 1.1 TestContainer</code></p>
+<h3>Recap</h3>
+<p>The bulk of this post introduced you to FMC, Fabric, and some of its capabilities. We also saw how to install a camel route, how to provision an MQ container, and how to upgrade a profile. Fuse FMC and Fuse Fabric are both very powerful tools to help you manage your enterprise deployments of integration infrastructure. Managing large deployments of ActiveMQ or ServiceMix can be very error prone and difficult even for those well equipped with custom scripts and templates. Take a look at Fuse Fabric/FMC and let me know if you have any questions! I will try to do a part III of this post to show cloud deployments, and show some more demos in depth. Let me know if there's any interest in that.</p>

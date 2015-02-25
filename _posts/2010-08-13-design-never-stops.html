@@ -1,0 +1,17 @@
+---
+layout: post
+title: Design should never stop!
+date: 2010-08-13 11:47:44.000000000 -07:00
+categories: []
+tags: []
+---
+<p>I was listening to a podcast today of Scott Hanselman interviewing Michael Feathers, the author of Working Effectively with Legacy Code. I'm currently reading the book, and I highly recommend it. Feathers said something that resonated with me very strongly because it's something I observe quite frequently at the different customer's I've worked for and in the different software-development groups of which I've been a part. He said:</p>
+<p>"I think it's one of the worst mistakes you can make in software development, to feel that design is over. It's really a continual process. Even in the older systems, you should be creating new functions and creating new classes."</p>
+<p>"Design is a continual process of examination and re-examination and evaluation."</p>
+<p>I have observed that most development in industry is maintenance development. Although it would be nice, we don't always get the chance to be part of a greenfield project, one in which we can start a design from scratch. But the implicit undertone of "not being able to start a design from scratch" is that new design takes place only on new projects! This is NOT the case! New design can emerge anytime you touch a code base, whether it's legacy code or new code.</p>
+<p>How many times have you been tasked to change the functionality of a module and you proceed by going in and adding logic to an existing function or adding methods to already-existing classes? On the other hand, how many times have you gone in and created new classes? Or broken out functionality from existing methods to new, smaller, methods? In other words, how many times have you added new abstractions to convey the thoughts behind the new functionality?</p>
+<p>That's what Feathers refers to as design not being over, and I agree. You should constantly be looking for abstractions in your code, and altering them if they don't completely agree with the functionality. If you're looking for new abstractions, or rethinking and reevaluating the old abstractions, you're still taking part in the design of the system.</p>
+<p>Doing the opposite usually is detrimental to the code.</p>
+<p>Altering functionality to existing functions by adding more code without thinking about how that problem can be broken down and abstracted properly further bloats the code and makes it even harder to abstract out the important parts in the future. Furthermore, it encourages the next developer to just do the same thing you did, i.e., continue to add more code to the existing method making it more complex, more bloated, and more unmaintainable. This bloated code works to compromise the design.</p>
+<p>Bloated code attracts and desires MORE bloated code.</p>
+<p>You should constantly be on the lookout for ways you can improve the design. Anytime you touch the code base, your changes can work to improve or work to destroy the design of a system.</p>

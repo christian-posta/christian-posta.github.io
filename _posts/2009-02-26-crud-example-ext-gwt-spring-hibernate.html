@@ -1,0 +1,37 @@
+---
+layout: post
+title: 'CRUD example: Ext-GWT + Spring + Hibernate'
+date: 2009-02-26 09:43:33.000000000 -07:00
+categories: []
+tags: []
+---
+<p>I am planning a series of posts  that walk a reader through building a simplistic application using <a href="http://www.extjs.com/products/gxt/">Ext-GWT</a> as the choice of technology for the user interface, <a href="http://www.hibernate.org">Hibernate</a> as the ORM, <a href="http://www.hsqldb.org">HSQLDB</a> as the backend, and the <a href="http://www.springsource.org">Spring Framework</a> to manage all of the application objects and bring everything together. I've chosen these technologies, but they are not the only options. They are all open source/freely available.</p>
+<h3>What is the Spring Framework?</h3>
+<p>The Spring Framework is a modularized framework that makes working with Java EE APIs easier. Spring also provides a component container that is independent of any Java EE application server. This means you can run your applications (and test them) without being tied to any vendor-specific application servers, but enjoy enterprise-level services such as declarative transactions, internationalization, and resource handling. At its core, Spring provides a dependency injection container that allows your application objects to be wired up at run time instead of hardcoding dependencies at compile time. A simple example of dependency injection:</p>
+<pre class="java:nocontrols" name="code">public class Foo {
+  private Bar operation;
+  public Foo(){
+    operation = new Bar();
+  }
+
+  public void doFoo() {
+    operation.doOperation();
+  }
+}</pre>
+<p>As you can see, the class Foo depends on class Bar. What if we wanted to change the behavior of Foo's dependency on Bar? We would have to replace the Bar member with a Bar2 member, and replace the call to "new Bar()" in the constructor with "new Bar2()". What if, however, Bar was an interface, and classes that implemented Bar were injected into Foo? Foo would have no idea what Bar's implementation is (wouldn't have to explicitly call "new Bar()), and it wouldn't even know where it came from. All Foo would know is that it has a dependency on Bar and uses it. Example:</p>
+<pre class="java:nocontrols" name="code">public class Foo {
+  private BarInterface operation;
+
+  public void doFoo() {
+    operation.doOperation();
+  }
+  public void setOperation(BarInterface op){
+    this.operation = op;
+  }
+}</pre>
+<p>Now all you have to do is inject the appropriate implementation of BarInterface into Foo, and Foo will run as desired. The Spring Framework handles this type of "wiring up" of the components in a declarative fashion.</p>
+<p>Why would you want to externalize "wiring up" your application components to a framework? Well, first, think of the "wiring up" of your application as "assembling the components together so that it can run." The application, once it's assembled and running, is a very different concern than the configuring and assemebling that went into it. For example, assembling the desk you just bought from a furniture store is a completely different concern than actually using it to store pencils and papers once you've completed assembly. <a href="http://en.wikipedia.org/wiki/Separation_of_concerns">Identifying and separating concerns</a> like this helps to modularize and decouple the application into manageable and maintainable pieces.</p>
+<p>Second, Spring does a good job of getting out of the way and not requiring the user to depend on the framework. In other words, your application objects do not need to use any org.springframework.* classes if they do not want (or need) to. Spring will allow your application objects to be completely unaware of the dependency injection container.</p>
+<h3>Our example</h3>
+<p>For our example, we'll modify the reference "Mail" program that ships with Ext-GWT, and give it the functionality of creating, reading, updating, and deleting (CRUD) emails from the ficticous "mail system" that we'll implement.</p>
+<p>Before continuing, however, I highly recommend the reader download and play around with the Spring Framework. There are <a href="http://www.google.com/search?source=ig&amp;hl=en&amp;rlz=1G1GGLQ_ENUS243&amp;=&amp;q=spring+framework+tutorial&amp;btnG=Google+Search&amp;aq=1&amp;oq=spring+framewo">great tutorials online</a>, and the <a href="http://static.springframework.org/spring/docs/2.5.x/reference/index.html">reference manual is excellent</a> too.</p>

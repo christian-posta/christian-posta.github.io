@@ -1,0 +1,49 @@
+---
+layout: post
+title: JMS-style selectors on Amazon SQS with Apache Camel
+date: 2013-10-22 17:31:55.000000000 -07:00
+categories: []
+tags: []
+---
+<p>This blog demonstrates how easy it is to use <a href="http://camel.apache.org">Apache Camel</a> and its new <a href="http://camel.apache.org/jsonpath">json-path component</a> along with the <a href="http://camel.apache.org/aws-sqs.html">camel-sqs</a> component to produce and consume messages on <a href="http://aws.amazon.com/sqs/">Amazon SQS</a>.</p>
+<p><a href="http://aws.amazon.com/sqs/">Amazon Web Services SQS</a> is a message queuing "software as a service" (SaaS) in the cloud. To be able to use it, you need to sign up for AWS. It's primary access mechanism is XML over HTTP through <a href="http://aws.amazon.com/tools/">various AWS SDK clients provided by Amazon</a>. Please check out <a href="http://aws.amazon.com/documentation/sqs/">the SQS documentation</a> for more.</p>
+<p>And as "luck" would have it, one of the users in <a href="http://camel.apache.org">Apache Camel</a> community created a <a href="http://camel.apache.org/aws-sqs.html">component to be able to integrate with SQS</a>. This makes it trivial to producer or consumer to an SQS queue and plugs in nicely with the <a href="http://camel.apache.org/dsl.html">Camel DSL</a>.</p>
+<p>SQS, however, is not a "one-size fits all" queueing service; you must be aware of your use case and make sure it fits (current requirements as well as somewhat into the future...). There are limitations that, if not studied and accounted for ahead of time, could come back to sink your project. An example of a viable alternative, and one that more fits the profile of high performance and full featured message queue is <a href="http://activemq.apache.org">Apache ActiveMQ</a>.</p>
+<p>For example, one limitation to keep in mind is that unlike traditional JMS consumers, you cannot create a subscription to a queue that filters messages based on some predicate (at least not using the AWS-SQS API -- you'd have to build that into your solution).</p>
+<p>Some other things to keep in mind when using SQS:</p>
+<ul>
+<li><strong>The queue does not preserve FIFO messaging</strong>
+<p>That is, message order is not preserved. They can arrive out of order from when they were sent. Apache Camel can help with <a href="http://camel.apache.org/resequencer.html">its resequencer pattern</a>. <a href="http://www.ofbizian.com">Bilgin Ibryam</a>, now a colleague of mine at Red Hat, <a href="http://www.ofbizian.com/2013/09/how-to-do-fifo-messaging-with-amazon-sqs.html">has written a great blog<br />
+post about how to restore message order</a> using the resequencer pattern.</li>
+<li><strong>Message size is limited to 256K</strong>
+<p>This is probably sufficient, but if your message sizes are variable, or contain more data that 256K, you will have to chunk them and send in smaller chunks.</li>
+<li><strong>No selector or selective consumption</strong>
+<p>If you're familiar with JMS, you know that you can specify consumers to use a "selector" or a predicate expression that is evaluated on the broker side to determine whether or not a specific message should be dispatched to a specific consumer. For example,</li>
+<li><strong>Durability constraints</strong>
+<p>Some use cases call for the message broker to store messages until consumers return. SQS allows a limit of up to 14 days. This is most likely sufficient, but something to keep in mind.</li>
+<li><strong>Binary payloads not allowed</strong>
+<p>SQS only allows text-based messages, e.g., XML, JSON, fixed format text, etc. Binary such as Avro, Protocol Buffers, or Thrift are not allowed.</li>
+</ul>
+<p>For some of these limitations, you can work around them by building out the functionality yourself. I would always recommend taking a look at how an <a href="http://www.christianposta.com/blog/?p=327">integration library</a> like <a href="http://camel.apache.org">Apache Camel</a> can help -- which has out-of-the-box support for doing some of these things.</p>
+<h2>Doing JMS-style selectors</h2>
+<p>So the basic problem is we want to subscribe to a SQS queue, but we want to <a href="http://camel.apache.org/message-filter.html">filter</a> which messages we process. For those messages that we do not process, those should be left in the queue. To do this, we will <a href="http://camel.apache.org/message-filter.html">make use of Apache Camel's Filter EIP</a> as well as the visibility timeouts available on the SQS queue.</p>
+<p>By default, SQS will dispatch all messages in its queue when it's queried. We cannot change this, and thus not avoid the message being dispatched to us -- we'll have to do the filtering on our side (this is different than how a full-featured broker like <a href="http://activemq.apache.org">ActiveMQ</a> does it, i.e., filtering is done on the broker side so the consumer doesn't even see the message it does not want to see).</p>
+<p>Once SQS dispatches a message, it does not remove it from the queue unless the consumer has acknowledged that it has it and is finished with it. The consumer does this <a href="http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSGettingStartedGuide/DeleteMessage.html">by sending a DeleteMessage command</a>. Until the DeleteMessage command is sent, the message is always in the queue, however visibility comes in to play here.</p>
+<p>When a message is dispatched to a consumer, there is a period of time which it will not be visible to other consumers. So if you browsed the queue, you would not see it (it should appear in the stats as "in-flight"). However, there is a configurable period of time you can specify for how long this "visibility timeout" should be active. So if you set the visibility to a lower time period (default is 30 seconds), you can more quickly get messages re-dispatched to consumers that would be able to handle the message.</p>
+<p>Take a look at the following Camel route which does just that:</p>
+<p><script src="https://gist.github.com/christian-posta/7106039.js"></script></p>
+<p>In the above Camel Route, we create a new message every 5 seconds and send it to an SQS queue named <em>demo</em> -- note we set the <strong>defaultVisibilityTimeout</strong> to 2 seconds. This means that after a message gets dispatched to a consumer, SQS will wait about 2 seconds before considering it eligible to be dispatched to another consumer if it has not been deleted.</p>
+<p>&nbsp;</p>
+<p>On the consumer side, we take advantage of a couple <a href="http://camel.apache.org">Apache Camel</a> conveniences</p>
+<p>&nbsp;</p>
+<h2>Using JSON Path + Filter EIP</h2>
+<p>&nbsp;</p>
+<p>Camel has an <a href="http://camel.apache.org/jsonpath">excellent new component named JSON-Path</a>. <a href="https://twitter.com/davsclaus/status/386866191303970816">Claus Ibsen tweeted about it when he hacked it up.</a> This allows you to do <a href="http://www.enterpriseintegrationpatterns.com/ContentBasedRouter.html">Content-Based Routing</a> on a JSON payload very easily by using XPath-style expressions to pick out and evaluate attributes in a JSON encoded object. So in the following example, we can test an attribute named 'type' to be equal to 'LOGIN' and use Camel's <a href="http://camel.apache.org/message-filter.html">Filter EIP</a> to allow only those messages that match to go through and continue processing:</p>
+<p><script src="https://gist.github.com/christian-posta/7106009.js"></script></p>
+<p>To complete the functionality, we have to pay attention to a new configuration option added for the <a href="http://camel.apache.org/aws-sqs.html">Camel-SQS</a> component:</p>
+<ul>
+<li><strong>deleteIfFiltered</strong> -- Whether or not to send the DeleteMessage to the SQS queue if an exchange fails to get through a filter. If 'false' and exchange does not make it through a Camel filter upstream in the route, then don't send DeleteMessage.</li>
+</ul>
+<p>By default, Camel will send the "DeleteMessage" command to SQS after a route has completed successfully (without an exception). However, in this case, we are specifying to <strong>not</strong> send the <em>DeleteMessage</em> command if the message had been previously filtered by Camel.</p>
+<p>This example demonstrates how easy it is to use <a href="http://camel.apache.org">Apache Camel</a> and its new <a href="http://camel.apache.org/jsonpath">json-path component</a> along with the <a href="http://camel.apache.org/aws-sqs.html">camel-sqs</a> component to produce and consume messages on <a href="http://aws.amazon.com/sqs/">Amazon SQS</a>.</p>
+<p>Please <a href="https://github.com/christian-posta/camel-sqs-example">take a look at the source code on my github repo</a> to play with the live code and try it out yourself.</p>

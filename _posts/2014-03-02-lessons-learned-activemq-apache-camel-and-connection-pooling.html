@@ -1,0 +1,49 @@
+---
+layout: post
+title: 'Lessons learned: ActiveMQ, Apache Camel and connection pooling'
+date: 2014-03-02 19:25:48.000000000 -07:00
+categories: []
+tags: []
+---
+<p>Every once in a while, I run into an interesting problem related to connections and pooling with <a href="http://activemq.apache.org">ActiveMQ</a>, and today I'd like to discuss something that is not always very clear and could potentially cause you to drink heavily when using <a href="http://activemq.apache.org">ActiveMQ</a> and <a href="http://camel.apache.org">Camel</a> <a href="http://camel.apache.org/jms">JMS</a>. Not to say that you won't want to drink heavily when using ActiveMQ and Camel anyway... in celebration of how delightful integration and messaging become when using them of course.</p>
+<p>So first up. Connection pooling.</p>
+<p>Sure, you've always heard to pool your connections. What does that really mean, and why do you want to do it?</p>
+<p>Opening up a connection to an ActiveMQ broker is a <em>relativley expensive</em> operation when compared to other actions like creating a session or consumer. So when sending or receiving messages and generally interacting with the broker, you'd like to reuse existing connections if possible. What you don't want to do is rely on a JMS library (like Spring JmsTemplate for example) that opens and closes connections for each send or receive of a message... unless you can pool/cache your connections.</p>
+<p>So if we can agree that pooling connections is a good idea, take a look at an example config:</p>
+<p><script src="https://gist.github.com/christian-posta/9283068.js"></script></p>
+<p>You may even want to use <a href="http://camel.apache.org">Apache Camel</a> and its wonderful <a href="http://camel.apache.org/jms">camel-jms</a> component because doing otherwise would just be silly. So maybe you want to set up a JMS config similar to so:</p>
+<p><script src="https://gist.github.com/christian-posta/9283108.js"></script></p>
+<p>This config basically means for consumers, set up 15 concurrent consumers, use transactions (local), use PERSISTENT messages for producers, set a timeout for 10000 for request-reply etc, etc.</p>
+<p><strong>Huge note</strong>: If you want a more thorough taste of the configs for the jms component, especially around caching consumers, transactions and more, please take a look at <a href="http://tmielke.blogspot.com">Torsten's</a> excellent blog on <a href="http://tmielke.blogspot.com/2012/03/camel-jms-with-transactions-lessons.html">Camel JMS with transactions - lesson learned</a>. Maybe you should also spend some time poking around his blog as he's got lots of good Camel/ActiveMQ stuff too :)</p>
+<p>Awesome so far. We have a connection pool of 10 connections, we will expect 10 sessions per connection (for a total of 100 sessions if we needed that...), and 15 concurrent consumers. We should be able to deal with some serious load, right?</p>
+<p>Take a look at this route here. It's simple enough, exposes the activemq component (which will use the jmsConfig from above, so 15 concurrent consumers) and just does some logging:</p>
+<p><script src="https://gist.github.com/christian-posta/9283293.js"></script></p>
+<p>Try and run this. You will find your consumers blocked up right away and stack traces will show this beauty:</p>
+<p><code><br />
+    "Camel (camel-1) thread #1 - JmsConsumer[test.queue]" daemon prio=5 tid=7f81eb4bc000 nid=0x10abbb000 in Object.wait() [10abba000]<br />
+       java.lang.Thread.State: WAITING (on object monitor)<br />
+        at java.lang.Object.wait(Native Method)<br />
+        - waiting on <7f40e9070> (a org.apache.commons.pool.impl.GenericKeyedObjectPool$Latch)<br />
+        at java.lang.Object.wait(Object.java:485)<br />
+        at org.apache.commons.pool.impl.GenericKeyedObjectPool.borrowObject(GenericKeyedObjectPool.java:1151)<br />
+        - locked <7f40e9070> (a org.apache.commons.pool.impl.GenericKeyedObjectPool$Latch)<br />
+        at org.apache.activemq.pool.ConnectionPool.createSession(ConnectionPool.java:146)<br />
+        at org.apache.activemq.pool.PooledConnection.createSession(PooledConnection.java:173)<br />
+        at org.springframework.jms.support.JmsAccessor.createSession(JmsAccessor.java:196)<br />
+        ....<br />
+</code></p>
+<p>How can that possibly be? We have connection pooling... we have sessions per connection set to 10 per connection, so how are we all blocked up on creating new sessions?</p>
+<p>The answer is you're exhausting the number of sessions, as you can expect by the stack trace. But how? And how much do I need to drink to resolve this?</p>
+<p>Well hold on now. Grab a beer and hear me out.</p>
+<p>First understand this. ActiveMQ's pooling implementation uses <a href="https://commons.apache.org/proper/commons-pool/">commons-pool</a> and the <em>maxActiveSessionsPerConnection</em> attribute is actually mapped to the <a href="http://commons.apache.org/proper/commons-pool/api-1.6/org/apache/commons/pool/impl/GenericKeyedObjectPool.html#setMaxActive(int)">maxActive</a> property of the underlying pool. From the docs this means:</p>
+<pre><code>maxActive controls the maximum number of objects (per key) that can allocated by the pool (checked out to client threads, or idle in the pool) at one time.
+</code></pre>
+<p>The key here is "key" (literally... the 'per key' clause of the documentation). So in the ActiveMQ implementation the key is an object that represents 1) whether the session mode is transacted and 2) what the acknowledgement mode is () <a href="https://github.com/apache/activemq/blob/trunk/activemq-jms-pool/src/main/java/org/apache/activemq/jms/pool/ConnectionPool.java#L130">as seen here</a>. So in plain terms, you'll end up with a "maxActive" sessions for each key that's used on that connection.. so if you have clients that use transactions, no transactions, client-ack, auto-ack, transacted-session, dups-okay, etc you can start to see that you'd end up with "maxActive" sessions for each permutation. So if you have maxActiveSesssionsPerConnection set to 10, you could really end up with 10 x 2 x 4 == 80 sessions. This is something to tuck away in the back of your mind.</p>
+<p>The second key here is that when the camel-jms component sets up consumers, it ends up sharing a single connection among all the consumers specified by the concurrentConsumers session. This is an interesting point, because <a href="http://camel.apache.org/jms">camel-jms</a> uses the underlying Spring framework's DefaultMessageListenerContainer and unfortunately this restriction comes from that library. So if you have 15 concurrent consumers, they will all share a single connection (even if pooling... it will grab one connection from the pool and hold it). So if you have 15 consumers that each share a connection, each share a transacted mode, each share an ack mode, then you end up trying to create 15 sessions for that one connection. And you end up with the above.</p>
+<p>So my rule of thumb for avoiding these scenarios:</p>
+<ul>
+<li>Understand exactly what each of your producers and consumers are doing, what their TX and ACK modes are</li>
+<li>Always tune the max sessions param when you NEED to (too many session threads? i dunno..) but always do concurrentConsumers+1 as the value AT LEAST</li>
+<li>If producers and consumers are producing/consuming the same destination SPLIT UP THE CONNECTION POOL: one pool for consumers, one pool for producers</li>
+</ul>
+<p>Dunno how valuable this info will be, but I wanted to jot it down for myself. If someone else finds it valuable, or has questions, let me know in the comments.</p>

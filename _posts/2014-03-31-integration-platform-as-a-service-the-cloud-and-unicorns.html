@@ -1,0 +1,26 @@
+---
+layout: post
+title: Integration platform as a service, the cloud, and… baby unicorns
+date: 2014-03-31 20:37:28.000000000 -07:00
+categories: []
+tags: []
+---
+<p><img class="alignright" src="/images/cloud.jpg" alt="" width="320" height="240" /><br />
+Ahh yes, this mythical utopian "cloud" where unicorns frolic, butterflies abound, and magical elves fetch me a beer three quarters of a way into my current one.</p>
+<p>I love that place.</p>
+<p>I just saw this warm and fuzzy line on the website of an open-source wolf in sheep's clothing company: "you can integrate any app, any data source and any device using a graphical interface" obviating any custom coding.</p>
+<p>Well, maybe the unicorns code it for you.</p>
+<p>For those of us in the real world that have worked on real, non-trivial, business-critical integration projects, we know the cold reality. They suck. Coding them by hand is going to land us into a world of hurt. So if we're smart, we leverage existing tried-and-true integration libraries like <a href="http://camel.apache.org">Apache Camel</a>to do the heavy lifting. If we want to keep the deployment simple, maybe we use our existing infrastructure like <a href="http://tomcat.apache.org">Apache Tomcat</a>. If we want to get modular, have requirements for dynamic services and components, and want app configuration handled for us, maybe we choose <a href="http://karaf.apache.org">Apache Karaf</a>. And of course we test via unit tests, integration tests, system tests, etc, etc.</p>
+<p>If you're a developer you know the truth. If you're a pointed-headed architect far removed from coding, you eat up the magic hand over fist.</p>
+<p>There's an awful lot of of hype around the "cloud", but often times behind the smoke and mirrors there is some truth (or at least semblance of truth :) ). SOA, ESB, etc, all had they're day on the hype curve but yet there was some substance to it once all the marketing cycles jumped onto the next bandwagon. The truth distilled you ask? I think the reality of "cloud" is highly virtualized environments (compute, storage, network), simplified deployments for <em>your code</em>, and  allowing applications to scale elastically with some good legwork by you up front. But none of this happens by magic, you give up some things: to wit.... control. But in some cases the benefits might be worth it.</p>
+<p>When I first saw the term "iPaaS", I thought it was cute. "Integration Platform as a Service". Someone is laughing all the way to the bank?</p>
+<p>Until it hit me. We're trying to make it easier to integrate systems right? It'll never be drag and drop batta-boom-batta-bing (though you'll pay millions thinking we can do it now), but there are definitely pain points that can be alleviated. Enterprise Integration Patterns? Automated tests? Continuous test/deployments, etc,etc... we've slowly, through all the barking and shilling, truly found ways to alleviate some of the pain points. But what about managing deployments and making it easier to "just deploy our code"?</p>
+<p>We've honestly got great ways to virtualize the infrastructure that hosts our integration solutions and software, but if you've been on the build and release part of a process, you know what a shit show it can be.</p>
+<p>Well, enter this idea of platform as a service.</p>
+<p>Notice I didn't capitalize the word "platform" or "service"...</p>
+<p>A platform as a service, designed to help developers and devops make it easier to deploy  code with little need for intimate knowledge of downloading, installing, configuring a system or container... and repeating it for scale and elasticity... mmmm.. what would that look like?</p>
+<p>The answer, my friends: <a href="http://fabric8.io">Fabric8.io</a> / <a href="http://www.redhat.com/products/jbossenterprisemiddleware/fuse/">JBoss Fuse</a></p>
+<p>Simply put, Fabric8/JBoss Fuse manages the containers and deployments for you. You just deploy your code. That is what a platform as a service is.</p>
+<p>You can use Fuse in stand-alone development, in traditional static network environments, in private clouds, hybrid clouds, public clouds….</p>
+<p>And as luck would have it,  this Fuse technology <a href="http://openshift.com/developers/jboss-fuse">is available on one of those PaaS thingys.</a>.</p>
+<p>Enough rambling, right Posta? Get to something worthwhile. <a href="http://www.christianposta.com/blog/?p=367">So in the next part, I'll show how to get started building a real Integration platform on a cloud PaaS with JBoss Fuse.</a></p>

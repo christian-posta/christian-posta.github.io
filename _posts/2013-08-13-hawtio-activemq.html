@@ -1,0 +1,75 @@
+---
+layout: post
+title: HawtIO + ActiveMQ
+date: 2013-08-13 16:09:31.000000000 -07:00
+categories: []
+tags: []
+---
+<p>Have you had a chance to take a look at <a href="http://hawt.io">HawtIO</a> yet? If you haven't, it's a new web-based dashboard for managing and monitoring JVM-based services like <a href="http://activemq.apache.org">Apache ActiveMQ</a>, <a href="http://camel.apache.org">Apache Camel</a>, <a href="https://www.jboss.org/jbossas/">JBoss</a>, <a href="https://www.jboss.org/infinispan">Infinispan</a>, <a href="http://tomcat.apache.org">Apache Tomcat</a><br />
+and <a href="http://hawt.io/plugins/index.html">many others!</a>. Actually, it's not just for monitoring, but you can edit, debug, profile your Camel routes and use it as the backbone of a cloud-based integration platform (iPaaS) as James Strachan demos in this video: <a href="http://macstrac.blogspot.com/2013/06/introducing-apache-camel-based-open.html">Introducing the Apache Camel based open source iPaaS</a>. Needless to say, it's hawt :)</p>
+<p>With that hawtness as a backdrop, let's focus on using HawtIO specifically with ActiveMQ.</p>
+<p>I have <a href="http://www.christianposta.com/blog/?p=298">blogged in the past</a> about plugging <a href="http://hawt.io">HawtIO</a> into a stand-alone version of ActiveMQ -- and if you're interested in collocating your management console with the embedded jetty that comes with ActiveMQ, that's cool and you should check it out. However, in this blog, we're going to cover a couple additional things:</p>
+<ul>
+<li>HawtIO with ActiveMQ 5.9</li>
+<li>Connecting to a remote ActiveMQ (older than 5.9.0)</li>
+<li>Connecting to a JVM on your local machine with HawtIO</li>
+</ul>
+<h2>Next Apache ActiveMQ Release</h2>
+<p>ActiveMQ 5.9.0 is (hopefully) going to be released some time this Fall 2013. I guess since it's an open source project, it depends on when we have time to work on it :) But among the many cool new features <a href="http://www.christianposta.com/blog/?p=312">that I plan to talk about at the Phoenix JUG in September</a>, one of the sexiest is replacing the existing ActiveMQ webconsole with <a href="http://hawt.io">HawtIO</a>! That's right... the older, dated, webconsole (below) is getting ousted!</p>
+<p>So why don't we get our hands wet a little, and play with a <a href="https://repository.apache.org/content/repositories/snapshots/org/apache/activemq/apache-activemq/5.9-SNAPSHOT/">nightly build</a>. You can take a look and get the latest 5.9-SNAPSHOT release. Unpack it and startup ActiveMQ:</p>
+<pre><code>$ACTIVEMQ_HOME/bin/activemq console
+</code></pre>
+<p>With the default config that's loaded, you should be able to navigate to <a href="http://localhost:8161/admin">http://localhost:8161/admin</a> to see the old admin console (if it asks for a password, 'admin' 'admin' is the default username and password):</p>
+<p><a href="http://christianposta.com/images/hawtio2/oldwebconsole.png" target="_blank"><img src="/images/oldwebconsole.png" alt="Old webconsole" /></a></p>
+<p>BTW! The pics are small, I know. Click on any of them to see full sized!</p>
+<p>If you've used this web console in the past, you'll know that it gives you an overview of the broker in terms of destinations, some basic stats, connections, and some limited visibility into network connections. You can also create queues and topics:</p>
+<p><a href="http://christianposta.com/images/hawtio2/createqueue.png" target="_blank"><img src="/images/createqueue.png" alt="Create queue" /></a></p>
+<p>But now, if you navigate over to <a href="http://localhost:8161/hawtio">http://localhost:8161/hawtio</a>, you should see the hawtio dashboard:</p>
+<p><a href="http://christianposta.com/images/hawtio2/hawtiodash.png" target="_blank"><img src="/images/hawtiodash.png" alt="HawtIO Dashboard" /></a></p>
+<p>On first notice, you'll see that HawtIO is much more that <em>just</em> an ActiveMQ dashboard. It has <a href="http://hawt.io/plugins/index.html">plugins for all kinds of technology</a>, and it can all be managed from one place.</p>
+<p>At the very top of the UI, you'll see a tab for "ActiveMQ". Tabs that appear here are those that have been auto-discovered. This makes sense since this deployment of HawtIO is bundled with ActiveMQ. If you click on the tab, you'll see a little more detail about the broker:</p>
+<p><a href="http://christianposta.com/images/hawtio2/activemqdash.png" target="_blank"><img src="/images/activemqdash.png" alt="ActiveMQ Dash" /></a></p>
+<p>To the left of the main screen is a tree containing the JMX mbeans associated with this broker. This is pretty powerful in my opinion: there was no such MBean browser in the old console. The MBeans are your window into what the broker is doing by giving you stats about destinations, subscriptions, and overall broker health, resource usage, config details, etc.</p>
+<p>There are also some visual indications of the broker's health (Green == good! ...memory, store limits, enqueue/dequeues):</p>
+<p><a href="http://christianposta.com/images/hawtio2/activemqchart.png" target="_blank"><img src="/images/activemqchart.png" alt="ActiveMQ Charts" /></a></p>
+<p>You also have access to "operations" that are usually tucked away under specific MBeans, but HawtIO brings the most-used ones to the forefront:</p>
+<p><a href="http://christianposta.com/images/hawtio2/activemqops.png" target="_blank"><img src="/images/activemqops.png" alt="ActiveMQ Operations" /></a></p>
+<p>And in the future, there will be diagrams about broker clusters and topologies and maybe live statistic updates in the diagrams with health overviews. Pretty cool stuff!</p>
+<h2>Connect Remotely!</h2>
+<p>HawtIO is really just a webapp deployed into a servlet container as a WAR. So you can deploy into Tomcat, JBoss, or any servlet container you like. What happens if you want to do that, but connect to externally deployed ActiveMQ instances? Well, you're in luck.</p>
+<p>You'll notice that there is a "Connect" tab on the top panel of the HawtIO screen. Upon clicking it, you can enter in host/port/path information and connect up. HawtIO is expecting to connect up to a jolokia agent, so you'll need to make sure the service to which you're connecting supports <a href="http://www.jolokia.org">Jolokia</a> access. In the case of ActiveMQ 5.9, jolokia is exposed by default here: http://localhost:8161/hawtio/jolokia</p>
+<p>Fill out your form like this:</p>
+<p><a href="http://christianposta.com/images/hawtio2/connectamq59.png" target="_blank"><img src="/images/connectamq59.png" alt="HawtIO connect remote ActiveMQ 5.9" /></a></p>
+<p>Upon clicking "Connect To Remote Server", you should be connected and presented with a new browser tab/window (note, in some versions of HawtIO you might be presented with a authentication dialog), and this new browser window will now have the ActiveMQ tab and access to the remote ActiveMQ:</p>
+<p><a href="http://christianposta.com/images/hawtio2/connect2amq59.png" target="_blank"><img src="/images/connect2amq59.png" alt="HawtIO connect remote ActiveMQ 5.9" /></a></p>
+<h3>What about older versions of ActiveMQ?</h3>
+<p>So this is all good and well if you're using ActiveMQ 5.9 which has Jolokia configured for use right out of the box, but what if you're using the previous version of ActiveMQ (5.8.0, or 5.7.0)?</p>
+<p>Well, in fact Jolokia was included in the 5.8.0 version. But for 5.7.0 it wasn't. The point really should be that there are a <a href="http://www.jolokia.org/agent.html">couple ways for a JVM to expose a Jolokia access point</a>, and as long as the Jolokia agent is available, HawtIO should be able to connect. So for example, in ActiveMQ 5.9.0 and 5.8.0, it comes with Jolokia and is exposed using a <a href="http://www.jolokia.org/agent.html">web agent</a>. However, if you disable the embedded jetty in <em>conf/activemq.xml</em> then your best bet would be to expose a JVM agent. This is possible to do for 5.7, 5.8, or 5.9.</p>
+<h4>I recommend the following approach for adding in the Jolokia JVM agent</h4>
+<ol>
+<li>Grab a distro of ActiveMQ (5.7.0, 5.8.0, or 5.9.0)</li>
+</ol>
+<blockquote><p>For this exercise, we're assuming the web-based agent is turned off if it comes installed by default.</p></blockquote>
+<ol>
+<li>Use the <em>create</em> command to create a broker: From your $ACTIVEMQ_HOME dir, run</li>
+</ol>
+<blockquote><p>$ACTIVEMQ_HOME/bin/activemq create ../brokers/hawtio-broker</p></blockquote>
+<p>This will create a broker named "hawtio-broker" in the directory one level up under "brokers"</p>
+<ol>
+<li>Navigate to <em>../brokers/hwatio-broker</em> and edit the bin/hawtio-broker script to include:</li>
+</ol>
+<blockquote><p>export ACTIVEMQ_OPTS="-javaagent:/path/to/jvmagent/hawtio-broker/lib/jolokia-jvm-1.1.3-agent.jar=port=8160,host=localhost"</p></blockquote>
+<p>This line can go below the other <em>exports</em> that might be in there. Note that the host and port here are what we will set in the HawtIO Connect form when we try to connect remotely.</p>
+<p><a href="http://christianposta.com/images/hawtio2/term-amq-hawtio-agent.png" target="_blank"><img src="/images/term-amq-hawtio-agent.png" alt="Example of the script" /></a></p>
+<ol>
+<li>Next, you need to download the JVM agent from the <a href="http://www.jolokia.org/download.html">Jolokia website</a> and place that jar under your <em>../brokers/hawtio-broker/lib</em> folder. <em>lib</em> won't be there by default, so create it. ActiveMQ will use this directory as an extension location and load up the agent from there based on the JVM args we set earlier.</li>
+<li>Follow the same steps as if you were to connect to a remote ActiveMQ, using the host and port specified in the JVM args above:</li>
+</ol>
+<p>You should be greeted with a similar screen to before, with the "ActiveMQ" tab at the top:</p>
+<p><a href="http://christianposta.com/images/hawtio2/connect57.png" target="_blank"><img src="/images/connect57.png" alt="We connected to ActiveMQ 5.7.0" /></a></p>
+<p>Upon clicking the ActiveMQ tab, you should see the stats that verify we are connected to a 5.7.0 (or whatever version you're using) broker:</p>
+<p><a href="http://christianposta.com/images/hawtio2/connect57-1.png" target="_blank"><img src="/images/connect57-1.png" alt="We connected to ActiveMQ 5.7.0" /></a></p>
+<p>There you have it. You can now connect remotely to ActiveMQ brokers with confidence.</p>
+<h2>Connect Locally</h2>
+<p>So this last section is still in progress... I will update it as I have time :)</p>
+<p>I encourage you to try out <a href="http://hawt.io">HawtIO</a> to monitor your ActiveMQ brokers. Your feedback is also highly valued, and can be directed to the <a href="http://hawt.io/community/index.html">HawtIO community</a>. HawtIO is far more than just an ActiveMQ monitor, however, so check out <a href="https://vimeo.com/68442425">its other features</a> and stay cool!</p>

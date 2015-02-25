@@ -1,0 +1,123 @@
+---
+layout: post
+title: Benchmarking your JMS layer with an open source JMSTester tool from FuseSource
+date: 2012-09-04 21:34:54.000000000 -07:00
+categories: []
+tags: []
+---
+<p>For most of the clients I've been to, scaling out a JMS messaging layer with ActiveMQ is a priority. There are a couple ways to achieve this, but without a doubt, creating benchmarks and analyzing an architecture on real hardware (or as my colleague <a href="http://blog.garytully.com">Gary Tully</a> says "asking the machine") is step one. But what opensource options do you have for creating a set of comprehensive benchmarks? If you have experience with some good ones, please let me know in the comments. The projects that I could think of:</p>
+<ul>
+<li><a href="http://jmeter.apache.org">Apache Jmeter</a></li>
+<li><a href="http://activemq.apache.org/activemq-performance-module-users-manual.html">ActiveMQ perf plugin</a></li>
+<li><a href="http://jmstester.fusesource.org">FuseSource JMSTester</a></li>
+<li>Hiram Chirino's <a href="https://github.com/chirino/jms-benchmark">jms-benchmark</a></li>
+</ul>
+<p>While chatting with Gary about setting up test scenarios for ActiveMQ, he recalled there was a very interesting project that appeared dead sitting in the <a href="http://www.fusesource.com/forge">FuseSource Forge</a> repo named <a href="http://jmstester.fusesource.org">JMSTester</a>. He suggested I take a look at it. I did, and I was impressed at its current capabilities. It was created by a former <a href="http://www.fusesource.com">FuseSource</a> consultant, <a href="http://de.linkedin.com/pub/andreas-gies/0/594/aa5">Andres Gies</a>, through many iterations with clients, flights, and free-time hacking. I have since taken it over and I will be adding features, tests, docs, and continuing the  momentum it once had.</p>
+<p>But even before I can get my creative hands in there, I want to share with you the power it has at the moment.</p>
+<h2>Purpose</h2>
+<p>The purpose of this blog entry is to give a tutorial-like introduction to the JMSTester tool. The purpose of the tool is to provide a powerful benchmarking framework to create flexible, distributed JMS tests while monitoring/recording stats critical to have on-hand before making tweaks and tuning your JMS layer.</p>
+<p>Some of the docs from the JMSTester homepage are slightly out of date, but the steps that describe some of the benchmarks are still accurate. This tutorial will require you download the SNAPSHOT I've been working on, which can be found here: <a href="http://www.christianposta.com/blog/jmstester-1.1-20120904.213157-5-bin.tar.gz">jmstester-1.1-20120904.213157-5-bin.tar.gz</a>. I will be deploying the next version of the website soon, which should have more updated versions of the binaries. When I do that, I'll update this post.</p>
+<h2>Meet the JMSTester tool</h2>
+<p>The JMSTester tool is simply a tool that sends and receives JMS messages. You use profiles defined in spring context config files to specify what sort of load you want to throw at your message broker. JMSTester allows you to define the number of producers you wish to use, the number of consumers, the connection factories, JMS properties (transactions, session acks,), etc. But the really cool part is you can run the benchmarks distributed over many machines. This means you setup machines to specifically act as producers and different ones to act as consumers. As far as monitoring and collecting the stats for benchmarking, JMSTester captures information in three different categories:</p>
+<ol>
+<li>Basic: message counts per consumer, message size</li>
+<li>JMX: monitor any JMX properties on the broker as the tests run, including number of threads, queue size, enqueue time, etc</li>
+<li>Machine: CPU, system memory, swap, file system metrics, network interface, route/connection tables, etc</li>
+</ol>
+<p>They Hyperic SIGAR library is used to capture the machine-level stats (group 3) and the RRD4J library is used to log the stats and output graphs. At the moment, I believe the graphs are pretty basic and I hope to improve upon those, but the raw data is always dumped to a csv file and you can use your favorite spreadsheet software to create your own graphs.</p>
+<h2>Architecture</h2>
+<p>The JMSTester tool is made up the following concepts:</p>
+<ul>
+<li>Controller</li>
+<li>Clients</li>
+<li>Recorder</li>
+<li>Frontend</li>
+<li>Benchmark Configuration</li>
+</ul>
+<h3>Controller</h3>
+<p>The controller is the organizer for the benchmark. It keeps track of who's interested in benchmark commands, starts the tests, keeps track of the number of consumers, the number of producers, etc. The benchmark cannot run without a controller. For those of you interested, the underlying architecture of the JMSTester tool relies on messaging, and ActiveMQ is the broker that the controller starts up for the rest of the architecture to work.</p>
+<h3>Clients</h3>
+<p>Clients are containers that take commands and can emulate the role of <em>Producer</em>, <em>Consumer</em> or both or neither (this will make sense further down). You can have as many clients as you want. You give them unique names and use their names within your benchmark configuration files. The clients can run anywhere, including on separate machines or all on one machine.</p>
+<h3>Recorder</h3>
+<p>The clients individually record stats and send the data over to the recorder. The recorder ends up organizing the stats and assembling the graphs, RRD4J databases, and benchmark csv files.</p>
+<h3>Frontend</h3>
+<p>The frontend is what sends commands to the controller. Right now there is only a command-line front end, but my intentions include a web-based front end with a REST-based controller that can be used to run the benchmarks.</p>
+<h3>Benchmark Configuration</h3>
+<p>The configuration files are <a href="http://www.springsource.org">Spring</a> context files that specify beans that instruct the controller and clients how to run the benchmark. In these config files, you can also specify what metrics to capture and while kind of message load to send to the JMS broker. Going forward I aim to improve these config files including adding custom namespace support to make the config less verbose.</p>
+<h2>Let's Go!</h2>
+<p>The <a href="http://jmstester.fusesource.org">JMSTester</a> website has a couple of good introductory tutorials:</p>
+<ul>
+<li>Simple: http://jmstester.fusesource.org/documentation/manual/TutorialSimple.html</li>
+<li>JMX Probes: http://jmstester.fusesource.org/documentation/manual/TutorialProbes.html</li>
+<li>Distributed: http://jmstester.fusesource.org/documentation/manual/TutorialDistributed.html</li>
+</ul>
+<p>They are mostly up-to-date, but I'll continue to update them as I find errors.</p>
+<p>The only thing about the <em>distributed</em> tutorial, it doesn't actually set up a distributed example. It separates out the clients but only on the same localhost machine. There are just a couple other parameters that need to be set to distribute it, which we'll cover here.</p>
+<p>The architecture for the tutorial will be the following:</p>
+<p><img src="/images/jmstester-blog-diagram.png" alt="Distributed Architecture Diagram" /></p>
+<p>Let's understand the diagram really quickly.</p>
+<p>The <em>JMS Host</em> will have two processes running: the ActiveMQ broker we'll be testing, and a JMSTester client container named <strong>Monitor</strong>. The container will be neither a producer or container, but instead will be used only to monitor machine and JMX statistics. The statistics will be sent back to the recorder on the <em>Controller Host</em> as described in the Recorder section above. The <em>Producer</em> and <em>Consumer</em> containers will be run on separate machines named, respectively, <strong>Producer</strong> and <strong>Consumer</strong>. Lastly, the <em>Controller Host</em> machine will have the <em>Controller</em> and <em>Recorder</em> components of the distributed test.</p>
+<h3>Initial Setup</h3>
+<p>Download and extract the JMSTester binaries <em>on each machine that will be participating in the benchmark</em>.</p>
+<h3>Starting the Controller and Recorder containers</h3>
+<p>On the machine that will host the controller, navigate to the $JMSTESTER_HOME dir and type the following command to start the controller and the recorder:</p>
+<p><code>./bin/runBenchmark -controller -recorder -springConfigLocations conf/testScripts</code></p>
+<p>Note that everything must be typed exactly as it is above, including no trailing spaces on the 'conf/testScripts'<br />
+This is a particularity that I will alleviate as part of my future enhancements.</p>
+<p>Once you've started the controller and recorder, you should be ready to start up the rest of the clients. The controller starts up an embedded broker that the clients will end up connecting to.</p>
+<h3>Starting the Producer container</h3>
+<p>On the machine that will host the producer, navigate to the $JMSTESTER_HOME dir, and type the following command:</p>
+<p><code>./bin/runBenchmark -clientNames Producer -hostname domU-12-31-39-16-41-05.compute-1.internal</code></p>
+<p>For the <strong>-hostname</strong> parameter, you must specify the host name where you started the controller. I'm using <a href="http://aws.amazon.com/ec2/">Amazon EC2</a> above, and if you're doing the same, prefer to use the internal DNS name for the hosts.</p>
+<h3>Starting the Consumer container</h3>
+<p>For the consumer container, you'll be doing the same thing you did for the producer, except give it a client name of <em>Consumer</em></p>
+<p><code>./bin/runBenchmark -clientNames Consumer -hostname domU-12-31-39-16-41-05.compute-1.internal</code></p>
+<p>Again, the <strong>-hostname</strong> parameter should reflect the host on which you're running the controller.</p>
+<h3>Setting up ActiveMQ and the Monitor on JMS Host</h3>
+<p>Setting up ActiveMQ is beyond the scope of this article.<br />
+But you will need to enable JMX on the broker. Just <a href="http://activemq.apache.org/jmx.html">follow the instructions</a> found on the Apache ActiveMQ website.</p>
+<p>This next part is necessary to allow the machine-level probe/monitoring. You'll need to install the SIGAR libs. They are not distributed with JMSTester because of their license, and their JNI libs are not available in Maven. Basically all you need to do is download and extract the [SIGAR distro from here][sigar-distro] and copy all of the libs from the <code>$SIGAR_HOME/sigar-bin/lib</code> folder into your $JMSTESTER_HOME/lib folder.</p>
+<p>Now start the Monitor container with a similar command for the producer and consumer:</p>
+<p><code>./bin/runBenchmark -clientNames Monitor -hostname domU-12-31-39-16-41-05.compute-1.internal</code></p>
+<h3>Submitting the tutorial testcase</h3>
+<p>We can submit the testcase from any computer. I've chosen to do it from my local machine. You'll notice the machine from which you submit the testcase isn't reflected in the diagram from above; this is simply because we can do it from any machine. Just like the other commands, however, you'll still need the JMSTester binaries.</p>
+<p>Before we run the test, let's take a quick look at the Spring config file that specifies the test. To do so, open up $JMSTESTER_HOME/conf/testScripts/tutorial/benchmark.xml in your favorite text editor, preferably one that color-codes XML documents so it's easier to read. The benchmark file is annotated with a lot of comments that describe the individual sections clearly. If something is not clear, please ping me so I can provide more details.</p>
+<p>There are a couple places in the config where you'll want to specify your own values to make this a successful test. Unfortunately, this is a manual process at the moment, but I plan to fix that up.</p>
+<p>Take a look at where the JMS broker connection factories are created. In this case, that would be where the ActiveMQ Connection Factories are created (lines 120 and 124.) The URL that goes here is the URL for the ActiveMQ broker you started in one of the previous sections. As it's distributed, there is a EC2 host url in there. You must specify your own host. Again, if you use EC2, prefer the internal DNS names.</p>
+<p>Then, take a look at line 169 where the AMQDestinationProbe is specified. This probe is JMX-probe specific to ActiveMQ. You must change the <code>brokerName</code> property to match whatever you named your broker when you started it (usually found in the <code>&lt;broker brokerName="name here"&gt;</code> section of your broker config).</p>
+<p>Finally, from the $JMSTESTER_HOME dir, run the following command:</p>
+<p><code>./bin/runCommand -command submit:conf/testScripts/tutorial -hostname ec2-107-21-69-197.compute-1.amazonaws.com</code></p>
+<p>Again, note that I'm setting the <strong>-hostname</strong> parameter to the host that the controller is running on. In this case, we'll prefer the public DNS of EC2, but it would be whatever you have in your environment.</p>
+<h3>Output</h3>
+<p>There you have it. You've submitted the testcase to the benchmark frammework. You should see some activity on each on of the clients (producer, consumer, monitor) as well as on the controller. If your test has run correctly and all of the raw data and graphs have been produced, you should see something similar as logging output:</p>
+<p><code>Written probe Values to : /home/ec2-user/dev/jmstester-1.1-SNAPSHOT/tutorialBenchmark/benchmark.csv</code></p>
+<p>Note that all of the results are written to <em>tutorialBenchmark</em> which is the name of the test as defined by the <strong>benchmarkId</strong> in the Spring config file on line 18:</p>
+<p><code>&lt;property name="benchmarkId" value="tutorialBenchmark"/&gt;</code></p>
+<p>If you take a look at the <code>benchmark.csv</code> file, you'll see all of the stats that were collected. The stats for this tutorial that were collected include the following:</p>
+<ul>
+<li>message count</li>
+<li>message size</li>
+<li>JMX QueueSize</li>
+<li>JMX ThreadCount</li>
+<li>SIGAR CpuMonitor</li>
+<li>SIGAR Free System Memory</li>
+<li>SIGAR Total System Memory</li>
+<li>SIGAR Free Swap </li>
+<li>SIGAR Total Swap</li>
+<li>SIGAR Swap Page In</li>
+<li>SIGAR Swap Page Out</li>
+<li>SIGAR Disk Reads (in bytes)</li>
+<li>SIGAR Disk Write (in bytes)</li>
+<li>SIGAR Disk Reads</li>
+<li>SGIAR Disk Writes</li>
+<li>SIGAR Network RX BYTES</li>
+<li>SIGAR Network RX PACKETS</li>
+<li>SIGAR Network TX BYTES</li>
+<li>SIGAR Network RX DROPPED</li>
+<li>SiGAR Network TX DROPPED</li>
+<li>SIGAR Network RX ERRORS</li>
+<li>SIGAR Network TX ERRORS</li>
+</ul>
+<h2>That's it</h2>
+<p>I highly recommend taking a look at this project. I haven taken it over, and will be improving it as time permits, but I would very much value any thoughts or suggestions about how to improve it or what use cases to support. Take a look at the documentation already there, and I will be adding more as we go.<br />
+If you have questions, or something didn't work properly as described above, please shoot me a comment, email or find me in the Apache IRC channels... I'm usually in at least #activemq and #camel.</p>

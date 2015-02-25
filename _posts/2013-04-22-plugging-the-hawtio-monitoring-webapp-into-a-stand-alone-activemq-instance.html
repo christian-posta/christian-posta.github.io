@@ -1,0 +1,34 @@
+---
+layout: post
+title: Plugging the HawtIO monitoring webapp into a stand-alone ActiveMQ instance
+date: 2013-04-22 06:11:38.000000000 -07:00
+categories: []
+tags: []
+---
+<p><a href="http://hawt.io">HawtIO</a> is a new pluggable HTML5 dashboard for monitoring ActiveMQ, Camel, Karaf, Fuse Fabric, Tomcat, and other technologies. Actually, I was completely surprised to see the <a href="http://hawt.io/plugins/index.html">list of plugins already available</a> and how HawtIO has already gained so much good traction. Not surprisingly though... it does some pretty cool stuff...</p>
+<p>The purpose of this quick post is to help you plug HawtIO into your stand-alone ActiveMQ instances with minimal fuss. For production deployments, I would recommend using a hardened, production-ready version of ActiveMQ such as <a href="http://fusesource.com/products/fuse-mq-enterprise/">FuseMQ Enterprise</a>, but some folks stick with the community versions and a standalone deployment. Let's say you had the <a href="http://activemq.apache.org/download.html">latest version of ActiveMQ</a> and wanted to pop HawtIO into it to see how "hawt" it is.</p>
+<p>First, HawtIO is a webapp packaged as a normal <code>war</code> file that can be deployed to any servlet container. This means you can deploy it, for example, to a Tomcat instance which has an embedded ActiveMQ along with some Camel routes, and HawtIO would discover and allow you to monitor all three technologies from the same dashboard. But like I said before, this post is more about the stand-alone deployments. The stand-alone ActiveMQ itself doesn't run <em>in</em> a servlet container, but does contain an embedded Jetty server that it uses for its current web console. Basically, what we want to do is tell the embedded Jetty server to find the HawtIO war and load it up.</p>
+<p>Start by <a href="http://hawt.io/getstarted/index.html">downloading the HawtIO war</a> and put it at your $ACTIVEMQ_HOME/hawtio folder (that folder won't exist out of the box, you'll have to create it).</p>
+<p>Then edit the Jetty config file in $ACTIVEMQ_HOME/conf/jetty.xml</p>
+<p>You'll want to add the following WebAppContext to the <code>handlers</code> property:</p>
+<p>[xml]<br />
+&lt;bean id=&quot;securityHandler&quot; class=&quot;org.eclipse.jetty.security.ConstraintSecurityHandler&quot;&gt;<br />
+  ...<br />
+  &lt;property name=&quot;handler&quot;&gt;<br />
+     &lt;bean id=&quot;sec&quot; class=&quot;org.eclipse.jetty.server.handler.HandlerCollection&quot;&gt;<br />
+     &lt;property name=&quot;handlers&quot;&gt;<br />
+       &lt;list&gt;<br />
+          ...<br />
+         &lt;bean class=&quot;org.eclipse.jetty.webapp.WebAppContext&quot;&gt;<br />
+           &lt;property name=&quot;contextPath&quot; value=&quot;/hawtio&quot; /&gt;<br />
+           &lt;property name=&quot;war&quot; value=&quot;${activemq.home}/hawtio/hawtio-default-1.1.war&quot; /&gt;<br />
+           &lt;property name=&quot;logUrlOnStart&quot; value=&quot;true&quot; /&gt;<br />
+         &lt;/bean&gt;<br />
+[/xml]</p>
+<p>Next, we'll need to tweak the contents of the hawtio war file because it will contain a conflicting slf4j jar that would normally already be on the classpath for ActiveMQ:</p>
+<pre><code>zip -d $ACTIVEMQ_HOME/hawtio/hawtio-web-1.0.war WEB-INF/lib/slf4j-api-1.6.1.jar
+</code></pre>
+<p>After that you should be good to go. Start ActiveMQ and Navigate your browser to http://localhost:8161/hawtio/</p>
+<p>Then have fun hacking around!</p>
+<h4>Updated to use latest release, hawtio 1.1!</h4>
+<p> No need to do the extra step of modifying the contents of the WAR file. Just point to the WAR file in your jetty.xml config file, and you're off!</p>

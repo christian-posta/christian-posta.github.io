@@ -1,6 +1,6 @@
 # Site wide configuration
 
-title:            Site Title
+title:            Software Blog
 locale:           en_US
 url:              
 
@@ -26,23 +26,23 @@ kramdown:
 
 # Site owner
 owner:
-  name: Your Name
+  name: Christian Posta
   avatar: bio-photo.jpg
-  bio: "Describe your self."
+  bio: "Principal Middleware Specialist/Architect at Red Hat, open-source enthusiast, committer on Apache ActiveMQ, Apache Camel, Fabric8, HawtIO, blogging, Family, India Pale Ale"
   email: 
   disqus-shortname: 
-  twitter: #username
+  twitter: christianposta
   facebook: #username
   google:
-    plus: #username
+    plus: christianposta
     analytics: 
     verify: 
     ad-client: 
     ad-slot: 
   bing-verify: 
-  github: #username
-  stackoverflow: #http://stackoverflow.com/users/123456/username
-  linkedin: #username
+  github: christian-posta
+  stackoverflow: ceposta
+  linkedin: christian-posta/15/412/199
   instagram: #username
   lastfm: #username
   tumblr: #username

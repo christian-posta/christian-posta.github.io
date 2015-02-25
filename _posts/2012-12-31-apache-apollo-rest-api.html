@@ -1,0 +1,23 @@
+---
+layout: post
+title: Apache Apollo REST API
+date: 2012-12-31 12:02:19.000000000 -07:00
+categories: []
+tags: []
+---
+<p><a href="http://activemq.apache.org/apollo/index.html">Apache Apollo</a> is a next-generation, high-performance, multi-protocol messaging broker built from the ground up to one day be a drop-in replacement of ActiveMQ 5.x. I have blogged about it in the past: see <a href="http://www.christianposta.com/blog/?p=262">Intro to Apollo Part I</a> and <a href="http://www.christianposta.com/blog/?p=278">Intro to Apollo Part II</a>. Apollo's non-blocking, asynchronous architecture allows it to be super fast and scale very well on multi-core systems using a minimal number of threads. The supported protocols include <a href="http://www.amqp.org">AMQP</a>, <a href="http://stomp.github.com/stomp-specification-1.1.html">STOMP</a>, <a href="http://www.mqtt.org">MQTT</a>, and ActiveMQ's native binary protocol, <a href="http://activemq.apache.org/openwire.html">Openwire</a>. Among all of the cool features implemented in Apollo, the one I want to briefly introduce is the REST API.</p>
+<p>Apollo will soon have a JMX API just like ActiveMQ, but in the meantime, the REST API is much more amenable to automated management or broker inspection. At the moment, there are three main sections to the API:</p>
+<ul>
+<li>Broker</li>
+<li>Session</li>
+<li>Config</li>
+</ul>
+<h2>Broker</h2>
+<p>With the broker API, you have access to the heart of Apollo and each individual Virtual Host. A Virtual Host is a grouping of store, authentication mechanisms, and destinations useful for implementing multi-tenancy. You can manage each Virtual Host's destinations (topics, queues) by inspecting existing destinations, deleting ones that should no longer be around, or creating new ones.</p>
+<p>Also available are details about the connectors (these are what allow Apollo to take incoming connections from clients), or existing connections. With the REST API, you can start and stop connectors, delete connections, or even bring down the entire broker.</p>
+<h2>Session</h2>
+<p>The session API is responsible for authenticating a user so that they have access to the API.</p>
+<h2>Config</h2>
+<p>Use the Config API to view existing configuration or change configuration which would be in effect immediately (no restart required).</p>
+<p>The REST API makes it easy to administer Apollo. You can view each REST endpoint and its details at http://localhost:61680/api/index.html using the default installation (could be different URL depending on where you configured your Administration endpoint to be). The Apollo console is built on top of the REST API and a new improved UX console is on its way.</p>
+<p>I highly recommend taking a look at <a href="http://activemq.apache.org/apollo/index.html">Apollo</a>!</p>

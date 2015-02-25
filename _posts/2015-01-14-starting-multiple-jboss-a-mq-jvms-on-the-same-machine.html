@@ -1,0 +1,41 @@
+---
+layout: post
+title: Starting multiple JBoss A-MQ JVMs on the same machine
+date: 2015-01-14 08:16:37.000000000 -07:00
+categories: []
+tags: []
+---
+<p>So I haven't been blogging as much recently -- just been really busy. But my New Year's resolution is to blog a little more sharing some things I come across frequently, even if it's simple stuff that might help some people out.</p>
+<p>So for this entry, I'll show a quick way to start up multiple <a href="http://www.jboss.org/products/amq/overview/">JBoss A-MQ</a> instances on a single machine. The reason why this question comes up is because JBoss A-MQ includes a little more "enterprise" ready features out of the box than plain old community <a href="http://activemq.apache.org">ActiveMQ</a>. <a href="http://www.jboss.org/products/amq/overview/">JBoss A-MQ</a> is a production-ready, hardened, version of ActiveMQ, and it's packaged inside <a href="http://karaf.apache.org">Apache Karaf</a> with some other features like the <a href="http://hawt.io">HawtIO</a> console (and more).</p>
+<p>What happens when people are trying to simulate more complex deployment scenarios in a lab or development environment, they may not have access to multiple VMs or machines to try out a full real-world deployment. So they may want to install multiple brokers on a single box. This is pretty straight forward, and all you have to do is make sure the default ports don't conflict. NOTE: this is not intended to be a production deployment!!! Don't deploy this way to production!!</p>
+<p>You can get pretty wacky and customize each additional A-MQ/Karaf JVM with the <a href="https://access.redhat.com/documentation/en-US/Red_Hat_JBoss_Fuse/6.1/html/Console_Reference/Consoleadmin.html">Karaf admin commands</a> but if you want to just get something working and want to understand where the port conflicts can be, check this out:</p>
+<h2>Download JBoss A-MQ</h2>
+<p>Go to the <a href="http://access.redhat.com">Red Hat support portal</a> (or <a href="http://www.jboss.org/products/amq/overview/">JBoss.org</a>) and download the copy of JBoss A-MQ you want to use. Note, the bits are the same from whichever website you download from, but you need a valid subscription to use in any shared environments (anything excluding your development laptop).</p>
+<p>For this exercise, we're using JBoss A-MQ 6.1 (filename jboss-a-mq-6.1.0.redhat-379.zip)</p>
+<h2>Install into two locations</h2>
+<p>If we want to have two separate JBoss A-MQ brokers, let's start by unpacking into two separate locations:</p>
+<pre><code>~&gt; unzip jboss-a-mq-6.1.0.redhat-379.zip -d amq01
+~&gt; unzip jboss-a-mq-6.1.0.redhat-379.zip -d amq02
+</code></pre>
+<p>Now in each installation path (eg, ./amq01/jboss-a-mq-6.1.0.redhat-379), which we'll call the broker's BASE directory, find the files in the $BASE/etc folder with the name <em>users.properties</em>. Uncomment the last line in that file so we have an admin user.</p>
+<h2>Change ports</h2>
+<p>Last step we need to do is change the ports in the installation for amq02 so they don't conflict.</p>
+<p>There are three files we'll need to touch, which are the config PIDs for the services that run in the container.</p>
+<h3>etc/org.apache.karaf.management.cfg</h3>
+<p>In this file, edit the following properties:</p>
+<pre><code>rmiRegistryPort = 1098  #default is 1099
+rmiServerPort = 44445   #default is 44444
+</code></pre>
+<p>Note, those are the changed values. You can change them to whatever you want.</p>
+<h3>etc/org.apache.karaf.shell.cfg</h3>
+<p>In this file, edit the following properties:</p>
+<pre><code>sshPort = 8102  #default is 8101
+</code></pre>
+<h3>etc/system.properties</h3>
+<p>And lastly, in this file, edit:</p>
+<pre><code>org.osgi.service.http.port=8182   #default is 8181
+activemq.port = 61617   #default is 61616
+activemq.jmx.url=service:jmx:rmi:///jndi/rmi://localhost:1098/karaf-${karaf.name}
+</code></pre>
+<h2>Start up your brokers</h2>
+<p>Go and start up your brokers with $BASE/bin/amq script, and you should have two running brokers, without collisions on ports.</p>

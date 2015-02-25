@@ -1,0 +1,45 @@
+---
+layout: post
+title: Java static methods can be a code smell
+date: 2010-02-15 09:35:07.000000000 -07:00
+categories: []
+tags:
+- design
+- java
+- mockito
+- testing
+---
+<p><!--[endif]--><!--[if gte mso 9]><xml> <o:shapedefaults v:ext="edit" spidmax="1026" /> </xml><![endif]--><!--[if gte mso 9]><xml> <o:shapelayout v:ext="edit"> <o:idmap v:ext="edit" data="1" /> </o:shapelayout></xml><![endif]--></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;">Response to <a href="http://www.michaelminella.com/testing/how-to-mock-static-methods.html">"How to Mock Static Methods"</a></span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;"> </span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;"><a href="http://en.wikipedia.org/wiki/Code_smell">Definition of code smell</a> (from Wikipedia):</span></p>
+<blockquote>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;">"any symptom in the source code of a program that possibly indicates a deeper problem."</span></p>
+</blockquote>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;"> </span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;">In Java, <a href="http://java.sun.com/docs/books/tutorial/java/javaOO/classvars.html">static methods</a> allow you to execute code at a "class scope" as opposed to an instance scope like member methods. This means, they rely on class-level variables (if any), parameters passed to the static method, or any other globally accessible data. They are NOT object oriented. An object has state associated with it and can be manipulated only through methods that implement the object's "behavior." Static methods do not operate on state, they are not object oriented, and in fact they are procedural.</span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;"> </span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;">Is this bad?</span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;"> </span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;">No. Although Java is object oriented, there will be times when procedural-like programming in Java is necessary and/or preferred.<span> </span>The real power in any object-oriented language is the ability to closely implement a model of real-life systems in code (see my <a href="http://christianposta.com/blog/?p=48">post about object-oriented modeling</a>). But even in the most hard-core object models, there will mostly likely be some glue code, or infrastructure code that will be implemented in a procedural style.</span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;"> </span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;">So if procedural-like programming in Java isn't "that bad" and static methods are a form of procedural programming, are static methods bad?</span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;"> </span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;">Ahh... the answer isn't as simple as a "yes", or a "no" regardless of what you may read on other blogs<span> </span>But I could probably ramble on and on about why it's really a decision that has to be made in context, so let's keep this article focused by examining a set of statements that I encountered in <a href="http://www.michaelminella.com/testing/how-to-mock-static-methods.html">"How to Mock Static Methods"</a> from Michael Minella's blog:</span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;"> </span></p>
+<blockquote>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;">"Something that has become a fundimental [sic] piece of the language (all you need to do is look at the Apache Commons project to see that) is so bad that it must be avoided at all costs in the name of testing. Gosling (or someone on his team) put it in the language for a reason and to avoid those uses solely because your toolset doesn't support the testing of it is nonsense. Time to get a new toolset."</span></p>
+</blockquote>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;"> </span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;">First, I'd like to point out that just because something has become a fundamental piece of a language doesn't mean it's "good" or something that should be done. Take a look at <a href="http://www.mindview.net/Etc/Discussions/CheckedExceptions">checked exceptions</a> for reference. I recall EJB 1.x and 2.x becoming a "fundamental" piece of Java EE in the past, so look at that for reference too.</span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;"> </span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;">Second, although I do agree with Michael in theory that avoiding a particular language feature because your tools don't support it is silly, his premise is focused on static methods. Avoiding static methods because your tooling doesn't support them is NOT nonsense at all. In fact, the type of impedance caused by some of the good testing and/or mocking frameworks (of which <a href="http://mockito.org/">Mockito</a> is my favorite :) ) and static methods can be confidently identified as a code smell. This does not mean we should not do it, but we should exert extra effort to understand why we are doing it and explore alternatives if there are "deeper problems."</span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;"> </span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;">There are at least two types of static methods that I would like to point out don't usually show much impedance with testing/mocking frameworks. The first type is static methods used as utility methods, as those found in a lot of the <a href="http://commons.apache.org/">apache commons</a> libraries, or your own internal commons libraries. These are usually routines that are supportive of a particular method's objective, and mocking/stubbing them out of a unit test wouldn't make sense. They are part of the implementation, and should be tested as such. The second type is static methods used in place of constructors as Joshua Bloch showed in his book <a href="http://www.amazon.com/Effective-Java-Programming-Language-Guide/dp/0201310058">"Effective Java."</a> This use of static methods allows you to construct a new object using a method with a very descriptive name, among some other advantages. An offshoot of this second type of static method could include factory methods, but that would depend on context.</span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;"> </span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;">The most glaring code smell as a result of static methods and testing-framework impedance arises when a unit relies on a static method that performs logic outside the scope of the responsibility of that unit. In these cases, your testing framework will fight you because you cannot stub/mock the out-of-scope logic because it is "hardcoded" via a static method. This can be considered a "deeper problem" and is the focus of most blogs that tell you not to use static methods because testing becomes abnormally difficult or impossible. Changing the design approach to follow the Dependency Inversion Principle is one alternative. A better understanding of how to test the unit is yet another.</span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;"> </span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;">I assert strongly that in the case of static methods, the push-back you may get from your testing frameworks is indicative of a code smell, not that you need to try and find a framework that uses complex trickery with class loader remapping as a solution. One should be poised to evaluate the use and fundamental drawbacks of a particular approach in their design. Michael's blog entry lends the reader to too easily assume a new tool/framework just because Java supports static methods and your current testing frameworks illuminate an impedance -- in this case, the impedance reflects a code smell and some deeper, more critical thinking is required.</span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;"> </span></p>
+<p class="MsoNormal"><span style="font-size: 10pt; font-family: Arial;"> </span></p>
+<p class="MsoNormal">

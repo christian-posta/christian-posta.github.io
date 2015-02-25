@@ -1,0 +1,15 @@
+---
+layout: post
+title: Using Apache Maven with Ext-GWT (part II)
+date: 2008-12-03 17:32:52.000000000 -07:00
+categories: []
+tags: []
+---
+<p>Although the <a href="http://mojo.codehaus.org/gwt-maven-plugin/">gwt-maven-plugin</a> from codehaus is going through the merge with the <a href="http://code.google.com/p/gwt-maven/">gwt-maven</a> plugin from Google Code, I wanted to share with you how building the Ext-GWT mail application with the gwt-maven-plugin from codehaus is a little easier. Please find the code for this second part <a href="code/gxt-mail-maven2.zip">here</a></p>
+<p>You'll notice the POM file is a little less verbose with regard to configuration and additional plugins (the plugin used to unpack the native GWT lib). There are more default plugin configuration parameters also.</p>
+<p>Run a mvn install at the root of the code distribution to compile into a war file. Note that your MAVEN_OPTS environment variable should be <a href="http://confluence.slac.stanford.edu/pages/viewpage.action?pageId=38246">set to increase the memory of the JVM</a>. </p>
+<p>Creating eclipse project files is simple also. Although I would recommend getting the <a href="http://m2eclipse.codehaus.org/">m2eclipse</a> plugin for Maven projects, you can generate eclipse plugin files by running the following maven command from the root of the code distribution (the directory where the pom.xml file exists):</p>
+<pre name="code" class="xml:nocontrols:nogutter">
+mvn gwt:eclipse
+</pre>
+<p>Stay tuned for more details about using this plugin as the codehaus and Google Code plugins merge!</p></p>

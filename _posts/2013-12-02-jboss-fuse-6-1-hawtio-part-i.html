@@ -1,0 +1,49 @@
+---
+layout: post
+title: JBoss Fuse 6.1 + HawtIO Part I
+date: 2013-12-02 22:02:42.000000000 -07:00
+categories: []
+tags: []
+---
+<h2>It's Open Source!</h2>
+<p><a href="http://www.jboss.org/products/fuse">JBoss Fuse</a> is an <a href="http://en.wikipedia.org/wiki/Enterprise_service_bus">open-source ESB</a> and is the evolution of <a href="http://fusesource.com/products/enterprise-servicemix/">Fuse ESB</a> after the <a href="http://www.christianposta.com/blog/?p=261">Red Hat acquisition of FuseSource</a>. It's <a href="https://github.com/jboss-fuse/fuse">open-source</a>, <a href="https://github.com/jboss-fuse/fuse/blob/master/license.txt">Apache v2 Licensed</a>, and <a href="http://www.redhat.com/resourcelibrary/datasheets/jboss-subscriptions-guide">fully supported by Red Hat</a>. One of the best parts is, you can download it and play with it for free and the same bits supported in production or with a subscription are exactly the same bits you can get right now.</p>
+<p><a href="http://www.jboss.org/products/fuse">JBoss Fuse</a> is an open-source ESB, but what does that even mean? I think the term ESB has lost its true meaning these days and now just means "box in the middle that all our stuff connects to". That's not an ESB. And that architecture doesn't work. What you need is a way to distribute out processing, integration, services, etc so that a "box in the middle" doesn't become a "bomb in the middle" that cannot scale and falls in on itself.</p>
+<p>So what you need is a light-weight integration container that can allow you distribute out your integrations. Deploy only the services you need to support your integration logic. Not doing EJB? Then why do you need an over-bloated EJB implementation in your container? And why stuff everything into a servlet container when not everything is a servlet?</p>
+<h2>Build on best-of-breed open-source software</h2>
+<p>JBoss Fuse is focused on integration and provides the tools within its container to facilitate that. Under the covers you'll find <a href="http://activemq.apache.org/">Apache ActiveMQ</a>, <a href="http://camel.apache.org/">Apache Camel</a>, <a href="http://cxf.apache.org/">Apache CXF</a>, all wrapped nicely in a <a href="http://karaf.apache.org/">Apache Karaf</a> container that's built on OSGi. You can also take advantage of a vital cluster management tool known as <a href="http://fuse.fusesource.org/fabric/">Fuse Fabric</a>.</p>
+<h2>Fuse Fabric</h2>
+<p>Fuse Fabric is a critical piece of software that helps simplify management of medium to large clusters of containers (built on Karaf), brokers (built on ActiveMQ), and integration routes (built with Camel). It can also be used to simplify the deployment processes and change management of production applications. It's built on the idea of a registry that coordinates the cluster (built on ZooKeeper), a distributed git scm that houses your deployment descriptors (profiles) and container management that allows you to version your changes, roll upgrades, and easily rollback updates.</p>
+<h2>Version 6.1 is due out soon!</h2>
+<p>The latest version of Jboss Fuse is due out soon. This includes new enhancements to the container, a new Fuse Management Console for <a href="http://fuse.fusesource.org/fabric/">Fuse Fabric</a>, new features as a result of using newer versions of <a href="http://activemq.apache.org/">ActiveMQ</a> and <a href="http://camel.apache.org/">Apache Camel</a>.</p>
+<p>And one of the biggest changes is the introduction of an awesome new HTML5-based/<a href="http://angularjs.org">AngularJS</a> web console for managing all of your JVM based applications and services, intended to replace the current Fuse Management Console (and more!): <a href="http://hawt.io">http://hawt.io</a>.</p>
+<h2>HawtIO is the new Fuse Management Console (FMC)!</h2>
+<p>HawtIO is intended to replace the mess of "every java application has its own web console" ... "oh and by the way they all replicate functionality, they are inconsistently clunky, and i don't have time to learn 5 new consoles". It's the one-and-only console for ActiveMQ, Camel, Karaf, and Fabric within the Fuse Family. It also comes out of the box with <a href="http://activemq.apache.org/activemq-590-release.html">ActiveMQ 5.9</a> but you should make no mistakes, it's not tied to those technologies. It can be used with any JVM technology with a little instrumentation from an awesome HTTP/REST API over JMX: <a href="http://www.jolokia.org">Jolokia</a>. It's built on a plugin architecture that currently supports technologies such as:</p>
+<ul>
+<li><a href="http://www.elasticsearch.org">Elastic Search</a></li>
+<li><a href="http://www.eclipse.org/jetty/">Jetty</a></li>
+<li><a href="http://tomcat.apache.org">Apache Tomcat</a></li>
+<li><a href="http://www.wildfly.org">Jboss AS</a></li>
+<li><a href="http://git-scm.com">git</a></li>
+<li>and <a href="http://hawt.io/plugins/index.html">many others</a></li>
+</ul>
+<h2>Quick Demo?</h2>
+<p>Reading about HawtIO and Fuse Fabric in JBoss Fuse is not as fun as demo'ing it, so let's see it in action!</p>
+<p>Here's a quick 5 minute intro to JBoss Fuse, Fuse Fabric, and HawtIO. Though keep in mind this might whet your pallet, I encourage you to <a href="http://www.jboss.org/products/fuse">download JBoss Fuse 6.1 Alpha and give it a shot</a>.</p>
+<p><iframe src="//player.vimeo.com/video/80892056" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></p>
+<p><a href="http://vimeo.com/80892056">JBoss Fuse 6.1 + HawtIO Fuse Management Console</a> from <a href="http://vimeo.com/user20787163">Christian Posta</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+<p>Here are some more resources:</p>
+<ul>
+<li><a href="http://macstrac.blogspot.co.uk">James Strachan</a> <a href="http://macstrac.blogspot.com/2013/11/happy-1st-birthday-hawtio.html">Welcome's HawtIO 1.2.0!</a></li>
+<li><a href="http://www.davsclaus.com">Claus Ibsen</a> also <a href="http://www.davsclaus.com/2013/11/happy-birthday-hawtio-1-year-old-today.html">wishes HawtIO a 1 year birthday</a></li>
+<li><a href="http://macstrac.blogspot.co.uk">James</a> gives a <a href="http://macstrac.blogspot.co.uk/2013/10/a-sneak-peek-at-whats-coming-in-jboss.html">nice sneak peak of JBoss Fuse 6.1 features</a></li>
+<li><a href="http://macstrac.blogspot.co.uk">James'</a> <a href="http://macstrac.blogspot.com/2013/06/introducing-apache-camel-based-open.html">video from Camel One 2013</a></li>
+</ul>
+<h2>What's next?</h2>
+<p>I have a lot to share about Fuse Fabric, JBoss Fuse 6.1, and of course HawtIO. In upcoming installments, I'd like to cover:</p>
+<ul>
+<li>Creating JBoss A-MQ (built on ActiveMQ) broker clusters using Fuse Fabric and new HawtIO visualizations</li>
+<li>Change management with profiles, git, and versioning</li>
+<li>Elastic search + Fuse Insight</li>
+<li>Apache Camel value-adds!</li>
+</ul>
+<p>Please stay tuned for the next Parts!</p>

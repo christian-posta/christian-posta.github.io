@@ -1,0 +1,23 @@
+---
+layout: post
+title: Easy REST endpoints with Apache Camel 2.14
+date: 2014-10-15 09:38:59.000000000 -07:00
+categories: []
+tags: []
+---
+<p><a href="http://camel.apache.org">Apache Camel</a> has a <a href="http://camel.apache.org/camel-2140-release.html">new release recently</a>, and <a href="http://www.davsclaus.com/2014/09/66th-apache-camel-release-is-out-its.html">some of the new features were blogged about by my colleague Claus Ibsen</a>. You really should check out his blog entry and dig into more detail, but one of the features I was looking forward to trying was the new <a href="http://camel.apache.org/rest-dsl">REST DSL</a>.</p>
+<p>So what is this new DSL?</p>
+<p>Actually, it's an extension to <a href="http://camel.apache.org/dsl.html">Camel's routing DSL</a>, which is a powerful domain language for declaratively describing integration flows and is <a href="http://camel.apache.org/dsl.html">available in many flavors</a>. It's pretty awesome, and is a differentiator between integration libraries. If you haven't seen Camel's DSL, you should check it out. Have I mentioned that Camel's DSL is awesome?</p>
+<p>k.. back to the REST story here..</p>
+<p>Before release 2.14, creating rest endpoints meant using <a href="http://camel.apache.org/cxfrs.html">camel-cxfrs</a> which can be difficult to approach for a new user just trying to expose a simple REST endpoint. Actually, it's a very powerful approach to doing contract-first REST design, but I'll leave that for the next blog post. However, <a href="http://www.christianposta.com/blog/?p=229">in a previous post I did dive into using camel-cxfrs for REST endpoints</a> so you can check it out.</p>
+<p>With the 2.14, the DSL has been extended to make it easier to create REST endpoints. For example:</p>
+<p><script src="https://gist.github.com/christian-posta/397c6148af610a18a222.js"></script></p>
+<p>In this example, we can see we use the DSL to define REST endpoints, and it's clear, intuitive and straight forward.</p>
+<p>All you have to do is set up the REST engine with this line:</p>
+<p><script src="https://gist.github.com/christian-posta/2ff19b8fd7fbfffced30.js"></script></p>
+<p>Or this in your Spring context XML:</p>
+<p><script src="https://gist.github.com/christian-posta/1ab4c34e850a7f26d9aa.js"></script></p>
+<p>The cool part is you can use multiple HTTP/servlet engines with this approach, including a micrservices style with embedded jetty (<a href="http://camel.apache.org/jetty.html">camel-jetty</a>) or through an existing servlet container (<a href="http://camel.apache.org/servlet.html">camel-servlet</a>). <a href="http://camel.apache.org/rest-dsl">Take a look at the REST DSL documentation</a> for the complete of HTTP/servlet components you can use with this DSL.</p>
+<p>Lastly, some might ask, what about documenting the REST endpoint? Eg, WADL?<br />
+Well, luckily, the new REST DSL is integrated out of the box with <a href="http://swagger.io">awesome Swagger library and REST documenting engine</a> ! So you can auto document your REST endpoints and have the docs/interface/spec generated for you! Take a look at the <a href="http://camel.apache.org/swagger.html">camel-swagger</a> documentation and the <code>camel-example-servlet-rest-tomcat</code> example that comes with the distribution to see more.</p>
+<p>Give it a try, and let us know (Camel mailing list, comments, stackoverflow, somehow!!!) how it works for you.</p>

@@ -1,0 +1,61 @@
+---
+layout: post
+title: Guaranteed messaging for topics, the JMS spec, and ActiveMQ
+date: 2012-08-27 12:43:20.000000000 -07:00
+categories: []
+tags: []
+---
+<p>Recently a customer asked me to look closer at ActiveMQ's implementation of "persistent" messages, how it applies to topics, and what happens in failover scenarios when there are non-durable subscribers.</p>
+<p>I had understood that the JMS semantics specify that only durable subscribers to a topic are guaranteed message delivery for a persistent delivery mode, even in the face of message-broker provider failure. But what does it have to say about non-durable subscribers for persistent messages? What's the point of sending a message "persistent" when there are no durable subscribers?</p>
+<p>Upon looking at the exact wording of the spec, I became a little unsure. So I consulted the <a href="http://www.amazon.com/gp/product/0596522045/ref=as_li_ss_tl?ie=UTF8&amp;camp=1789&amp;creative=390957&amp;creativeASIN=0596522045&amp;linkCode=as2&amp;tag=christianc0aa-20"><em>Java Message Service</em></a> book (Richards, Monson-Haefel, and Chappell) for some more discussion around <a href="http://www.eaipatterns.com/GuaranteedMessaging.html">guaranteed messaging</a>, checked into the ActiveMQ source code, and consulted with some of my co-workers.</p>
+<p>First, let's look at what the spec says:</p>
+<p>From section 4.10 of the <a href="http://download.oracle.com/otndocs/jcp/7195-jms-1.1-fr-spec-oth-JSpec/">JMS spec</a>:</p>
+<blockquote><p>Most clients should use producers that produce PERSISTENT messages. This insures once-and-only-once message delivery for messages delivered from a queue or a durable subscription.</p></blockquote>
+<p>Pretty clear, right? Using persistent message delivery ensures message delivery for a queue or durable subscription.</p>
+<p>From section 6.12:</p>
+<blockquote><p>Unacknowledged messages of a nondurable subscriber should be able to be recovered for the lifetime of that nondurable subscriber.</p></blockquote>
+<p>So now unacked messages of a non-durable subscriber should be able to be recovered? "for the lifetime of that non-durable subscriber" I guess...</p>
+<p>But later as part of 6.12:</p>
+<blockquote><p>Only durable subscriptions are reliably able to recover unacknowledged messages.</p></blockquote>
+<p>and...</p>
+<blockquote><p>To ensure delivery, a TopicSubscriber should establish a durable subscription.</p></blockquote>
+<p>Although the spec says very clearly [to the effect] that only queues and durable subscribers can take advantage of the store-and-forward guaranteed delivery, I guess I become confused at the "messages of a non-durable subscriber should be able to be recovered for the lifetime of the non-durable subscriber"</p>
+<ul>
+<li>Does the persistent protocol change for a topic depending on its consumers (where the message is considered the responsibility of the broker only after the broker has persisted the message and sent the producer an ack)?</li>
+<li>Does that mean even in the event of broker failure? Or is broker failure considered and end of the life of the subscription for non-durable subs?</li>
+<li>What happens with ActiveMQ when there is a network of brokers for persistent, non-durable topics? Can messages be missed if a broker in the network fails?</li>
+<li>What are the exact differences between sending a message "persistent" vs "non-persistent" to a topic with non-durable subscribers?</li>
+</ul>
+<p>These are two parts that have to be considered for this discussion of guaranteed delivery. The part where the publisher is sending a message to the broker, and when the consumer is receiving a message from the broker. For persistent messages, the protocol is for the sender to send a message and the broker to ack the message only after it has been persisted to a store. On the other hand, the consumer must ack the message after the broker has delivered it to say "hey, I'll take responsibility of the message now". Only then will the broker relinquish responsibility and removing it from its store.</p>
+<h3>Does the protocol change for a topic depending on its consumers?</h3>
+<p>So for persistent messages sent to a topic (not taking into any account consumers at the moment), does the spec say anything about whether the message is supposed to be stored before the broker sends back its ack? No, it doesn't. It's left up to the implementors of the JMS broker in question. In the case of ActiveMQ, if there are ONLY non-durable subscriptions on a topic, it will NOT persist the message.</p>
+<p>The synchronous nature of the protocol does not change, i.e., if the message is sent persistent, the session will consider the exchange with the broker to be synchronous, and it will wait for a response from the broker before proceeding -- but the broker will not actually persist the message. In ActiveMQ, this changes if there is AT LEAST one durable subscriber. Then the broker will persist the message (per the JMS spec).</p>
+<h3>Does that mean even in the event of a broker failure?</h3>
+<p>The lifetime of a non-durable subscription is indeed broken if a broker fails. So a message will not be delivered, even if it's sent persistent, to a non-durable subscriber in the event of broker failure (or any other termination of the life of that non-durable sub). Additionally, a message will not be redelivered in the face of broker failure for non-durable subscriptions.</p>
+<h3>What happens in a network of brokers?</h3>
+<p>Messages can indeed be lost. Consider this network of brokers where A -&gt; B -&gt; C and subscription is demand forwarded from C -&gt; B -&gt; A. So if we have a producer at A producing to a topic "topic.foo" and a non-durable consumer is on broker C consuming from "topic.foo", if broker B goes down, messages thereafter sent to A will be dropped. The lifetime of the subscription as far as A knows has been terminated.</p>
+<p>Lastly,</p>
+<h3>What are the exact differences between sending a message "persistent" vs "non-persistent" to a topic with non-durable subscribers?</h3>
+<p>According to the JMS spec:</p>
+<table border="1">
+<tbody>
+<tr>
+<th>How Published</th>
+<th>Nondurable Subscriber</th>
+<th>Durable Subscriber</th>
+</tr>
+<tr>
+<td>NON_PERSISTENT</td>
+<td>at-most-once (missed if inactive)</td>
+<td>at-most-once</td>
+</tr>
+<tr>
+<td>PERSISTENT</td>
+<td>once-and-only-once (missed if inactive)</td>
+<td>once-and-only-once</td>
+</tr>
+</tbody>
+</table>
+<p>So for a non-durable subscriber, a non-persistent message will be delivered "at most once" but will be missed if inactive (or broker failure).<br />
+For a non-durable subscriber, a persistent message will be delivered "once and only once" but missed if inactive. The "inactive" part of the spec effectively means if there are no durable subscribers to a topic, a message could be lost and there is no guarantee of delivery regardless of whether the message is sent persistent or non-persistent.</p>
+<p>If I have said something incorrectly, please let me know! The details around this can be somewhat confusing, but I believe I've outlined it correctly.</p>

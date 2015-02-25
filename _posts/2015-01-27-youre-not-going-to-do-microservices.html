@@ -1,0 +1,21 @@
+---
+layout: post
+title: You're not going to do Microservices
+date: 2015-01-27 16:24:51.000000000 -07:00
+categories: []
+tags: []
+---
+<p>Seems like every 5 to 10 years our industry, especially in the Enterprise Integration, or enterprise application space, we get introduced to some new methodology or architectural style that's the best since sliced bread and will make you 10x more productive and make your enterprise more agile, flexible, able to respond to change, and whatever else that CIOs are willing to spend gobs of money on. We've seen Enterprise Application Integration, Web Services, SOA, Component based architectures, ESBs, and on and on.</p>
+<p>Today: Microservices</p>
+<p>Well, guess what: chances are you're not going to get microservices architecture right.</p>
+<p>Honestly, I'm not saying that to dump cold water on your burning desire to try out new things. I do think there is legitimacy to microservices and it's an approach that grew organically over the years of watching failed committee-driven implementations. But guess what? There is a foundation of pre-requisites that must be in place first beforehand to be successful with this architecture (or any architecture :) ) that, based on my observation, is lacking at more places than it's prevailing. By all means, fire up Spring Boot or Dropwizard, or no container. <strong>You're not doing microservices just because you're following the lemmings away from the App Server</strong>. Places like Netflix, Amazon, etc seem to have some of the right combination of pre-requisites to make it work... But ask your VPs of engineering, ask your Directors of computing what they would say if their internal teams were organized like Amazon. They would spoil their pants. Your company probably doesn't and probably won't get microservices right.</p>
+<h2>Most organizations are not structured for microservices</h2>
+<p>We all hear about Conway's law, but this fact is the strongest reason why you're not going to do microservices. People win. Culture wins. Paper processes and paper structure does not win. If you have a UI team, DB team, "services" team, each specializing in its own right, you'll end up with systems that look like those tiers. There's nothing wrong with that per-se. But a tree-like structure and layers of managers above technological-grouped teams is an impediment to microservices-based teams.</p>
+<h2>REST is not a silver bullet</h2>
+<p>REST is great! I like the concepts, and that for enterprises it's basically the HTTP implementation we talk about. I'm happy to get away from SOAP. HTTP and REST is understood, has great tools, networking equipment, proxies, etc are all built with it in mind...But <a href="http://getprismatic.com/story/1422136825657?share=NDAwMA.MTQyMjEzNjgyNTY1Nw.NT_Zo31VQdZtIqi1ml9HAZdWsgE">REST is not a silver bullet</a>.</p>
+<h2>Modularizing applications is hard</h2>
+<p>How big should the service be? How deep should it be? Single responsibilities? Domain Driven Design bounded contexts, etc. This is all difficult to get right in practice. Doing it a few times and failing is the best (in my opinion) way to learn how to avoid the sharp edges, but properly modularizing your applications and your domain services is not easy.</p>
+<h2>We still don't understand how to do event-based architectures</h2>
+<p>Why are we still connecting everything by RPC!?!? This one aggravates me the most that we still don't know how to do Event driven architectures correctly, and that when a "new" architectural style comes about, we relive all of the same mistakes we did with the previous. BTW.... Microservices != REST.</p>
+<p>Alright, this was a bit of a complain session, but just wanted to bring some reality to the discussion around microservices.<br />
+At the end of the day, isolating "services" or systems at the process level is still not really loose coupling or "decoupled" systems. Runtime coupling is still very much present and maybe even more so. Never mind that <a href="http://en.wikipedia.org/wiki/Fallacies_of_distributed_computing">the Fallacies of distributed computing</a> still hold true. So maybe when we re-invent architectural styles, we frame them within the lessons learned?</p>

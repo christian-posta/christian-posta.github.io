@@ -1,0 +1,301 @@
+---
+layout: post
+title: Camel on JBoss EAP with Custom Modules
+date: 2014-07-17 09:36:18.000000000 -07:00
+categories: []
+tags: []
+---
+<h2>Apache Camel -- the best open source integration library</h2>
+<p><a href="http://camel.apache.org">Apache Camel</a> is an awesome, open-source, integration library that can be used <a href="http://www.jboss.org/products/fuse/overview/">as the backbone of an ESB</a>, or in <a href="https://github.com/christian-posta/contract-first-camel-eap/tree/camel-eap-modules">stand alone applications</a> to do routing, transformation, or mediation of systems (read: integrating multiple systems). <a href="http://camel.apache.org">Camel</a> is quite versatile and does not force users to deploy into any particular container or JVM technology. Deploy into <a href="http://karaf.apache.org">OSGi</a> for flexible modularity, deploy into <a href="http://wildfly.org">Java EE</a> when you use the Java EE stack, or deploy into Plain Jane Java Main if you're doing lightweight <a href="http://macstrac.blogspot.com/2014/05/micro-services-with-fabric8.html">microservices</a> style deployments.</p>
+<p><img src="/images/apache-camel-logo.jpg" alt="camel" /></p>
+<h2>Running Camel on EAP</h2>
+<p>I've had a few people ask questions recently about running Camel on <a href="http://www.jboss.org/products/eap/overview/">JBoss Enterprise Application Platform</a>, and I can usually say "<a href="http://www.christianposta.com/blog/?p=359">well look at this awesome blog someone did about doing just that</a>."</p>
+<p>However, for some of the folks at large companies that prefer to curate their usage of third-party libraries and prefer to put them into a globally accessible classpath, packaging the Camel libs into their WAR/EAR is not an option.</p>
+<p>Here are some reasons why you might want to package Camel on EAP as a global library:</p>
+<ul>
+<li>Golden image, curated list</li>
+<li>reduce bloated war deployments</li>
+<li>can patch/update libs at a single source location</li>
+<li>assure all applications are using the approved versions</li>
+</ul>
+<p>Why you might NOT want to do this:</p>
+<ul>
+<li>Java EE containers are intended to be multi-tenant</li>
+<li>Not flexible in deployment options/versions</li>
+<li>Possible classpath issues/collisions depending on the third party library and transitive dependencies</li>
+<li>Complicates the management of the Java EE container</li>
+</ul>
+<h2>EAP Modules</h2>
+<p>Regardless of the pro/con approaches, what's the best way to go about getting Camel packaged as a module on JBoss EAP so that you can use it from the global classpath? The answer is to use JBoss EAP's native modular system called, fittingly, "<a href="https://access.redhat.com/documentation/en-US/JBoss_Enterprise_Application_Platform/6/html/Development_Guide/chap-Class_Loading_and_Modules.html#Overview_of_Class_Loading_and_Modules-1">Modules</a>." We can <a href="https://access.redhat.com/solutions/195403">create custom modules</a> for EAP and enable for our <a href="http://maven.apache.org/plugins/maven-war-plugin/examples/skinny-wars.html">skinny wars</a>.</p>
+<h3>Step by Step</h3>
+<p>For this blog, I'll use the <a href="http://www.christianposta.com/blog/?p=359">previously created Camel example deployed as a simple WAR project</a>. However, instead of including all of the camel jars as <code>&lt;scope&gt;compile&lt;/scope&gt;</code> we will change the scope to provided:</p>
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.apache.camel&lt;/groupId&gt;
+    &lt;artifactId&gt;camel-core&lt;/artifactId&gt;
+    &lt;version&gt;${camel.version}&lt;/version&gt;
+    &lt;scope&gt;provided&lt;/scope&gt;
+&lt;/dependency&gt;
+</code></pre>
+<p>Just a refresh, the <a href="http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope">maven scope options</a> help you finely control how your dependencies are packaged and presented to the classpath:</p>
+<ul>
+<li>compile -- default scope, used for compiling the project and is packaged onto the classpath as part of the <code>package</code> phase</li>
+<li>provided -- the dependency is required for compile time, but is NOT packaged in the artifact produced by the build in <code>package</code> phase</li>
+<li>runtime -- the dependency must be on the classpath when it's run, but is not required for compilation and is also not packaged</li>
+</ul>
+<p>There are a couple others, but you may wish to <a href="http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope">check the docs</a> to get a complete understanding.</p>
+<p>So now that we've changed the scope to provided, if we do a build, we should be able to inspect our WAR and verify there are no Camel jars:</p>
+<h4>Build the project from $SOURCE_ROOT</h4>
+<pre><code>ceposta@postamachat$ mvn clean install
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 3.324s
+[INFO] Finished at: Wed Jul 16 14:16:53 MST 2014
+[INFO] Final Memory: 29M/310M
+[INFO] ------------------------------------------------------------------------
+</code></pre>
+<h4>List the contents of the WAR</h4>
+<pre><code>ceposta@postamachat$ unzip -l target/camel-cxf-contract-first-1.0.0-SNAPSHOT.war
+Archive:  target/camel-cxf-contract-first-1.0.0-SNAPSHOT.war
+  Length     Date   Time    Name
+ --------    ----   ----    ----
+        0  07-16-14 14:15   META-INF/
+      132  07-16-14 14:15   META-INF/MANIFEST.MF
+        0  07-16-14 14:15   WEB-INF/
+        0  07-16-14 14:15   WEB-INF/classes/
+        0  07-16-14 14:15   WEB-INF/classes/camelinaction/
+        0  07-16-14 14:15   WEB-INF/classes/camelinaction/order/
+        0  07-16-14 14:15   WEB-INF/classes/META-INF/
+        0  07-16-14 14:15   WEB-INF/classes/META-INF/spring/
+        0  07-16-14 14:15   WEB-INF/classes/wsdl/
+     1927  07-16-14 14:15   WEB-INF/classes/camelinaction/order/ObjectFactory.class
+      992  07-16-14 14:15   WEB-INF/classes/camelinaction/order/OrderEndpoint.class
+     1723  07-16-14 14:15   WEB-INF/classes/camelinaction/order/OrderEndpointImpl.class
+     2912  07-16-14 14:15   WEB-INF/classes/camelinaction/order/OrderEndpointService.class
+      604  07-16-14 14:15   WEB-INF/classes/log4j.properties
+     1482  07-16-14 14:15   WEB-INF/classes/META-INF/spring/camel-cxf.xml
+     1935  07-16-14 14:15   WEB-INF/classes/META-INF/spring/camel-route.xml
+     3003  07-16-14 14:15   WEB-INF/classes/wsdl/order.wsdl
+     1193  05-23-14 04:22   WEB-INF/web.xml
+        0  07-16-14 14:15   META-INF/maven/
+        0  07-16-14 14:15   META-INF/maven/com.redhat.demos/
+        0  07-16-14 14:15   META-INF/maven/com.redhat.demos/camel-cxf-contract-first/
+     8070  07-16-14 14:03   META-INF/maven/com.redhat.demos/camel-cxf-contract-first/pom.xml
+      134  07-16-14 14:15   META-INF/maven/com.redhat.demos/camel-cxf-contract-first/pom.properties
+ --------                   -------
+    24107                   23 files
+</code></pre>
+<p>If we try to deploy this project to EAP, we would surely run into classpath issues because Camel is not included by default on the classpath in EAP. So let's build the modules ourselves.</p>
+<p>First, get access to EAP by downloading from the Red Hat support portal. (Note, these steps may work in Wildfly, but I'm using EAP for this discussion).</p>
+<p><strong>NOTE: I will use <a href="http://www.redhat.com/products/jbossenterprisemiddleware/application-platform/">JBoss EAP 6.2</a> for this example as well as the Red Hat distribution of Apache Camel which comes from <a href="http://www.redhat.com/products/jbossenterprisemiddleware/fuse/">JBoss Fuse 6.1</a></strong></p>
+<p>For each of the dependencies in your pom that you'd like to create a custom module for, you'll have to repeat these steps (Note these steps are <a href="https://access.redhat.com/solutions/195403">formalized in the EAP knowledge base on the Red Hat support portal</a>):</p>
+<h4>create a folder under $EAP_HOME/modules to store your new module</h4>
+<pre><code>ceposta@postamachat(jboss-eap-6.2) $ cd modules
+ceposta@postamachat(modules) $ mkdir -p org/apache/camel/core
+</code></pre>
+<h4>create a folder named <em>main</em> under the module folder, as this is where we'll place the jars for the module</h4>
+<pre><code>ceposta@postamachat(modules) $ mkdir  org/apache/camel/core/main
+</code></pre>
+<p>Now we'll need to find out which dependencies/jars need to go into this module. If you use <a href="http://maven.apache.org/plugins/maven-dependency-plugin/index.html">Maven's Dependency Plugin</a> this should help out tremendously.</p>
+<p><strong>NOTE: these steps are a one-time effort, however, it's probably worth a little bit of time to automate these steps with perl/python/bash script. for this demo, I didn't create a script, but if you do, I'd appreciate you sharing it with everyone either <a href="https://twitter.com/christianposta">let me know on twitter @christianposta</a> or do a <a href="https://github.com/christian-posta/contract-first-camel-eap/tree/camel-eap-modules">pull request on the github project associated with this blog</a>.. thanks!</strong></p>
+<h4>show the dependencies for the project and each artifact:</h4>
+<pre><code>ceposta@postamachat$ mvn dependency:tree
+
+[INFO] ------------------------------------------------------------------------
+[INFO] Building [TODO]Camel CXF Contract First Example 1.0.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ camel-cxf-contract-first ---
+[INFO] com.redhat.demos:camel-cxf-contract-first:war:1.0.0-SNAPSHOT
+[INFO] +- org.apache.camel:camel-core:jar:2.12.0.redhat-610379:provided
+[INFO] |  \- com.sun.xml.bind:jaxb-impl:jar:2.2.6:provided
+[INFO] +- org.apache.camel:camel-cxf:jar:2.12.0.redhat-610379:provided
+[INFO] |  +- org.apache.camel:camel-spring:jar:2.12.0.redhat-610379:provided
+[INFO] |  |  \- org.springframework:spring-tx:jar:3.2.8.RELEASE:provided
+[INFO] |  +- org.apache.camel:camel-cxf-transport:jar:2.12.0.redhat-610379:provided
+[INFO] |  +- org.apache.cxf:cxf-rt-frontend-jaxrs:jar:2.7.0.redhat-610379:provided
+[INFO] |  |  +- javax.ws.rs:javax.ws.rs-api:jar:2.0-m10:provided
+[INFO] |  |  \- org.apache.cxf:cxf-rt-bindings-xml:jar:2.7.0.redhat-610379:provided
+[INFO] |  +- org.apache.cxf:cxf-rt-frontend-jaxws:jar:2.7.0.redhat-610379:provided
+[INFO] |  |  +- xml-resolver:xml-resolver:jar:1.2:provided
+[INFO] |  |  +- asm:asm:jar:3.3.1:provided
+[INFO] |  |  +- org.apache.cxf:cxf-rt-frontend-simple:jar:2.7.0.redhat-610379:provided
+[INFO] |  |  \- org.apache.cxf:cxf-rt-ws-addr:jar:2.7.0.redhat-610379:provided
+[INFO] |  |     \- org.apache.cxf:cxf-rt-ws-policy:jar:2.7.0.redhat-610379:provided
+[INFO] |  |        \- org.apache.neethi:neethi:jar:3.0.3:provided
+[INFO] |  +- org.springframework:spring-core:jar:3.2.8.RELEASE:provided
+[INFO] |  |  \- commons-logging:commons-logging:jar:1.1.3:provided
+[INFO] |  +- org.springframework:spring-beans:jar:3.2.8.RELEASE:provided
+[INFO] |  +- org.springframework:spring-context:jar:3.2.8.RELEASE:provided
+[INFO] |  |  \- org.springframework:spring-expression:jar:3.2.8.RELEASE:provided
+[INFO] |  +- org.apache.cxf:cxf-rt-features-clustering:jar:2.7.0.redhat-610379:provided
+[INFO] |  \- org.apache.cxf:cxf-rt-bindings-soap:jar:2.7.0.redhat-610379:provided
+[INFO] |     \- org.apache.cxf:cxf-rt-databinding-jaxb:jar:2.7.0.redhat-610379:provided
+[INFO] +- log4j:log4j:jar:1.2.16:provided
+[INFO] +- org.slf4j:slf4j-api:jar:1.6.6:provided
+[INFO] +- org.slf4j:slf4j-log4j12:jar:1.6.6:provided
+[INFO] +- org.apache.cxf:cxf-rt-transports-http-jetty:jar:2.7.0.redhat-610379:provided
+[INFO] |  +- org.apache.cxf:cxf-api:jar:2.7.0.redhat-610379:provided
+[INFO] |  |  +- org.codehaus.woodstox:woodstox-core-asl:jar:4.2.0:provided
+[INFO] |  |  |  \- org.codehaus.woodstox:stax2-api:jar:3.1.1:provided
+[INFO] |  |  +- org.apache.ws.xmlschema:xmlschema-core:jar:2.1.0:provided
+[INFO] |  |  +- org.apache.geronimo.specs:geronimo-javamail_1.4_spec:jar:1.7.1:provided
+[INFO] |  |  +- wsdl4j:wsdl4j:jar:1.6.3:provided
+[INFO] |  |  \- org.osgi:org.osgi.compendium:jar:4.2.0:provided
+[INFO] |  +- org.apache.cxf:cxf-rt-transports-http:jar:2.7.0.redhat-610379:provided
+[INFO] |  +- org.apache.cxf:cxf-rt-core:jar:2.7.0.redhat-610379:provided
+[INFO] |  +- org.eclipse.jetty:jetty-server:jar:8.1.14.v20131031:provided
+[INFO] |  |  +- org.eclipse.jetty:jetty-continuation:jar:8.1.14.v20131031:provided
+[INFO] |  |  \- org.eclipse.jetty:jetty-http:jar:8.1.14.v20131031:provided
+[INFO] |  |     \- org.eclipse.jetty:jetty-io:jar:8.1.14.v20131031:provided
+[INFO] |  |        \- org.eclipse.jetty:jetty-util:jar:8.1.14.v20131031:provided
+[INFO] |  +- org.eclipse.jetty:jetty-security:jar:8.1.14.v20131031:provided
+[INFO] |  \- org.apache.geronimo.specs:geronimo-servlet_3.0_spec:jar:1.0:provided
+[INFO] +- org.apache.camel:camel-test-spring:jar:2.12.0.redhat-610379:provided
+[INFO] |  +- org.apache.camel:camel-test:jar:2.12.0.redhat-610379:provided
+[INFO] |  \- org.springframework:spring-test:jar:3.2.8.RELEASE:provided
+[INFO] +- junit:junit:jar:4.11:test
+[INFO] |  \- org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO] \- org.springframework:spring-web:jar:3.2.5.RELEASE:provided
+[INFO]    +- aopalliance:aopalliance:jar:1.0:provided
+[INFO]    \- org.springframework:spring-aop:jar:3.2.5.RELEASE:provided
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 1.450s
+[INFO] Finished at: Wed Jul 16 15:03:08 MST 2014
+[INFO] Final Memory: 17M/310M
+[INFO] ------------------------------------------------------------------------
+</code></pre>
+<p>This gives you the complete list of dependencies for your project and each of the top-level and transitive dependencies. Now you know what jars should go into each module.</p>
+<p>The next step is to download all of these jars to make it easy to copy them to the module folder:</p>
+<h4>Copy all project dependencies to target/dependency</h4>
+<pre><code>ceposta@postamachat$ mvn dependency:copy-dependencies 
+
+ceposta@postamachat$ ls -l target/dependency
+
+total 32072
+-rw-r--r--  1 ceposta  staff     4467 Jul 16 14:50 aopalliance-1.0.jar
+-rw-r--r--  1 ceposta  staff    43581 Jul 16 14:50 asm-3.3.1.jar
+-rw-r--r--  1 ceposta  staff  2592519 Jul 16 14:50 camel-core-2.12.0.redhat-610379.jar
+-rw-r--r--  1 ceposta  staff   207482 Jul 16 14:43 camel-cxf-2.12.0.redhat-610379.jar
+-rw-r--r--  1 ceposta  staff    64726 Jul 16 14:50 camel-cxf-transport-2.12.0.redhat-610379.jar
+-rw-r--r--  1 ceposta  staff   244731 Jul 16 14:50 camel-spring-2.12.0.redhat-610379.jar
+-rw-r--r--  1 ceposta  staff    43947 Jul 16 14:50 camel-test-2.12.0.redhat-610379.jar
+-rw-r--r--  1 ceposta  staff    71455 Jul 16 14:50 camel-test-spring-2.12.0.redhat-610379.jar
+-rw-r--r--  1 ceposta  staff    62050 Jul 16 14:50 commons-logging-1.1.3.jar
+-rw-r--r--  1 ceposta  staff  1115924 Jul 16 14:50 cxf-api-2.7.0.redhat-610379.jar
+-rw-r--r--  1 ceposta  staff   204287 Jul 16 14:50 cxf-rt-bindings-soap-2.7.0.redhat-610379.jar
+-rw-r--r--  1 ceposta  staff    38847 Jul 16 14:50 cxf-rt-bindings-xml-2.7.0.redhat-610379.jar
+-rw-r--r--  1 ceposta  staff   408403 Jul 16 14:50 cxf-rt-core-2.7.0.redhat-610379.jar
+-rw-r--r--  1 ceposta  staff   129306 Jul 16 14:50 cxf-rt-databinding-jaxb-2.7.0.redhat-610379.jar
+-rw-r--r--  1 ceposta  staff    34276 Jul 16 14:50 cxf-rt-features-clustering-2.7.0.redhat-610379.jar
+-rw-r--r--  1 ceposta  staff   654099 Jul 16 14:50 cxf-rt-frontend-jaxrs-2.7.0.redhat-610379.jar
+-rw-r--r--  1 ceposta  staff   388669 Jul 16 14:50 cxf-rt-frontend-jaxws-2.7.0.redhat-610379.jar
+-rw-r--r--  1 ceposta  staff    67426 Jul 16 14:50 cxf-rt-frontend-simple-2.7.0.redhat-610379.jar
+-rw-r--r--  1 ceposta  staff   260274 Jul 16 14:50 cxf-rt-transports-http-2.7.0.redhat-610379.jar
+-rw-r--r--  1 ceposta  staff    97071 Jul 16 14:50 cxf-rt-transports-http-jetty-2.7.0.redhat-610379.jar
+-rw-r--r--  1 ceposta  staff    80014 Jul 16 14:50 cxf-rt-ws-addr-2.7.0.redhat-610379.jar
+-rw-r--r--  1 ceposta  staff   207480 Jul 16 14:50 cxf-rt-ws-policy-2.7.0.redhat-610379.jar
+-rw-r--r--  1 ceposta  staff   223298 Jul 16 14:50 geronimo-javamail_1.4_spec-1.7.1.jar
+-rw-r--r--  1 ceposta  staff    96323 Jul 16 14:50 geronimo-servlet_3.0_spec-1.0.jar
+-rw-r--r--  1 ceposta  staff    45024 Jul 16 14:50 hamcrest-core-1.3.jar
+-rw-r--r--  1 ceposta  staff   110928 Jul 16 14:50 javax.ws.rs-api-2.0-m10.jar
+-rw-r--r--  1 ceposta  staff  1112659 Jul 16 14:50 jaxb-impl-2.2.6.jar
+-rw-r--r--  1 ceposta  staff    21162 Jul 16 14:50 jetty-continuation-8.1.14.v20131031.jar
+-rw-r--r--  1 ceposta  staff    96122 Jul 16 14:50 jetty-http-8.1.14.v20131031.jar
+-rw-r--r--  1 ceposta  staff   104219 Jul 16 14:50 jetty-io-8.1.14.v20131031.jar
+-rw-r--r--  1 ceposta  staff    89923 Jul 16 14:50 jetty-security-8.1.14.v20131031.jar
+-rw-r--r--  1 ceposta  staff   357704 Jul 16 14:50 jetty-server-8.1.14.v20131031.jar
+-rw-r--r--  1 ceposta  staff   287680 Jul 16 14:50 jetty-util-8.1.14.v20131031.jar
+-rw-r--r--  1 ceposta  staff   245039 Jul 16 14:50 junit-4.11.jar
+-rw-r--r--  1 ceposta  staff   481535 Jul 16 14:50 log4j-1.2.16.jar
+-rw-r--r--  1 ceposta  staff    71487 Jul 16 14:50 neethi-3.0.3.jar
+-rw-r--r--  1 ceposta  staff   614152 Jul 16 14:50 org.osgi.compendium-4.2.0.jar
+-rw-r--r--  1 ceposta  staff    26176 Jul 16 14:50 slf4j-api-1.6.6.jar
+-rw-r--r--  1 ceposta  staff     9711 Jul 16 14:50 slf4j-log4j12-1.6.6.jar
+-rw-r--r--  1 ceposta  staff   335679 Jul 16 14:50 spring-aop-3.2.5.RELEASE.jar
+-rw-r--r--  1 ceposta  staff   612569 Jul 16 14:50 spring-beans-3.2.8.RELEASE.jar
+-rw-r--r--  1 ceposta  staff   866273 Jul 16 14:50 spring-context-3.2.8.RELEASE.jar
+-rw-r--r--  1 ceposta  staff   873608 Jul 16 14:50 spring-core-3.2.8.RELEASE.jar
+-rw-r--r--  1 ceposta  staff   196367 Jul 16 14:50 spring-expression-3.2.8.RELEASE.jar
+-rw-r--r--  1 ceposta  staff   457987 Jul 16 14:50 spring-test-3.2.8.RELEASE.jar
+-rw-r--r--  1 ceposta  staff   242436 Jul 16 14:50 spring-tx-3.2.8.RELEASE.jar
+-rw-r--r--  1 ceposta  staff   627339 Jul 16 14:50 spring-web-3.2.5.RELEASE.jar
+-rw-r--r--  1 ceposta  staff   182112 Jul 16 14:50 stax2-api-3.1.1.jar
+-rw-r--r--  1 ceposta  staff   482245 Jul 16 14:50 woodstox-core-asl-4.2.0.jar
+-rw-r--r--  1 ceposta  staff   186758 Jul 16 14:50 wsdl4j-1.6.3.jar
+-rw-r--r--  1 ceposta  staff    84091 Jul 16 14:50 xml-resolver-1.2.jar
+-rw-r--r--  1 ceposta  staff   165787 Jul 16 14:50 xmlschema-core-2.1.0.jar
+</code></pre>
+<p>Now we find what jars go to what dependency and create modules. For example, looking above we see <em>camel-core</em> has a dependency on <code>com.sun.xml.bind:jaxb-impl:jar:2.2.6</code> Luckily enough, that's the only dependency and it's a system dependency that JBoss EAP already provides.</p>
+<p>So all we need to copy to our JBoss Module directory is the <code>org.apache.camel:camel-core:jar:2.12.0.redhat-610379</code> dependency. But where do we get that!? Well, since we used dependency:copy-dependencies, it should just be in your target/dependency folder.</p>
+<p>But the official answer is the Camel jars Red Hat curates are shipped as part of <a href="http://www.redhat.com/products/jbossenterprisemiddleware/fuse/">JBoss Fuse</a>.</p>
+<p>So if you download the distribution for JBoss Fuse, and unpack it, you should see an <code>/extras</code> folder in that distribution. Inside that distribution is an archive file named <code>apache-camel-2.12.0.redhat-610379.zip</code>. If you unpack this archive and check the <code>/lib</code> folder, you will have all of the Camel components and jars that Red Hat supports.</p>
+<p>Now that we know camel-core is the only jar we'll need for the camel-core module, let's copy that over to our module folder on EAP:</p>
+<h4>Copy all of the dependencies and transitive dependencies to module folder</h4>
+<pre><code>ceposta@postamachat(contract-first-camel-eap) $ cp target/dependency/camel-core-2.12.0.redhat-610379.jar $EAP_HOME/modules/org/apache/camel/core/main/
+</code></pre>
+<h4>Create module.xml</h4>
+<p>Now we'll need to add a simple xml descriptor to let EAP know this is a valid module:</p>
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;module xmlns="urn:jboss:module:1.1" name="org.apache.camel.core"&gt;
+    &lt;resources&gt;
+        &lt;resource-root path="camel-core-2.12.0.redhat-610379.jar"/&gt;
+    &lt;/resources&gt;
+&lt;/module&gt;
+</code></pre>
+<p>And now you have a <code>camel-core</code> EAP module! If you have dependencies on other modules, you can add them like this for example, but not necessary for camel-core module (it's just a sample of what it would look like for other modules that will need this):</p>
+<pre><code>&lt;dependencies&gt;
+    &lt;module name="org.apache.commons.lang"/&gt;
+    &lt;module name="org.apache.commons.logging" /&gt;
+    &lt;module name="org.apache.commons.collections" /&gt;
+    &lt;module name="org.apache.commons.io" /&gt;
+    &lt;module name="org.apache.commons.configuration" /&gt;
+&lt;/dependencies&gt;
+</code></pre>
+<h4>Enable the camel-core module:</h4>
+<p>The last thing to do is to enable the module in the global classpath. To do this, find the standalone configuration file and add it to the <code>&lt;global-modules&gt;</code> section of the "EE subsystem":</p>
+<pre><code>.... bunch of other stuff here....
+
+&lt;subsystem xmlns="urn:jboss:domain:ee:1.1"&gt;
+    &lt;global-modules&gt;
+        &lt;module name="org.apache.camel.core" slot="main" /&gt;
+    &lt;/global-modules&gt;
+&lt;/subsystem&gt;
+
+.... bunch of other stuff here....
+</code></pre>
+<p>Now do this for the camel-cxf component (hint, these are the jars).. OR if already have some of your custom modules and you want to further split this out into reusable modules, split them by technology (spring, cxf, cxf-transport, etc)</p>
+<pre><code>[INFO] +- org.apache.camel:camel-cxf:jar:2.12.0.redhat-610379:provided
+[INFO] |  +- org.apache.camel:camel-spring:jar:2.12.0.redhat-610379:provided
+[INFO] |  |  \- org.springframework:spring-tx:jar:3.2.8.RELEASE:provided
+[INFO] |  +- org.apache.camel:camel-cxf-transport:jar:2.12.0.redhat-610379:provided
+[INFO] |  +- org.apache.cxf:cxf-rt-frontend-jaxrs:jar:2.7.0.redhat-610379:provided
+[INFO] |  |  +- javax.ws.rs:javax.ws.rs-api:jar:2.0-m10:provided
+[INFO] |  |  \- org.apache.cxf:cxf-rt-bindings-xml:jar:2.7.0.redhat-610379:provided
+[INFO] |  +- org.apache.cxf:cxf-rt-frontend-jaxws:jar:2.7.0.redhat-610379:provided
+[INFO] |  |  +- xml-resolver:xml-resolver:jar:1.2:provided
+[INFO] |  |  +- asm:asm:jar:3.3.1:provided
+[INFO] |  |  +- org.apache.cxf:cxf-rt-frontend-simple:jar:2.7.0.redhat-610379:provided
+[INFO] |  |  \- org.apache.cxf:cxf-rt-ws-addr:jar:2.7.0.redhat-610379:provided
+[INFO] |  |     \- org.apache.cxf:cxf-rt-ws-policy:jar:2.7.0.redhat-610379:provided
+[INFO] |  |        \- org.apache.neethi:neethi:jar:3.0.3:provided
+[INFO] |  +- org.springframework:spring-core:jar:3.2.8.RELEASE:provided
+[INFO] |  |  \- commons-logging:commons-logging:jar:1.1.3:provided
+[INFO] |  +- org.springframework:spring-beans:jar:3.2.8.RELEASE:provided
+[INFO] |  +- org.springframework:spring-context:jar:3.2.8.RELEASE:provided
+[INFO] |  |  \- org.springframework:spring-expression:jar:3.2.8.RELEASE:provided
+[INFO] |  +- org.apache.cxf:cxf-rt-features-clustering:jar:2.7.0.redhat-610379:provided
+[INFO] |  \- org.apache.cxf:cxf-rt-bindings-soap:jar:2.7.0.redhat-610379:provided
+[INFO] |     \- org.apache.cxf:cxf-rt-databinding-jaxb:jar:2.7.0.redhat-610379:provided
+</code></pre>
+<p><strong>Note, you may want to split out the different third party dependencies here into their own modules. For example, Spring Framework, Camel Spring, etc)</strong></p>
+<h2>Deploy our project to EAP:</h2>
+<p>Now from the command line, go to the root of the source code for the sample project and do a build and deploy:</p>
+<pre><code>ceposta@postamachat$ mvn clean install
+
+ceposta@postamachat$ mvn jboss-as:deploy-only
+</code></pre>
+<h2>Where to go next?</h2>
+<p>If you have issues with the above I'd be happy to assist, or contact <a href="http://support.redhat.com">Red Hat Support</a> for quicker response :)</p>

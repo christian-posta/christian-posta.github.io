@@ -1,0 +1,66 @@
+---
+layout: post
+title: REST endpoint for integration using Apache Camel
+date: 2012-04-25 14:38:41.000000000 -07:00
+categories:
+- Camel
+- FuseSource
+tags:
+- java fusesource camel cxf
+---
+<p>REST is an architectural style used for organizing resources and when applied to HTTP-based services allows building stateless, decoupled, scalable services. HTTP methods, HTTP headers, and mime-types all allow a developer to achieve the REST style. Frameworks like <a href="http://jersey.java.net/">Jersey</a> and <a href="http://fusesource.com/products/enterprise-cxf/">Fuse Services Framework (Apache CXF)</a> can be used to speed up the development and deployment of services trying to achieve a RESTful style, and in this blog post I'd like to discuss how to build the backend of a resource that relies on integration provided by <a href="http://fusesource.com/products/enterprise-camel/">Fuse Mediation Router</a> also known as <a href="http://camel.apache.org/">Apache Camel</a>.</p>
+<p>Just as an aside, a link that I've had tucked away in the recesses of my bookmarks may be of interest for those of you wondering whether your architecture is indeed RESTful or just the same highly coupled RPC style that REST tries to alleviate. Roy Fielding, who wrote his dissertation on REST, actively asserts the notion that <a href="http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven">hyerlinks within resource representations are a must</a> for REST styles, and even further clarifies the uncertainties around implementing REST.</p>
+<p>The source code for this sample can be found <a href="https://github.com/christian-posta/file-rest-blog">on my github repository</a></p>
+<p><a href="http://fusesource.com/products/enterprise-camel/">Fuse Mediation Router</a> is <a href="http://architects.dzone.com/articles/apache-camel-integration">FuseSource's</a> enterprise-grade, hardened version of Apache Camel that provides a comfortable DSL for describing integrations, mediations, and routing. It's free, open-source, and has an Apache License. For those unfamiliar with Mediation Router/Camel, take a look at an introduction from Jon Anstey (co-author of <a href="http://www.amazon.com/gp/product/1935182366/ref=as_li_ss_tl?ie=UTF8&amp;tag=christianc0aa-20&amp;linkCode=as2&amp;camp=1789&amp;creative=390957&amp;creativeASIN=1935182366">Camel in Action</a>)at DZone's Enterprise Integration Zone: <a href="http://architects.dzone.com/articles/apache-camel-integration">Apache Camel: Integration Nirvana</a>.</p>
+<p>We will be using Mediation Router to help write a simple integration between a REST endpoint and a resource files on a file system. I'll be using <a href="http://fusesource.com/docs/router/2.8/component_ref/_IDU_CXFRS.html">camel-cxfrs</a> component to expose the REST endpoint and will be using the <a href="http://fusesource.com/docs/router/2.8/component_ref/_IDU_File2.html">camel-file</a> component to read a directory on the file system. The intention of the sample is to describe the configuration necessary to expose the REST interface with Mediation Router, integrate with a backend somehow, transform the data into an appropriate REST response, and send back the response.</p>
+<p>To get started, let's focus on how to set up the REST endpoint. To do so, you would create a JAX-RS resource that describes the java methods that will act as REST endpoints. This sample code requires familiarity with <a href="http://jcp.org/en/jsr/detail?id=311">Java API for RESTful Web Services</a> aka JAX-RS. For those unfamiliar, here are some <a href="http://www.mkyong.com/tutorials/jax-rs-tutorials/">great tutorials to follow along</a> that help to understand JAX-RS.</p>
+<p>[java]<br />
+@Path(&quot;/customerservice/&quot;)<br />
+public class CustomerServiceResource {</p>
+<p>// NOTE: The instance member variables will not be available to the<br />
+// Camel Exchange. They must be used as method parameters for them to<br />
+// be made available<br />
+@Context<br />
+private UriInfo uriInfo;</p>
+<p>public CustomerServiceResource() {<br />
+}</p>
+<p>@GET<br />
+@Path(&amp;quot;/customers/{id}/&amp;quot;)<br />
+@Produces(&amp;quot;text/xml&amp;quot;)<br />
+public Customer getCustomer(@PathParam(&amp;quot;id&amp;quot;) String id) {<br />
+    return null;<br />
+}</p>
+<p>@PUT<br />
+@Path(&amp;quot;/customers/&amp;quot;)<br />
+public Response updateCustomer(Customer customer) {<br />
+    return null;<br />
+}</p>
+<p>}<br />
+[/java]</p>
+<p>As you can see, the annotations are the JAX-RS annotations that describe the operations, HTTP methods, and mime-types involved with the REST endpoint. Notice, the return values are all null as this class will not actually be used to handle the requests that come in to the endpoint; the Mediation Router routes will be responsible for processing and responding. Note, however, that instance members are not available to the Mediation Router exchanges, i.e., any instance members injected via the JAX-RS @Context annotations will not be available. To make them available, add them as parameters to your methods.</p>
+<p>Declaring the CXF-RS endpoint with Mediation Router can be done one of two ways: Directly in the endpoint configuration like this:</p>
+<p>[java]<br />
+from(&quot;cxfrs://http://localhost:9090/route?resourceClasses=com.fusesource.samples.CustomerServiceResource&quot;)<br />
+[/java]</p>
+<p>Creating it directly in the configuration requires less xml configuration but offers limited flexibility. Another option is creating a separate bean that's responsible for the endpoint and then referencing it within the endpoint configuration:</p>
+<p>[java]<br />
+from(&quot;cxfrs:bean:rsServer&quot;)<br />
+[/java]</p>
+<p>The bean <em>rsServer</em> should be defined in the camel context. An example:</p>
+<p>[xml]<br />
+&lt;cxf:rsServer id=&quot;rsServer&quot; address=&quot;http://localhost:9090/route&quot;<br />
+              serviceClass=&quot;com.fusesource.samples.CustomerServiceResource&quot;/&gt;<br />
+[/xml]</p>
+<p>This approach allows you to decouple the endpoint configuration and allows to be quicker and less verbose in the endpoint configuration. Both options are shown in the sample code, although the first option is used.</p>
+<p>That's all the configuration required to expose the REST endpoint with Mediation Router. Fairly simple. The next step is to consume a file from the file system based on what comes in from the REST endpoint. The contents of the file will be returned to the client of the REST call. To do this, we use the <a href="http://fusesource.com/docs/router/2.8/component_ref/_IDU_File2.html">camel-file</a> component and enrich the Exchange with a <a href="http://fusesource.com/docs/router/2.8/apidoc/org/apache/camel/model/ProcessorDefinition.html#pollEnrich(java.lang.String)">pollEnrich</a> call in the DSL:</p>
+<p>[java]<br />
+.setHeader(Exchange.FILE_NAME, simple(&quot;test-${body}.xml&quot;))<br />
+.pollEnrich(&quot;file:src/data?noop=true&quot;, 1000, new CustomerEnricher())<br />
+[/java]</p>
+<p>We cannot use any dynamic expressions in the pollEnrich call, so we set a header that the file component understands before we do the enrichment. In this case, the body of the REST message is an identifier that can be used to template the file-system resource.</p>
+<p>Lastly, we can attach some additional processing to the route:<br />
+[java]<br />
+.process(new CustomerServiceProcessor())<br />
+[/java]</p>
+<p>The intent of the example, as described above, is to show how to configure the endpoint and attach it to further Mediation Router processing. Note, the Message Exchange Pattern (MEP) for the REST endpoint is InOut and expects a response. The example is not meant to be a complete end-to-end solution as that will vary depending on intended functionality. Please note above the links <a href="http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven">to Roy's discussions</a> on what REST is and is not.</p>
+<p>If I have left something out, or you need more clarification around the example, drop me a comment and we can discuss.</p>

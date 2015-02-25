@@ -1,0 +1,22 @@
+---
+layout: post
+title: DevOps with Apache Tomcat/TomEE and Fabric8
+date: 2014-06-02 07:29:45.000000000 -07:00
+categories: []
+tags: []
+---
+<p><a href="http://en.wikipedia.org/wiki/DevOps">DevOps</a> is all about automating your build and release environment, reducing human error/tasks, and building up a pipeline to support continuous delivery so you can get quick feedback about your IT solutions. It takes communication between your development teams and operations teams, as well as discipline and commitment to automation.</p>
+<p>Part of the automation I'm talking about is deploying your applications to environments in a consistent way AND being able to build your Dev/QA/Prod environment from scratch in a few seconds. And that's where <a href="http://fabric8.io">Fabric8</a> comes into the picture :)</p>
+<p><a href="http://fabric8.io">Fabric8</a> is an open-source configuration and automation platform for middleware that's run in OSGi, Tomcat, Java EE, and MicroServices, Cloud, Anywhere really...</p>
+<p>I've blogged a <a href="http://www.christianposta.com/blog/?p=376">a little about what is Fabric8</a>, but the best way to understand it is to download it and try it!!</p>
+<p>In the latest <a href="http://fabric8.io/#/site/book/doc/index.md?chapter=getStarted_md">beta release</a>, there is now support for running <a href="http://tomcat.apache.org">Apache Tomcat</a> and <a href="http://tomee.apache.org/apache-tomee.html">TomEE</a>! Both skinny and fat war deployments are supported.</p>
+<p>Here's a quick video to help you get started with Tomcat and Fabric8.</p>
+<p>A couple of highlights:</p>
+<pre><code>* You just create a war project
+* Use the fabric8 maven plugin to upload your project your instance of fabric8
+* "Deploy" to a new container, which is Apache Tomcat
+* Use the Tomcat and Apache Camel plugins for HawtIO to get introspection 
+* Use fabric:watch * for rapid deploys during development
+</code></pre>
+<p><iframe src="//player.vimeo.com/video/96933483" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></p>
+<p><a href="http://vimeo.com/96933483">Provision, Manage Tomcat with Fabric8</a> from <a href="http://vimeo.com/user20787163">Christian Posta</a> on <a href="https://vimeo.com">Vimeo</a>.</p>

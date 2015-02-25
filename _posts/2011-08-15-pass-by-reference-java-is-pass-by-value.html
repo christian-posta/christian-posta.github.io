@@ -1,0 +1,60 @@
+---
+layout: post
+title: Pass by reference? Java is pass by value.
+date: 2011-08-15 16:42:35.000000000 -07:00
+categories: []
+tags: []
+---
+<p>I stumbled upon a discussion, probably an age-old discussion, about whether java passes function arguments by reference or by value. i know I've studied this in the past and I know the answer is not a crystal clear one unless you consider <a href="http://www.cpptutor.com/call-by-reference-in-c++.htm">C++'s accepted definitions</a> of pass by reference. In that case, java is always pass by value. </p>
+<p>Java does not allow passing arguments by reference, wherein the reference is an alias for the actual object/variable. Java passes pointers by value (copies the pointer) to a function which can then dereference the pointer and manipulate the object. However, just because the pointer allows access to the object and allows mutations of the object doesn't mean you have a reference to the object. </p>
+<p>for example, x = 0 would look something like this in memory:</p>
+<pre>
+----------------------------
+0x00000001   |      0       |
+----------------------------
+</pre>
+<p>Where x is the location in memory that holds the value '0'. x is in fact 0, and the place where x is stored is 0x0000001. The reference to x is 0x0000001. x is not a pointer. there are no pointers in this example.</p>
+<p>A pointer would be something like this:</p>
+<p>x = 0<br />
+*p = x</p>
+<pre>
+----------------------------
+0x00000001   |      0       |  <-- this is x
+----------------------------
+0x00000002   |   0x00000001 |  <-- this is p
+----------------------------
+
+</pre>
+<p>In java, when you make a function call, the stack frame that's set up for the function call will contain the (values - copy) of primitive values or the pointer. For example..</p>
+<p>int a = 21;<br />
+Object b = new Object();</p>
+<p>Let's say these are represented in memory like this:</p>
+<pre>
+----------------------------
+0x00000001   |      21      |  <-- this is a
+----------------------------
+0x00000002   |  0x0000fff1  |  <-- this is b
+----------------------------
+			 .
+			 .
+			 .
+-------------------------------------------
+0x0000fff1   |  begin details of object b  |  <-- this is the heap somewhere with object's contents
+-------------------------------------------
+
+</pre>
+<p>A method call like foo(a, b) will result in copying the values of 21 and 0x0000fff1 onto the call stack:</p>
+<p>void foo(int x, Object y)</p>
+<pre>
+----------------------------
+0x00000032   |      0       |  <-- current stack pointer
+----------------------------
+0x00000033   |      0       |  <-- return value (for illustration only)
+----------------------------
+0x00000034   |      21      |  <-- this is x
+----------------------------
+0x00000035   |  0x0000fff1  |  <-- this is y
+----------------------------
+</pre>
+<p>As you can see, the values of a and b are copied onto the stack frame as x and y. x has the value of 21, y has a pointer to the same object pointed to by b. You can manipluate y (which will manipluate the contents of the object), but assigning y to some new object will not reassign b to a new object. This is because you would only be assigning the value of y to be a different pointer. You wouldn't be assigning the value of b (which points to the object). This is the distinction between pass by value and pass by reference. y is not an actual alias of b.</p>
+<p>If it were, I could completely reassign y to be something and when the code returned to where it was called, b would have the same value as y. But it won't. You cannot change the *value* of b (what b points to) by changing y. </p>

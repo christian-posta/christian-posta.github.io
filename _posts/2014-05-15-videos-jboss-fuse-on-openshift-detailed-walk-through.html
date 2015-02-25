@@ -1,0 +1,34 @@
+---
+layout: post
+title: 'Videos: JBoss Fuse on OpenShift: Detailed walk through'
+date: 2014-05-15 20:12:14.000000000 -07:00
+categories: []
+tags: []
+---
+<p>I've been meaning to blog about this for a while, but never got the time. Well I have a few seconds to point out that I've posted eight (8) step-by-step videos walking you through the details of an out of the box demo for running <a href="http://www.jboss.org/jbossfuse">JBoss Fuse</a> on <a href="https://www.openshift.com/">OpenShift</a>.</p>
+<p>I <a href="http://www.christianposta.com/blog/?p=367">wrote about the getting started</a> videos a while back, but now you can watch the deep dives here:</p>
+<h2>Part I -- an introduction to the loan broker demo</h2>
+<p>In this video, I quickly introduce the loan broker demo.  You may have seen others do this, but I try to be comprehensive and introduce all the parts and what their role is, etc.</p>
+<p><iframe src="//player.vimeo.com/video/91029860" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></p>
+<p><a href="http://vimeo.com/91029860">JBoss Fuse iPaaS on OpenShift Part I: Intro to the Loan Broker Example</a> from <a href="http://vimeo.com/jbossdeveloper">JBoss Developer</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+<h2>Part II -- creating ActiveMQ brokers</h2>
+<p>Part II is all about introducing you to setting up ActiveMQ brokers in a Master-Slave HA topology using <a href="http://www.jboss.org/jbossfuse">JBoss Fuse</a> and the <a href="http://hawt.io">HawtIO</a> console that's used to implement the Fuse Management Console</p>
+<p><iframe src="//player.vimeo.com/video/91029861" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></p>
+<p><a href="http://vimeo.com/91029861">JBoss Fuse iPaaS on OpenShift Part II: Creating ActiveMQ Brokers</a> from <a href="http://vimeo.com/jbossdeveloper">JBoss Developer</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+<h2>Part III -- Creating containers, deploying camel routes, and the loan broker pieces</h2>
+<p>In this part we walk through the steps of creating Fuse containers on OpenShift, deploying camel routes, the loan broker pieces, and visualizing them.</p>
+<p>Note the lowercase container names! OpenShift doesn't like camelCase or hyphenated-container-names.</p>
+<p><iframe src="//player.vimeo.com/video/91030052" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></p>
+<p><a href="http://vimeo.com/91030052">JBoss Fuse iPaaS on OpenShift Part III: Creating containers, Camel, and the bank demo</a> from <a href="http://vimeo.com/jbossdeveloper">JBoss Developer</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+<h2>Part IV -- Creating networks of brokers</h2>
+<p>Now we get a little more complicated. In a real topology, you might have geographically distributed components. Using [ActiveMQ][activemq]'s Network of Broker feature can help you with that. Doing that in the cloud requires a few clicks:</p>
+<p><iframe src="//player.vimeo.com/video/91030053" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></p>
+<p><a href="http://vimeo.com/91030053">JBoss Fuse iPaaS on OpenShift Part IV: Creating a network of ActiveMQ brokers</a> from <a href="http://vimeo.com/jbossdeveloper">JBoss Developer</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+<h2>Part V -- How to connect your to a Network of Brokers</h2>
+<p>Once we have a network of brokers, there are some simple ways to enable your clients to connect up!</p>
+<p><iframe src="//player.vimeo.com/video/91030054" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></p>
+<p><a href="http://vimeo.com/91030054">JBoss Fuse iPaaS on OpenShift Part V: Connecting up to a network of brokers</a> from <a href="http://vimeo.com/jbossdeveloper">JBoss Developer</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+<h2>Part VI -- Failover, failback across a network of brokers</h2>
+<p>So you have HA pairs and networks of brokers, now what happens when you fail a node? or failback?</p>
+<p><iframe src="//player.vimeo.com/video/91030055" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></p>
+<p><a href="http://vimeo.com/91030055">JBoss Fuse iPaaS on OpenShift Part VI: Failover, failback</a> from <a href="http://vimeo.com/jbossdeveloper">JBoss Developer</a> on <a href="https://vimeo.com">Vimeo</a>.</p>

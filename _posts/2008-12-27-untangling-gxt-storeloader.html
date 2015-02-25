@@ -1,0 +1,69 @@
+---
+layout: post
+title: Untangling GXT Store/Loader
+date: 2008-12-27 15:04:26.000000000 -07:00
+categories: []
+tags: []
+---
+<p>The <a href="http://www.extjs.com/products/gxt/">Ext-GWT</a> (GXT) library uses a "loader-store" functionality to handle manipulating UI models (or domain objects) and binding them to GXT widgets. The Ext team has posted a simplistic overview document of the "loader-store" mechanism at their <a href="http://extjs.com/helpcenter/index.jsp">Helpcenter</a>. The focus of this blog entry will try to build upon the initial documentation provided by Ext and explain step-by-step how to use the loading mechanism to load your models from a remote source and populate a GXT store.</p>
+<p>The pre-requisite expectations before diving into this entry is a cursory understanding (browsing through the GXT reference apps is enough) of the <a href="http://www.extjs.com/deploy/gxtdocs/com/extjs/gxt/ui/client/store/package-summary.html">loader-store API</a> and having read the <a href="http://extjs.com/helpcenter/index.jsp">Helpcenter</a> docs regarding the loader-store functionality. I think once you've seen it in action (in the sample apps) and recognize that there is some untangling to be done, you'll be ready to dive into this entry :)</p>
+<h3>Store</h3>
+<p>The GXT Store API (com.extjs.gxt.ui.client.store) provides classes generally oriented around the concept of a "store" or a central storage place for your UI or business models. From the Store API documentation: "The store class encapsulates a client side cache of ModelData objects which provide input data for components."  I guess you could think of a store as a collection (java.util.List?) of models which can fire events when properties of the store change and can track changes to models.</p>
+<p>The <code>Store</code> class is marked abstract; you may want to pay more attention to specific types of stores: the <code>ListStore</code> and <code>TreeStore</code> classes. ListStore is used to populate widgets that use lists (think of tables, grids, combo boxes, data lists, etc) and TreeStore is for tree-based widgets (the Tree and TreeTable widgets). </p>
+<p>As I mentioned, widgets can display the models from the store that backs them. When a widget is backed by a store and a model in that store gets updated, the widget will also automatically update. For example, if a Grid widget is backed by a ListStore and one of the columns is displaying the "name" property of the store's models, and some one (programatically or otherwise) changes the value of "name" in one of the models, the "name" value will also automatically change in the Grid.</p>
+<p>How does a store get populated with models? You could call ListStore.add(Models) or TreeStore.add(Models) for trivial purposes... or... you could use the "loader" mechanism.</p>
+<h3>Loader</h3>
+<p>A loader does exactly what you might be thinking that it does. It is used to load models into a store, generally from a remote source. Think of a loader as an object who's responsibility is to retrieve a payload from a remote location, read the payload, and then tell the store to load itself with the retrieved data.</p>
+<p>You have the option to create a new store and give it a loader. When a store has a loader, it will use the loader to load the models. See the following snippet for instantiating a store with a loader:</p>
+<pre name="code" class="java:nocontrols">
+    BaseListLoader loader = new BaseListLoader(proxy);
+    loader.setRemoteSort(true);
+
+    ListStore store = new ListStore(loader);
+</pre>
+<p>Hopefully you've gotten the connection between the loader and the store. If not, please leave a comment asking a specific question. Let's move on.</p>
+<p>As I mentioned above, a loader retrieves a payload from a remote source, reads the payload, and then tells the store to populate itself with the models that the loader read from the remote source. The loader is flexible enough in that it allows you to inject the collaborator that will be responsible for both retrieving the remote data and then reading it. You will notice that the following are both legal constructors for creating a loader:</p>
+<pre name="code" class="java:nocontrols">
+BaseListLoader loader = new BaseListLoader(proxy);
+BaseListLoader loader = new BaseListLoader(proxy, reader);
+</pre>
+<h3>Proxy</h3>
+<p>The <code>proxy</code> object in the above constructors is of the type  <code>DataProxy</code>. This object is what is used to retrieve the data from the remote source. You can write your own collaborators to load data from a remote source, but the following are the default implementations provided by the GXT framework:</p>
+<ul>
+<li><code>HttpProxy</code> - A concrete <code>DataProxy</code> that retrieves data using a RequestBulder instances</li>
+<li><code>MemoryProxy</code> - A <code>DataProxy</code> implementation that simply passes the data specified in the constructor to the reader when its load method is called</li>
+<li><code>RpcProxy</code> - <code>DataProxy</code> implementation that retrieves data using GWT RPC </li>
+<li><code>ScriptTagProxy</code> - An implementation that adds a JavaScript to the page responsible for loading (please correct me if<br />
+someone has a better way of explaining this implementation.</li>
+</ul>
+<p>I will be demonstrating the use of the RpcProxy which uses GWT's RPC mechanism to retrieve data from a remote source. The basic idea is to instantiate a RpcProxy object which knows how to connect to and retrieve data from a remote location. After filling in the appropriate methods, the loader will use it to populate the store. See the following example of instantiating an RpcProxy:</p>
+<pre name="code" class="java:nocontrols">
+    RpcProxy proxy = new RpcProxy() {
+      @Override
+      public void load(Object loadConfig, AsyncCallback callback) {
+        service.getPosts((PagingLoadConfig) loadConfig, callback);
+      }
+    };
+</pre>
+<p>The code snippet above is from the PagingGridExample from the Examples demo. Notice that in the load method (line 3) the GWT-RPC proxy is called. A loadConfig object does not have to be one of the parameters to your RPC service, but in this example, it's used to supply sorting parameters (server side).</p></p>
+<h3>Putting it all together</h3>
+<p>Hopefully, I've shed some light on the three components necessary to put together communication with a remote resource and how the store uses the loader, which uses the proxy, to get models into the store.</p>
+<p>To put everything together, we'll take a look at the com.extjs.gxt.samples.client.examples.grid.PagingBeanModelGridExample.java class as reference. See the code relevant to setting up the grid's store below:</p>
+<pre name="code" class="java:nocontrols">
+    RpcProxy proxy = new RpcProxy() {
+      @Override
+      public void load(Object loadConfig, AsyncCallback callback) {
+        service.getBeanPosts((PagingLoadConfig) loadConfig, callback);
+      }
+    };
+
+    // loader
+    BasePagingLoader loader = new BasePagingLoader(proxy, new BeanModelReader());
+    loader.setRemoteSort(true);
+
+    loader.load(0, 50);
+
+    ListStore<beanmodel> store = new ListStore<beanmodel>(loader);
+</beanmodel></beanmodel></pre>
+<p>This snippet is taken from line 55-71 from PagingBeanModelGridExample.java. Everything has been discussed, except for the BeanModelReader() object that is passed to the loader. In this case, the BeanModelReader class is used to read the results of the GWT-RPC call that returns pojo model objects. The reader then wraps the pojo's as BeanModel classes.</p>
+<p>If I've left something out, or something I've said is unclear, please leave me a comment, or feel free to email me: <a href="mailto:christian.posta@gmail.com">christian.posta@gmail.com</a></p></p>

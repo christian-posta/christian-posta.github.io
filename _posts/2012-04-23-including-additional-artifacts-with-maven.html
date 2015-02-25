@@ -1,0 +1,48 @@
+---
+layout: post
+title: Including additional artifacts with Maven
+date: 2012-04-23 19:09:46.000000000 -07:00
+categories: []
+tags: []
+---
+<p>Sometimes your build will contain other artifacts for a build other than the pom, a jar, etc. For example, you may wish to attach data-source configurations to that are meant to deploy along with your artifacts, or include other descriptor configurations like a features.xml file to be deployed into <a href="http://fusesource.com/products/enterprise-servicemix/">Fuse ESB</a>  aka <a href="servicemix.apache.org/">ServiceMix</a>. This makes it easier to use maven, or any other provisioning tool, to also grab the attached artifacts. To do this, use the <a href="http://mojo.codehaus.org/build-helper-maven-plugin/attach-artifact-mojo.html">build-helper-maven-plugin</a> and the following configuration:</p>
+<p>[xml]<br />
+ &lt;plugin&gt;<br />
+    &lt;groupId&gt;org.codehaus.mojo&lt;/groupId&gt;<br />
+    &lt;artifactId&gt;build-helper-maven-plugin&lt;/artifactId&gt;<br />
+    &lt;executions&gt;<br />
+        &lt;execution&gt;<br />
+            &lt;id&gt;attach-artifacts&lt;/id&gt;<br />
+            &lt;phase&gt;package&lt;/phase&gt;<br />
+            &lt;goals&gt;<br />
+                &lt;goal&gt;attach-artifact&lt;/goal&gt;<br />
+            &lt;/goals&gt;<br />
+            &lt;configuration&gt;<br />
+                &lt;artifacts&gt;<br />
+                    &lt;artifact&gt;<br />
+                        &lt;file&gt;target/classes/features.xml&lt;/file&gt;<br />
+                        &lt;type&gt;xml&lt;/type&gt;<br />
+                        &lt;classifier&gt;features&lt;/classifier&gt;<br />
+                    &lt;/artifact&gt;<br />
+                &lt;/artifacts&gt;<br />
+            &lt;/configuration&gt;<br />
+        &lt;/execution&gt;<br />
+    &lt;/executions&gt;<br />
+&lt;/plugin&gt;<br />
+[/xml]</p>
+<p>If you would like to also filter/tokenize the artifacts before attaching them, add the following resource plugin:</p>
+<p>[xml]<br />
+&lt;plugin&gt;<br />
+    &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;<br />
+    &lt;artifactId&gt;maven-resources-plugin&lt;/artifactId&gt;<br />
+    &lt;executions&gt;<br />
+        &lt;execution&gt;<br />
+            &lt;id&gt;filter&lt;/id&gt;<br />
+            &lt;phase&gt;generate-resources&lt;/phase&gt;<br />
+            &lt;goals&gt;<br />
+                &lt;goal&gt;resources&lt;/goal&gt;<br />
+            &lt;/goals&gt;<br />
+        &lt;/execution&gt;<br />
+    &lt;/executions&gt;<br />
+&lt;/plugin&gt;<br />
+[/xml]</p>

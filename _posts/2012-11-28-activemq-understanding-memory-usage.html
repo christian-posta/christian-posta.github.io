@@ -1,0 +1,70 @@
+---
+layout: post
+title: 'ActiveMQ: Understanding Memory Usage'
+date: 2012-11-28 07:59:44.000000000 -07:00
+categories: []
+tags: []
+---
+<p>As indicated by some recent mailing list emails and a lot of info returned from Google, ActiveMQ's SystemUsage and particularly the MemoryUsage functionality has left some people confused. I'll try to explain some details around MemoryUsage that might be helpful in understanding how it works. I won't cover StoreUsage and TempUsage as my colleauges have <a href="http://tmielke.blogspot.com/2011/02/observations-on-activemqs-temp-storage.html">covered those</a> <a href="http://activemq.2283324.n4.nabble.com/StoreUsage-TempUsage-and-MemoryUsage-td2356734.html">in some depth</a>.</p>
+<p>There is a section of the activemq.xml configuration you can use to specify SystemUsage limits, specifically around the memory, persistent store, and temporary store that a broker can use. Here is an example with the defaults that come with ActiveMQ 5.7:</p>
+<pre><code>&lt;systemUsage&gt;
+    &lt;systemUsage&gt;
+        &lt;memoryUsage&gt;
+            &lt;memoryUsage limit="64 mb"/&gt;
+        &lt;/memoryUsage&gt;
+        &lt;storeUsage&gt;
+            &lt;storeUsage limit="100 gb"/&gt;
+        &lt;/storeUsage&gt;
+        &lt;tempUsage&gt;
+            &lt;tempUsage limit="50 gb"/&gt;
+        &lt;/tempUsage&gt;
+    &lt;/systemUsage&gt;
+&lt;/systemUsage&gt;</code></pre>
+<h2>MemoryUsage</h2>
+<p>MemoryUsage seems to cause the most confusion, so here goes my attempt to clarify its inner workings.</p>
+<p>When a message comes in to the broker, it has to go somewhere. It first gets unmarshalled off the wire into an ActiveMQ command object of type <code>ActiveMQMessage</code>. At this moment, the object is obviously in memory but the broker isn't keeping track of it.</p>
+<p>Which brings us to our first point.</p>
+<p>The MemoryUsage is really just a counter of bytes that the broker needs and uses to keep track of how much of our JVM memory is being used by messages. This gives the broker some way of monitoring and ensuring we don't hit our limits (more on that in a bit). Otherwise we could take on messages without knowing where our limits are until the JVM runs out of heap space.</p>
+<p>So we left off with the message coming in off the wire. Once we have that, the broker will take a look at which destination (or multiple destinations) the message needs to be routed. Once it finds the destination, it will "send" it there. The destination will increment a reference count of the message (to later know whether or not the message is considered "alive") and proceed to do something with it. For the first reference count, the memory usage is incremented. For the last reference count, the memory usage is decremented. If the destination is a queue, it will store the message into a persistent location and try to dispatch it to a consumer subscription. If it's a Topic, it will try to dispatch it to all subscriptions. Along the way (from the initial entry into the destination to the subscription that will send the message to the consumer), the message reference count may be incremented or decremented. As long as it has a reference count greater than or equal to 1, it will be accounted for in memory.</p>
+<p>Again, the MemoryUsage <em>is just an object that counts bytes of messages</em> to know how much JVM memory has been used to hold messages.</p>
+<p>So now that we have a basic understanding of <em>what</em> the MemoryUsage is, let's take a closer look at a couple things:</p>
+<ol>
+<li>MemoryUsage hierarchies (what's this destination memory limit that I can configure on <a href="http://activemq.apache.org/per-destination-policies.html">policy entries</a>)??</li>
+<li>Producer Flow Control </li>
+<li>Splitting memory usage between destinations and subscriptions (producers and consumers)?</li>
+</ol>
+<h3>Main Broker Memory, Destination Memory, Subscription Memory</h3>
+<p>When the broker loads up, it will create its own SystemUsage object (or use the one specified in the configuration). As we know, the SystemUsage object has a MemoryUsage, StoreUsage, and TempUsage associated with it. The memory component will be known as the broker's Main memory. It's a usage object that keeps track of overall (destination, subscription, etc) memory.</p>
+<p>A destination, when it's created, will create its own SystemUsage object (which creates its own separate Memory, Store, and Temp Usage objects) but it will set its parent to the be broker's main SystemUsage object. A destination can have its memory limits tuned individually (but not Store and Temp, those will still delegate to the parent). To set a destination's memory limit:</p>
+<pre><code>&lt;destinationPolicy&gt;
+    &lt;policyMap&gt;
+        &lt;policyEntries&gt;
+            &lt;policyEntry queue="&gt;" memoryLimit="5MB"/&gt;
+        &lt;/policyEntries&gt;
+    &lt;/policyMap&gt;
+&lt;/destinationPolicy&gt;</code></pre>
+<p>So the destination usage objects can be used to more finely control MemoryUsage, but it will always coordinate with the Main memory for all usage counts. This functionality can be used to limit the number of messages that a destination keeps around so that a single destination cannot starve other destinations. For queues, it also affects the store cursor's high water mark. A queue has different cursors for persistent and non-persistent messages. If we hit the high water mark (a threshold of the destination's memory limit), no more messages be cached ready to be dispatched, and non-persistent messages can be purged to temp disk as necessary (if <broker persistent="true" ... /> the StoreCursor will use FilePendingMessageCursor... otherwise it will just use a VMPendingMessageCursor and won't purge to temporary store).</p>
+<p>If you don't specify a memory limit for individual destinations, the destination's SystemUsage will delegate to the parent (Main SystemUsage) for all usage counts. This means it will effectively use the broker's Main SystemUsage for all memory-related counts.</p>
+<p>Consumer subscriptions, on the other hand, don't have any notion of their own SystemUsage or MemoryUsage counters. They will always use the broker's Main SystemUsage objects. The main thing to note about this is when using a FilePendingMessageCursor for subscriptions (for example, for a Topic subscription), the messages will not be swapped to disk until the cursor high-water mark (70% by default) is reached.. but that means 70% of Main memory will need to be reached. That could be a while, and a lot of messages could be kept in memory. And if your subscription is the one holding most of those messages, swapping to disk could take a while. As topics dispatch messages to one subscription at a time, if one subscription grinds to a halt because it's swapping its messages to disk, the rest of the subscription ready to receive the message will also feel the slow down.</p>
+<p>You can set the cursor high water mark for subscriptions of a topic to be lower than the default:</p>
+<pre><code>&lt;destinationPolicy&gt;
+    &lt;policyMap&gt;
+        &lt;policyEntries&gt;
+            &lt;policyEntry topic="FOO.BAR.&gt;" cursorMemoryHighWaterMark="30" /&gt;
+        &lt;/policyEntries&gt;
+    &lt;/policyMap&gt;
+&lt;/destinationPolicy&gt;</code></pre>
+<p>For those interested... When a message comes in the the destination, a MemoryUsage object is set on the message so that when Message.incrementReferenceCount() can increment the memory usage (on first referenced). So that means it's accounted for by the destination's Memory usage (and also the Main memory since the destination's memory also informs its parent when its usage changes) and continues to do so. The only time this will change is if the message gets swapped to disk. When it gets swapped, its reference counts will be decremented, its memory usage will be decremented, and it will lose its MemoryUsage object once it gets to disk. So when it comes back to life, which MemoryUsage object will get associated with it, and where will it be counted? If it was swapped to a queue's store, when it reconstitutes, it will be again associated with the destination memory usage. If it was swapped to a temp store in a subscription (like in a FilePendingMessageCursor), when it reconstitutes, it will NOT be associated with the destination's memory usage anymore. It will be associated with the subscription's memory usage (which is main memory).</p>
+<h3>Producer Flow Control</h3>
+<p>The big win for keeping track of memory used by messages is for <a href="http://activemq.apache.org/producer-flow-control.html">Producer Flow Control (PFC)</a>. PFC is enabled by default and basically slows down the producers when usage limits are reached. This keeps the broker from exceeding its limits and running out of resources. For producers sending synchronously or for async sends with a producer window specified, if system usages are reached the broker will block that individual producer, but it will not block the connection. It will instead put the message away temporarily to wait for space to become available. It will only send back a ProducerAck once the message has been stored. Until then, the client is expected to block its send operation (which won't block the connection itself). The ActiveMQ 5.x client libraries handle this for you. However, if an async send is sent without a producer window, or if a producer doesn't behave properly and ignores ProducerAcks, PFC will actually block the entire connection when memory is reached. This could result in deadlock if you have consumers sharing the same connection.</p>
+<p>If producer flow control is turned off, then you have to be a little more careful about how you set up your system usages. When producer flow control is off, it basically means "broker, you have to accept every message that comes in, no matter if the consumers cannot keep up". This can be used to handle spikes for incoming messages to a destination. If you've ever seen memory usages in your logs severely exceed the limits you've set, you probably had PFC turned off and that is expected behavior.</p>
+<h3>Splitting Broker's Main Memory</h3>
+<p>So... I said earlier that a destination's memory uses the broker's main memory as a parent, and that subscriptions don't have their own memory counters, they just use the broker's main memory. Well this is true in the default case, but if you find a reason, you can further tune how memory is divided and limited. The idea here is you can partition the broker's main memory into "Producer" and "Consumer" parts.</p>
+<p>The Producer part will be used for all things related to messages coming in to the broker, therefore it will be used in destinations. So this means when a destination creates its own MemoryUsage, it will use the Producer memory as its parent, and the Producer memory will use a <em>portion</em> of the broker's main memory.</p>
+<p>On the other hand, the Consumer part will be used for all things related to dispatching messages to consumers. This means subscriptions. Instead of a subscription using the broker's main memory directly, it will use the Consumer memory which will be a portion of the main memory. Ideally, the Consumer portion and the Producer portion will equal the entire broker's main memory.</p>
+<p>To split the memory between producer and consumer, set the <code>splitSystemUsageForProducersConsumers</code> property on the main <code>&lt;broker/&gt;</code> element:</p>
+<p><code>&lt;broker splitSystemUsageForProducersConsumers="true"&gt;</code></p>
+<p>By default this will split the broker's Main memory usage into 60% for the producers and 40% for the consumers. To tune this even further, set the <code>producerSystemUsagePortion</code> and <code>consumerSystemUsagePortion</code> on the main broker element:</p>
+<p><code>&lt;broker splitSystemUsageForProducersConsumers="true" producerSystemUsagePortion="70" consumerSystemUsagePortion="30"&gt;</code></p>
+<p>There you have it. Hopefully this sheds some light into the MemoryUsage of the broker.</p>
+<p>The topic is huge, and the tuning options are plenty, so if you have specific questions please ask in the <a href="http://activemq.apache.org/mailing-lists.html">activemq mailing list</a> or leave a comment below.</p>
