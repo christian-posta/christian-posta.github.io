@@ -2,8 +2,8 @@
 layout: post
 title: Plugging the HawtIO monitoring webapp into a stand-alone ActiveMQ instance
 date: 2013-04-22 06:11:38.000000000 -07:00
-categories: []
-tags: []
+categories: [hawtio]
+tags: [hawtio, webapps]
 ---
 <p><a href="http://hawt.io">HawtIO</a> is a new pluggable HTML5 dashboard for monitoring ActiveMQ, Camel, Karaf, Fuse Fabric, Tomcat, and other technologies. Actually, I was completely surprised to see the <a href="http://hawt.io/plugins/index.html">list of plugins already available</a> and how HawtIO has already gained so much good traction. Not surprisingly though... it does some pretty cool stuff...</p>
 <p>The purpose of this quick post is to help you plug HawtIO into your stand-alone ActiveMQ instances with minimal fuss. For production deployments, I would recommend using a hardened, production-ready version of ActiveMQ such as <a href="http://fusesource.com/products/fuse-mq-enterprise/">FuseMQ Enterprise</a>, but some folks stick with the community versions and a standalone deployment. Let's say you had the <a href="http://activemq.apache.org/download.html">latest version of ActiveMQ</a> and wanted to pop HawtIO into it to see how "hawt" it is.</p>

@@ -2,8 +2,8 @@
 layout: post
 title: Apache Apollo REST API
 date: 2012-12-31 12:02:19.000000000 -07:00
-categories: []
-tags: []
+categories: [apollo]
+tags: [apollo, REST]
 ---
 <p><a href="http://activemq.apache.org/apollo/index.html">Apache Apollo</a> is a next-generation, high-performance, multi-protocol messaging broker built from the ground up to one day be a drop-in replacement of ActiveMQ 5.x. I have blogged about it in the past: see <a href="http://www.christianposta.com/blog/?p=262">Intro to Apollo Part I</a> and <a href="http://www.christianposta.com/blog/?p=278">Intro to Apollo Part II</a>. Apollo's non-blocking, asynchronous architecture allows it to be super fast and scale very well on multi-core systems using a minimal number of threads. The supported protocols include <a href="http://www.amqp.org">AMQP</a>, <a href="http://stomp.github.com/stomp-specification-1.1.html">STOMP</a>, <a href="http://www.mqtt.org">MQTT</a>, and ActiveMQ's native binary protocol, <a href="http://activemq.apache.org/openwire.html">Openwire</a>. Among all of the cool features implemented in Apollo, the one I want to briefly introduce is the REST API.</p>
 <p>Apollo will soon have a JMX API just like ActiveMQ, but in the meantime, the REST API is much more amenable to automated management or broker inspection. At the moment, there are three main sections to the API:</p>

@@ -1,0 +1,131 @@
+---
+layout: post
+title: "Speeding Up ActiveMQ Persistent Messaging Performance by 25x"
+modified:
+categories: [activemq] 
+tags: [activemq, performance, jboss-amq, GFS2, benchmark]
+image:
+  feature:
+date: 2015-02-25T15:14:39-07:00
+---
+<p><a href="http://activemq.apache.org">Apache ActiveMQ</a> is a very popular open-source messaging broker brought to you by the same people who created (and work on) <a href="http://karaf.apache.org">Apache Karaf</a>, <a href="http://camel.apache.org">Apache Camel</a>, <a href="http://servicemix.apache.org">Apache ServiceMix</a>, and many others. It has a vibrant community, is very flexible, and can be deployed in highly performant and highly available scenarios.</p>
+
+<p>At <a href="http://redhat.com">Red Hat</a> (where I work), we support a product called <a href="http://www.jboss.org/products/amq/overview/">JBoss A-MQ</a>, which is a production hardened, enterprise supported, fully opensource, version of the upstream ActiveMQ project. Red Hat is fully committed to opensource and all of our products are opensource (non of this open-core bull$hit) Our customers, and those specifically who use JBoss A-MQ, are the top in their respective fields (retail/e-retail, government, shipping, health providers, finance, telco, etc,etc.) and deploy JBoss A-MQ in highly critical scenarios.</p>
+
+<p>Since the JBoss A-MQ codebase comes from the upstream ActiveMQ community, and all of the bug fixes and enhancements we do on the Red Hat side get folded back into the community, I'd like to share with you an enhancement we recently contributed that sped up our use case at a prominent customer by 25x, and could potentially help your use case as well. The patches that have been committed are in the master branch and won't be available until the 5.12 community release (although will be available in a patch to JBoss A-MQ 6.1 sooner than that, hopefully end of this week or early next week), though I encourage you to checkout a nightly SNAPSHOT of 5.12 to try it out sooner (<a href="https://repository.apache.org/content/repositories/snapshots/org/apache/activemq/apache-activemq/5.12-SNAPSHOT/">nightly snapshots can be found here</a>) .</p>
+
+<h2>Our problem...</h2>
+
+<p>To set the context, we're talking about persistent messaging through the broker. That means, the broker will not accept responsibility of the message until it has been safely stored to a persistent store. At that point, it's up to the broker to deliver the message to a consumer and should not lose it until the consumer has acknowledged responsibility of the message.</p>
+
+<p>The ActiveMQ documentation describes that flow like this:</p>
+
+<p><img src="https://access.redhat.com/documentation/en-US/Fuse_Message_Broker/5.4/html/Using_Persistent_Messages/files/images/faststore.gif" alt="messageing" /></p>
+
+<p>However, to ensure the message doesn't get lost, we have to assume that the messaging store is highly available. In the case described for the rest of this post, we're using <a href="http://activemq.apache.org/kahadb.html">KahaDB Persistence Adapter</a>, which is the default <a href="http://activemq.apache.org/persistence.html">persistence adapter</a> provided out of the box. We need to have the kahadb database files on a highly available storage (NAS, SAN, etc). Second requirement is, when we write the message to the filesystem, we must sync the data to the disk (aka, flush all of the buffers between the application, OS, network, and hardware) so we can be sure that the disk will not lose the data. You can get tradeoffs of very fast "persistence" by not syncing to disk and allowing the OS to buffer the writes, but this introduces potential for lost messages upon failure.</p>
+
+<p>Back to our story though: In our use case, we were using a <a href="http://en.wikipedia.org/wiki/GFS2">GFS2 file system</a> on top of a block-storage device with RHEL 6.5. When ActiveMQ writes the message to the database, it will ask the OS file descriptor to "sync" so that all of the contents are safely on disk, and will block the writing thread until that has completed (there's a little more going on, but will simplify it for a sec). This sync is very expensive, and we noticed that it was even slower because the data was being sync'd AND the metadata sync'd on EACH call. (all of this varies to some degree by OS, filesystem, etc... for this specific scenario we're talking about RHEL 6.5 and GFS2).</p>
+
+<p>In our use case, we decided that we don't need to sync the metadata on all calls to sync, only those that the operating system deems is necessary to maintain consistency. So there's an undocumented (which reminds me to document this) feature in ActiveMQ that you can configure to NOT force sync of the metadata on every sync call, and delegate to the OS. To do this, pass this flag into the JVM at startup time:</p>
+
+<pre><code>-Dorg.apache.activemq.kahaDB.files.skipMetadataUpdate=true
+</code></pre>
+
+<p>This will allow the OS to make the decision whether to sync the metadata or not. And for some use cases, this speeds up the write to disk followed by sync'ing the data.</p>
+
+<p>However, in our use case, that wasn't so. We were getting about 76 messages per second, which doesn't pass the smell test for me.</p>
+
+<h2>DiskBenchmark w/ ActiveMQ</h2>
+
+<p>So we pulled out a little-known disk benchmarking tool that comes out of the box with ActiveMQ (note.. doc this one too :) ). It does a test to see how fast it can write/read from the underlying filesystem. It's useful in this case since ActiveMQ is also written in Java, this DiskBenchmark will use Java APIs to accomplish this. So you can use it as one data point for how fast the writes SHOULD be. There are other system-level tests that you can do to test individual parts of your storage/filesystem setup, but I digress -- this post is already getting too long.</p>
+
+<p>To run the disk benchmark, navigate to the ActiveMQ installation directory and run this:</p>
+
+<pre><code>java -classpath "lib/*" \
+    org.apache.activemq.store.kahadb.disk.util.DiskBenchmark
+</code></pre>
+
+<p>This will run a benchmark and spit out the results. Our results for this case looked fine considering the hardware:</p>
+
+<pre><code>Benchmarking: /mnt/gfs2/disk-benchmark.dat                                                                       │
+Writes:                                                                                                          │
+  639996 writes of size 4096 written in 10.569 seconds.                                                          │
+  60554.074 writes/second.                                                                                       │
+  236.53935 megs/second.                                                                                         │
+                                                                                                                 │
+Sync Writes:                                                                                                     │
+  23720 writes of size 4096 written in 10.001 seconds.                                                           │
+  2371.763 writes/second.                                                                                        │
+  9.264699 megs/second.                                                                                          │
+                                                                                                                 │
+Reads:                                                                                                           │
+  3738602 reads of size 4096 read in 10.001 seconds.                                                             │
+  373822.8 writes/second.                                                                                        │
+  1460.2454 megs/second.
+</code></pre>
+
+<p>Increasing the block size to 4MB (this is ActiveMQ's default max bock size):</p>
+
+<pre><code>java -classpath "lib/*" \
+    org.apache.activemq.store.kahadb.disk.util.DiskBenchmark --bs=4194304
+
+Benchmarking: /mnt/gfs2/disk-benchmark.dat                                                                       │
+Writes:                                                                                                          │
+  621 writes of size 4194304 written in 10.235 seconds.                                                          │
+  60.674156 writes/second.                                                                                       │
+  242.69662 megs/second.                                                                                         │
+                                                                                                                 │
+Sync Writes:                                                                                                     │
+  561 writes of size 4194304 written in 10.017 seconds.                                                          │
+  56.00479 writes/second.                                                                                        │
+  224.01917 megs/second.                                                                                         │
+                                                                                                                 │
+Reads:                                                                                                           │
+  2280 reads of size 4194304 read in 10.004 seconds.                                                             │
+  227.90884 writes/second.                                                                                       │
+  911.6354 megs/second.
+</code></pre>
+
+<p>Those 9.x megs/sec and 224.x megs/sec sync writes didn't jive with our 76 msg/s, so we dug a little deeper.</p>
+
+<p>Huge thanks to Robert Peterson at Red Hat who works on the storage team... After sifting through straces, and relying on Bob's knowledge of the filesystem/storage, we were able to see that since the file size continues to grow with each write, the OS will indeed sync metadata as well, so will not speed up the writes with that JVM flag to skip metadata updates. Bob recommended that we preallocate the files that we write to... and then it hit me.. duh.. that's what the Disk Benchmark util was doing!</p>
+
+<p>So after writing a patch to preallocate the journal files, we saw our performance numbers go from 76 TPS to about 2000 TPS. I did some quick testing on other file systems, and seems to be a noticeable impact there, though I cannot say for sure without doing more thorough benchmarking.</p>
+
+<p>So now with that patch, we can configure KahaDB to "preallocate" journal files. Out of the box, it will preallocate the file as a <a href="http://en.wikipedia.org/wiki/Sparse_file">sparse file</a>. This type of file may or may not be sufficient for your tuning needs, so try it out first. For us, it wasn't sufficient -- we needed to preallocate the blocks/structures, so we preallocated with zeros:</p>
+
+<pre><code>&lt;kahaDB directory="/mnt/gfs2/kahadb" \
+    enableJournalDiskSyncs="true" preallocationStrategy="zeros" /&gt;
+</code></pre>
+
+<p>This allowed us to do the sync/fsync of the data and save on the metadata updates, as well as reduced the load on the filesystem to have to allocate those blocks. This resulted in the dramatic performance increase.</p>
+
+<p>Note, there are three preallocation strategies:</p>
+
+<ul>
+<li><code>sprase_file</code> -- default, out of the box</li>
+<li><code>zeros</code> -- ActiveMQ preallocates the file by writing zeros (0x00) to those blocks</li>
+<li><code>os_kernel_copy</code> -- ActiveMQ delegates the allocation to the operating system</li>
+</ul>
+
+<p>Test which one works better for you. I'm also working on a patch to do the preallocation in batches vs entire file.</p>
+
+<p>See the <a href="http://activemq.apache.org/kahadb.html">documentation for more about KahaDB and preallocation</a></p>
+
+<h2>Final results</h2>
+
+<p>After some quick scenario testing I noticed increases in performance across the different file systems used for this specific use case. Of course, your testing/hardware/scenarios/OS/network/configuration/filessytem etc may vary quite a bit from the one used in this test, so ask the computer before you start throwing things into production. Nevertheless, our numbers for this use case on our late-modeled, unexciting lab hardware</p>
+
+<pre><code>| strategy         |Local storage | GFS2     | NFSv4
+|------------------|--------------|----------|---------
+| `sparse_file`    | 64 m/s       | 76 m/s   | 522 m/s |
+| `zeros`          | 163 m/s      | 2072 m/s | 613 m/s |
+| `os_kernel_copy` | 162 m/s      | BUG      | 623 m/s |
+ ------------------------------------------------------
+</code></pre>
+
+<h2>NOTE!!!!</h2>
+
+<p>Just note, that for the <code>os_kernel_copy</code> option, it could fail if running on RHEL 6.x/7.x and using GFS2, so stay away from that until a kernel bug gets fixed :)</p>
+
+<p>For more Camel, ActiveMQ, microservices, and cloud goodness, follow me on Twitter @christianposta and my blog http://christianposta.com/blog</p>

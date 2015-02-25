@@ -2,8 +2,8 @@
 layout: post
 title: Understanding how OSGI bundles get resolved part II
 date: 2012-05-08 00:17:14.000000000 -07:00
-categories: []
-tags: []
+categories: [OSGi]
+tags: [how-it-works, OSGi]
 ---
 <p>In my <a href="http://www.christianposta.com/blog/?p=241">previous post</a>, I introduced the rules for how bundles get resolved in an OSGI container. In this post, I'd like to demonstrate each rule step using the <a href="http://karaf.apache.org/">Apache Karaf</a> OSGI container. Karaf is based on the <a href="http://felix.apache.org/site/index.html">Apache Felix</a> core, although the <a href="http://www.eclipse.org/equinox/">Equinox</a> core can be substituted if desired. Karaf is a full-featured OSGI container and is the cornerstone of the <a href="http://servicemix.apache.org/">Apache ServiceMix</a> integration container. ServiceMix is basically Karaf but specifically tuned for Apache Camel, Apache ActiveMQ and Apache CXF.</p>
 <p>This tutorial will require Maven and Karaf. <a href="http://maven.apache.org/download.html">Download maven</a> from the maven website. Download and install karaf as described in the <a href="http://karaf.apache.org/manual/latest-2.2.x/quick-start.html">getting started guide</a> on the Karaf website. You will also need the code that goes along with this example. You <a href="https://github.com/christian-posta/explore-bundle-resolution">can get it at my github</a> repo. After getting it, make sure to run 'mvn install' from the top-level project. This will build and install all of the bundles into your <em>local</em> maven repository. Although you can install bundles a couple different ways, using maven is easiest. Note that this sample code is mostly made up of package names without any real Java classes (except where the tutorial specifies).</p>

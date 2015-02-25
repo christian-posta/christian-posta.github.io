@@ -4,9 +4,7 @@ title: 'From inside the code: Camel RouteBuilder and Java DSL'
 date: 2012-05-21 18:41:42.000000000 -07:00
 categories:
 - Camel
-tags:
-- camel
-- DSL
+tags: [how-it-works, camel, DSL, routing]
 ---
 <p>Recently got back from <a href="http://www.camelone.com/">Camel One</a> and now it's time to get back to business. One topic of discussion I wanted to go over quickly is the Camel route builders and the DSL around them. Ever wonder how and why certain Java DSL methods are available in the route builder? For example, to begin a route, you must specify a consumer endpoint which is either push-driven or poll-driven and introduces an Exchange to your camel route. To do this, you use the <code>from()</code> DSL method. Which makes sense within the rest of the route, because you're getting messages/exchanges <strong>from</strong> an endpoint and then starting your route. But for some of you experienced Camel developers, you'll wonder what exactly you can do after you've created your consumer with the <code>from()</code> method. Well to fully understand that, you must understand a little about how the RouteBuilder API works.</p>
 <p>When you define a route with the Java DSL, you start by creating a new class that extends from the <em>org.apache.camel.builder.RouteBuilder</em> abstract class and then override the <em>configure()</em> method and implement a route with the DSL. You start the route with the <em>from()</em> method mentioned above, but where does that method come from? Consider the following UML diagram:</p>

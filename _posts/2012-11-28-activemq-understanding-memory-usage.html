@@ -2,8 +2,8 @@
 layout: post
 title: 'ActiveMQ: Understanding Memory Usage'
 date: 2012-11-28 07:59:44.000000000 -07:00
-categories: []
-tags: []
+categories: [activemq]
+tags: [how-it-works, activemq, memory-model, memory-usage]
 ---
 <p>As indicated by some recent mailing list emails and a lot of info returned from Google, ActiveMQ's SystemUsage and particularly the MemoryUsage functionality has left some people confused. I'll try to explain some details around MemoryUsage that might be helpful in understanding how it works. I won't cover StoreUsage and TempUsage as my colleauges have <a href="http://tmielke.blogspot.com/2011/02/observations-on-activemqs-temp-storage.html">covered those</a> <a href="http://activemq.2283324.n4.nabble.com/StoreUsage-TempUsage-and-MemoryUsage-td2356734.html">in some depth</a>.</p>
 <p>There is a section of the activemq.xml configuration you can use to specify SystemUsage limits, specifically around the memory, persistent store, and temporary store that a broker can use. Here is an example with the defaults that come with ActiveMQ 5.7:</p>

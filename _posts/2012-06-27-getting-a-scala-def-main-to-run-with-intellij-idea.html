@@ -3,7 +3,7 @@ layout: post
 title: Getting a Scala def main() to run with IntelliJ IDEA
 date: 2012-06-27 18:11:38.000000000 -07:00
 categories: []
-tags: []
+tags: [scala, intellij]
 ---
 <p>When you set up a run configuration to run a Scala object's main function, you have the option to run it as an Application. If you manually set up the Scala Facet on the module in which your object is, and point to a local Scala distribution, everything runs as expected. But if you are trying to run the main() function from an object in a Maven project, and your scala-library and scala-compiler are marked as "provided", the scala library won't be included on the classpath when you try to run it in IDEA. I understand, per <a href="http://youtrack.jetbrains.com/issue/SCL-2465">this issue ticket -- SCL-2465</a> that since a scala distribution is not included with IDEA, it won't put it onto the classpath by default, but there's got to be some way to notify the user that running an "Application" Run/Debug config is NOT like running a Java one. At the moment, it seems like it's supposed to happen seamlessly, but it doesn't. It chokes saying:</p>
 <p><code>Caused by: java.lang.ClassNotFoundException: scala.ScalaObject<br />

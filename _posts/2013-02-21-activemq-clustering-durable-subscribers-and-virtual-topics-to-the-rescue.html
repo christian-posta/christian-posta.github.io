@@ -2,8 +2,8 @@
 layout: post
 title: ActiveMQ Clustering, Durable Subscribers, and Virtual Topics to the rescue
 date: 2013-02-21 11:58:29.000000000 -07:00
-categories: []
-tags: []
+categories: [activemq]
+tags: [lesson-learned, activemq, camel, durable-subscribers, virtual-topics, connection-pooling]
 ---
 <p>So you want to do publish-subscribe with <a href="http://activemq.apache.org/">ActiveMQ</a> across distributed topics and be reliable. You can just use durable subscriptions, right? Well, you could, but if you're using <a href="http://activemq.apache.org/networks-of-brokers.html">clustering with ActiveMQ</a>, you may run into unintended behavior. I was recently at a client, and I noticed this behavior, and I also noticed the same behavior is present when using Weblogic JMS clustering as well. So what are the problems, and what does ActiveMQ bring to the table to solve them? Well, I'm assuming you read the title, so you may have an idea... but I'll keep going anyway...</p>
 <p>Consider this scenario. You have broker A and broker B. They are networked together in both directions to form a full mesh type of <a href="http://activemq.apache.org/networks-of-brokers.html">Network of Brokers</a>. Aka, cluster. Then you have a subscriber, FOO, using the failover URL <code>failvoer:(tcp://hostA,tcp://hostB)</code>. This means the subscriber will pick a URL at random from the list of nodes in the failover transport and connect to that broker. So far so good. Let's say the failover url picks broker B to connect to, and the subscriber creates a durable subscription to topic <code>TEST.TOPIC</code> on broker B. Under the covers, the network of brokers will determine that there is a new consumer for <code>TEST.TOPIC</code> on B so if there are any producers on broker A, then broker A should forward messages to broker B (where the consumer is).</p>

@@ -2,10 +2,8 @@
 layout: post
 title: 'From inside the code: ActiveMQ Network Connectors'
 date: 2012-05-02 00:44:33.000000000 -07:00
-categories:
-- ActiveMQ
-- FuseSource
-tags: []
+categories: [activemq]
+tags: [activemq, newtork-of-brokers, how-it-works]
 ---
 <p>This post is more for me and any ActiveMQ contributors that may be interested in how the Network Connectors work for ActiveMQ. I recently spent some time looking at the code and thought that it would be good to draw up some quick diagrams to help me remember what I learned and help to identify where to debug in the future if there are issues I am researching. If I make a mistake and you'd like to add clarification, please do so in the comments.</p>
 <p>First, you set up your network connectors by configuring them in the ActiveMQ configuration file. This configuration gets mapped to the corresponding ActiveMQ beans using the xbean library for which I have <a href="http://www.christianposta.com/blog/?p=111">a separate blog post</a> which explains exactly how this is done. To specify network connectors, you add the <code>&lt;networkConnectors/&gt;</code> element to your configuration file and add a <code>&lt;networkConnector/&gt;</code>, <code>&lt;multicastNetworkConnector/&gt;</code>, or <code>&lt;ldapNetworkConnector/&gt;</code>. These three different types of network connectors can be used to establish a network of brokers with <code>&lt;networkConnector/&gt;</code> being most common. Here's how the three map to Java classes:</p>

@@ -2,8 +2,8 @@
 layout: post
 title: Mixins in Python
 date: 2012-02-20 15:04:43.000000000 -07:00
-categories: []
-tags: []
+categories: [python]
+tags: [python, mixins]
 ---
 <p>In Python, mixins allow a programmer to package a set of clearly defined and cohesive methods into a unit that can then be used to add functionality to other classes by “mixing in” these methods. This programming style, when used correctly, can lead to well-organized code as well as improved readability. However, in python, there may be better approaches than to use mixins. As Michele Simionato points out in his two part series (<a href="http://www.artima.com/weblogs/viewpost.jsp?thread=246341" target="_blank">part 1</a> and <a href="http://www.artima.com/weblogs/viewpost.jsp?thread=246483" target="_blank">part 2</a>), python has better constructs for providing the same advantages to using mixins without the drawbacks.</p>
 <p>The drawbacks Michele points out include: class namespace pollution, methond-name collisions, accidentally overridden methods, unclear class hierarchy, and cognitive load to understand classes composed of many mixins. To learn more about mixins, see an <a href="http://en.wikipedia.org/wiki/Mixin" target="_blank">overview from wikipedia</a>, this post <a href="http://stackoverflow.com/questions/533631/what-is-a-mixin-and-why-are-they-useful" target="_blank">from StackOverflow</a>, this article <a href="http://www.linuxjournal.com/article/4540" target="_blank">from Linux Journal</a> and of course the Artima posts from Michele (<a href="http://www.artima.com/weblogs/viewpost.jsp?thread=246341" target="_blank">part 1</a> and <a href="http://www.artima.com/weblogs/viewpost.jsp?thread=246483" target="_blank">part 2</a>). Michele advises to use this as an alternative: <a href="http://www.python.org/dev/peps/pep-3124/" target="_blank">Overloading/Generic Functions</a></p>

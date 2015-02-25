@@ -1,7 +1,7 @@
 ---
 layout: home
-excerpt: "A minimal Jekyll theme for your blog by designer Michael Rose."
-tags: [Jekyll, theme, responsive, blog, template]
+excerpt: "A blog about all things software, cloud, integration, messaging, and programming"
+tags: [software, cloud, PaaS, fabric8, apache, camel, activemq, openshift, docker, performance]
 image:
   feature: bg2.png
 ---

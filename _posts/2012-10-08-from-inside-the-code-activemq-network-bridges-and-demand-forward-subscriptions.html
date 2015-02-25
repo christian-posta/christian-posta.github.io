@@ -2,8 +2,8 @@
 layout: post
 title: 'From inside the code: ActiveMQ Network Bridges and Demand Forward Subscriptions'
 date: 2012-10-08 07:39:52.000000000 -07:00
-categories: []
-tags: []
+categories: [activemq]
+tags: [how-it-works, activemq, network-of-broker]
 ---
 <p>I've written previously about <a href="http://www.christianposta.com/blog/?p=242">ActiveMQ Network Connectors</a> as a way to help describe some of the responsibilities of the classes that are involved with configuring a network of brokers for <a href="http://activemq.apache.org">ActiveMQ</a>. I recently had to dive back into that section of the code and found that blog post invaluable to help recall things about network connectors that I wouldn't otherwise retain in memory. Since it was so helpful to me, I'd like to continue on with how the network bridges and demand-forwarding subscriptions work. </p>
 <p>Hopefully this information will be helpful to others that are interested in knowing more about what goes on under the covers, or to those contributing to the <a href="http://activemq.apache.org">ActiveMQ</a> project and are going to dig around in that area of the code.</p>
