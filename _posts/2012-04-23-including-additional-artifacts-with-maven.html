@@ -4,6 +4,7 @@ title: Including additional artifacts with Maven
 date: 2012-04-23 19:09:46.000000000 -07:00
 categories: []
 tags: [maven]
+comments: true
 ---
 <p>Sometimes your build will contain other artifacts for a build other than the pom, a jar, etc. For example, you may wish to attach data-source configurations to that are meant to deploy along with your artifacts, or include other descriptor configurations like a features.xml file to be deployed into <a href="http://fusesource.com/products/enterprise-servicemix/">Fuse ESB</a>  aka <a href="servicemix.apache.org/">ServiceMix</a>. This makes it easier to use maven, or any other provisioning tool, to also grab the attached artifacts. To do this, use the <a href="http://mojo.codehaus.org/build-helper-maven-plugin/attach-artifact-mojo.html">build-helper-maven-plugin</a> and the following configuration:</p>
 <p>[xml]<br />

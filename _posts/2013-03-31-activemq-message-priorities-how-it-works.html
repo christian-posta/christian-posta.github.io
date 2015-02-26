@@ -4,6 +4,7 @@ title: 'ActiveMQ Message Priorities: How it works'
 date: 2013-03-31 18:28:15.000000000 -07:00
 categories: [activemq]
 tags: [how-it-works, activemq, priority-messaging]
+comments: true
 ---
 <p>There's usually a steady drip of questions on the <a href="http://activemq.apache.org/mailing-lists.html">mailing list</a> surrounding <a href="http://activemq.apache.org/how-can-i-support-priority-queues.html">ActiveMQ's message-priority support</a> as well as good questions about observed behaviors and "what's really supported"? I hope to help you understand what happens under the covers and what levels of priority can be supported. The details could get gory for some. If you're not interested in the details, take a look at <a href="http://activemq.apache.org/how-can-i-support-priority-queues.html">the ActiveMQ wiki</a> for the high-level overview.</p>
 <p>First, since <a href="http://activemq.apache.org/">ActiveMQ</a> supports JMS 1.1, let's take a look at what the <a href="http://www.oracle.com/technetwork/java/docs-136352.html">JMS Spec</a> says about support for "JMSPriority":</p>

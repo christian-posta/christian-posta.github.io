@@ -4,6 +4,7 @@ title: Easier way to create custom Spring Config Namespaces using xbean-spring
 date: 2012-01-04 18:48:36.000000000 -07:00
 categories: [activemq]
 tags: [xbean, activemq]
+comments: true
 ---
 <div>
 <p>Over the weekend I was debugging a peculiar issue with <a href="http://activemq.apache.org/" target="_blank">ActiveMQ</a> (turned out to indeed be a bug that had been reported a few months ago: <a href="https://issues.apache.org/jira/browse/AMQ-3359" target="_blank">https://issues.apache.org/jira/browse/AMQ-3359</a> ) and I became curious about how the components were being loaded up, wired together, and eventually started by the infrastructure code. If there is any interest in that, and I have time, I may blog about that later, but I stumbled upon a pretty cool way of creating your own custom namespaces for spring application context configuration files. Well, I stumbled upon how it’s done in ActiveMQ. I didn’t see much documentation online about how they did it, so I loaded up the remote debugger and figured it out.</p>

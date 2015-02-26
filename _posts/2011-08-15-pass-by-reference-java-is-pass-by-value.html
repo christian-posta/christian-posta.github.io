@@ -4,6 +4,7 @@ title: Pass by reference? Java is pass by value.
 date: 2011-08-15 16:42:35.000000000 -07:00
 categories: [java]
 tags: [java, how-it-works]
+comments: true
 ---
 <p>I stumbled upon a discussion, probably an age-old discussion, about whether java passes function arguments by reference or by value. i know I've studied this in the past and I know the answer is not a crystal clear one unless you consider <a href="http://www.cpptutor.com/call-by-reference-in-c++.htm">C++'s accepted definitions</a> of pass by reference. In that case, java is always pass by value. </p>
 <p>Java does not allow passing arguments by reference, wherein the reference is an alias for the actual object/variable. Java passes pointers by value (copies the pointer) to a function which can then dereference the pointer and manipulate the object. However, just because the pointer allows access to the object and allows mutations of the object doesn't mean you have a reference to the object. </p>

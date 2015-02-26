@@ -4,6 +4,7 @@ title: Guaranteed messaging for topics, the JMS spec, and ActiveMQ
 date: 2012-08-27 12:43:20.000000000 -07:00
 categories: []
 tags: [how-it-works, jms, guaranteed-messaging, activemq]
+comments: true
 ---
 <p>Recently a customer asked me to look closer at ActiveMQ's implementation of "persistent" messages, how it applies to topics, and what happens in failover scenarios when there are non-durable subscribers.</p>
 <p>I had understood that the JMS semantics specify that only durable subscribers to a topic are guaranteed message delivery for a persistent delivery mode, even in the face of message-broker provider failure. But what does it have to say about non-durable subscribers for persistent messages? What's the point of sending a message "persistent" when there are no durable subscribers?</p>

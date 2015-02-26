@@ -4,6 +4,7 @@ title: REST endpoint for integration using Apache Camel
 date: 2012-04-25 14:38:41.000000000 -07:00
 categories: [camel]
 tags: [camel, REST, DSL, cxf]
+comments: true
 ---
 <p>REST is an architectural style used for organizing resources and when applied to HTTP-based services allows building stateless, decoupled, scalable services. HTTP methods, HTTP headers, and mime-types all allow a developer to achieve the REST style. Frameworks like <a href="http://jersey.java.net/">Jersey</a> and <a href="http://fusesource.com/products/enterprise-cxf/">Fuse Services Framework (Apache CXF)</a> can be used to speed up the development and deployment of services trying to achieve a RESTful style, and in this blog post I'd like to discuss how to build the backend of a resource that relies on integration provided by <a href="http://fusesource.com/products/enterprise-camel/">Fuse Mediation Router</a> also known as <a href="http://camel.apache.org/">Apache Camel</a>.</p>
 <p>Just as an aside, a link that I've had tucked away in the recesses of my bookmarks may be of interest for those of you wondering whether your architecture is indeed RESTful or just the same highly coupled RPC style that REST tries to alleviate. Roy Fielding, who wrote his dissertation on REST, actively asserts the notion that <a href="http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven">hyerlinks within resource representations are a must</a> for REST styles, and even further clarifies the uncertainties around implementing REST.</p>

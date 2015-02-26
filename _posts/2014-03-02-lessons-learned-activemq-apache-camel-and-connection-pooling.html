@@ -4,6 +4,7 @@ title: 'Lessons learned: ActiveMQ, Apache Camel and connection pooling'
 date: 2014-03-02 19:25:48.000000000 -07:00
 categories: [lesson-learned]
 tags: [lesson-learned, camel, activemq, jboss-fuse]
+comments: true
 ---
 <p>Every once in a while, I run into an interesting problem related to connections and pooling with <a href="http://activemq.apache.org">ActiveMQ</a>, and today I'd like to discuss something that is not always very clear and could potentially cause you to drink heavily when using <a href="http://activemq.apache.org">ActiveMQ</a> and <a href="http://camel.apache.org">Camel</a> <a href="http://camel.apache.org/jms">JMS</a>. Not to say that you won't want to drink heavily when using ActiveMQ and Camel anyway... in celebration of how delightful integration and messaging become when using them of course.</p>
 <p>So first up. Connection pooling.</p>
