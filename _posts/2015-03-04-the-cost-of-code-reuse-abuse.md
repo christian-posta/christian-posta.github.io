@@ -5,8 +5,6 @@ modified:
 categories: design
 comments: true
 tags: [microservices, design, code-reuse, DDD]
-image: 
-  feature: dilbert_codereuse.jpg
 date: 2015-03-04T06:32:02-07:00
 ---
 
@@ -15,6 +13,8 @@ Oddly enough, while I'm sleeping or in some zombie state while attempting to sle
 But I think last night I was stirring up something in my head that has some merit, and something I've been thinking about for a while, inspired by a blog I read by [Udi Dahan][udi] a while back (not sure how a blog post from 09 prompted me to think about this just now...). To wit, the idea that "code reuse" is the goal of many recent architectural styles, software methodologies, and "#bestPractices". That if we can just "reuse" code, that we save on the "cost" of developing software, and thus can get to delivery faster. 
 
 In fact, that's nonsense.
+
+![dilbert](/images/dilbert_codereuse.jpg)
 
 And Udi Dahan does a great job of [explaining the differences between "use" and "reuse"][udi-reuse] in his blog post from a while back. His point is that code "use" is that of the generic kind: frameworks, common utility libraries, etc. That "reuse" is much more domain specific: business logic. Furthermore, the true cost of delivering software lies in things other than writing code. He says
 
