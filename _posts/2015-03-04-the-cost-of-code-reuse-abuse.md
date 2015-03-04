@@ -5,8 +5,8 @@ modified:
 categories: design
 comments: true
 tags: [microservices, design, code-reuse, DDD]
-image:
-  feature:
+image: 
+  feature: dilbert_codereuse.jpg
 date: 2015-03-04T06:32:02-07:00
 ---
 
