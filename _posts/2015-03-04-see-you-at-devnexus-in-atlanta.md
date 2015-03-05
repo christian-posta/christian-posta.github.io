@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "See You at DevNexus in Atlanta\!"
+title: "See You at DevNexus in Atlanta!"
 modified:
 categories: conference
 comments: true
