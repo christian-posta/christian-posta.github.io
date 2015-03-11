@@ -32,7 +32,7 @@ Are you not writing unit tests? Then you're slowing yourself down. You cannot ma
  
 Are you not doing continuous integration? then you're slowing yourself (and sinking deadlines) by not being able to communicate changes in your code base across your team. And when it comes time to integrate/merge/rebase with others on your team, you have a black hole (literally... how do you predict how long it will take to rectify these conflicts? you cannot..) in terms of time. So by slowing yourself, you incur a cost.
    
-Are you creating all kinds of shared dependencies, custom libraries, shared domain logic, and home-grown frameworks? Then you might as well hang up the business right now. [I've all ready written about the cost of code reuse abuse](http://blog.christianposta.com/design/the-cost-of-code-reuse-abuse/).
+Are you creating all kinds of shared dependencies, custom libraries, shared domain logic, and home-grown frameworks? Then you might as well hang up the business right now. [I've already written about the cost of code reuse abuse](http://blog.christianposta.com/design/the-cost-of-code-reuse-abuse/).
 
 ## Operations
 Are you hand crafting servers for deployment? Then have a look at some [thoughts on that](https://blog.engineyard.com/2014/pets-vs-cattle) and how by definition this introduces inefficiencies and introduces human errors. Huge cost for change. 
