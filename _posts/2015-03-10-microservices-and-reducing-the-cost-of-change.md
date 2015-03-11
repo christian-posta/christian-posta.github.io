@@ -19,7 +19,7 @@ Believe it or not, businesses are around to make money. Yah, yah, they provide s
 To be able to provide these kinds of services, and come up with new innovative ways to provide better customer service or better products, companies must rely on technology going forward. Or, their competition (be it large existing competitors, or competitors they don't even know about yet) will smoke them. To accommodate this relatively newer embrace of technology as a differentiator, businesses have to be __agile__. But okay, Mr Posta, you say. I've been hearing that for the last 10 years about "agile". WTF is different?
   
   
-The difference is the technical solutions for this agility have been popping up organically and more specifically in the form of open collaboration, community and opensource. It's not being driven (at least of yet.... although it's fast becoming a "perceived goldmine" for vendors) by stuffy, know-it-all, committees coming up with egregious specs that they can then hand down to us from the castle of the all knowing. 
+The difference is the technical and cultural solutions for this agility have been popping up organically and more specifically in the form of open collaboration, community and opensource. It's not being driven (at least of yet.... although it's fast becoming a "perceived goldmine" for vendors) by stuffy, know-it-all, committees coming up with egregious specs that they can then hand down to us from the castle of the all knowing. 
 
 > But why should you care?
 
