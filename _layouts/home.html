@@ -33,8 +33,8 @@
     {% include _author-bio.html %}
   </div>
   <div id="index">
-    <h3><a href="{{ site.url}}/posts/">Most Recent Posts</a><span class="home-limit">(Last 5)</span></h3>
-    {% for post in site.posts limit:5 %}    
+    <h3>Most Recent Posts&nbsp;<span class="home-limit"><a href="{{ site.url}}/posts/">See all of them</a></span></h3>
+    {% for post in site.posts limit:10 %}
     <article>
       {% if post.link %}
         <h2 class="link-post"><a href="{{ site.url }}{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a> <a href="{{ post.link }}" target="_blank" title="{{ post.title }}"><i class="fa fa-link"></i></h2>
