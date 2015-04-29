@@ -2,9 +2,9 @@
 layout: post
 title: "Integration Testing JBoss Fuse 6.x With Pax Exam, Part I"
 modified:
-categories: 
+categories: testing
 comments: true
-tags: []
+tags: [jboss-fuse, pax-exam, integration-testing, fabric8]
 image:
   feature:
 date: 2015-04-28T22:35:06-07:00
