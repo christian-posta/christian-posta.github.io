@@ -20,6 +20,10 @@ I'm a firm believer in collaborative solutions, and believe working on technolog
 I enjoy talking about the technology that I work with and the solutions that I work on. You can find me talking about the latest trends in 
 cloud computing, microservices, integration, open-source, and design at the [Phoenix JUG](http://phxjug.org), [Red Hat Summit](http://www.redhat.com/summit/)/[DevNation](http://www.devnation.org), [DevNexus](http://www.devnexus.com/s/index) and others. Here's a list of past speaking engagements and slides:
 
+* **Microservices with Apache Camel, Docker, and Fabric8v2** Red Hat Summit 2015 [slides](http://www.slideshare.net/ceposta/camel-microservicesfabric8)
+* **Why real integration developers ride Camels** Red Hat Summit 2015 [slides](http://www.slideshare.net/ceposta/why-real-integration-developers-ride-camels)
+* **Continuous Delivery with JBoss Fuse on Fabric8v2 and OpenShiftv3** Red Hat DevNation 2015 [slides](http://cmoulliard.github.io/devnation-2015/slideshow/generated/devnation-cd.html#/cover) 
+* **Continuous Delivery with JBoss Fuse on OpenShift** DevNexus 2015 [slides](http://www.slideshare.net/ceposta/devnexus-2015)
 * **Real-world #microservices with Camel, Fabric8, and OpenShift** Keynote phxjug 2014 [slides](http://www.slideshare.net/ceposta/realworld-microservices-with-apache-camel-fabric8-and-openshift)
 * **Integrating microservices with JBoss Fuse** Red Hat webinar 2014 [slides](http://www.slideshare.net/ceposta/ceposta-microservices)
 * **DevOps with Fabric8, ActiveMQ, Camel** Keynote phxjug 2014 [slides](http://www.slideshare.net/ceposta/devops-with-activemq-camel-fabric8-and-hawtio)
