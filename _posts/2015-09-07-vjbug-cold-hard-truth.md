@@ -14,6 +14,8 @@ date: 2015-09-07T08:13:43-07:00
 
 So you think you're going to do microservices? Did you also try to adopt SOA? And agile? And scrum?
 
+>Update: links to the in-person preso and the webinar I did for these talks are here: <a href="https://t.co/SMhXojCVCM">In person @IteratePHX</a> and <a href="https://plus.google.com/events/ck5bmdjj966ng9nnd6nv6ljptpo">Virtual JBUG webinar</a>
+
 Business needs are getting more complex, demanding, and changing rapidly. You tried all the past hyped technologies and architectures but those promises have been under-delivering. Can microservices help here?
 
 <a href="https://plus.google.com/events/ck5bmdjj966ng9nnd6nv6ljptpo"> ![Hangouts](/images/vjbug-hangouts.png) </a>
