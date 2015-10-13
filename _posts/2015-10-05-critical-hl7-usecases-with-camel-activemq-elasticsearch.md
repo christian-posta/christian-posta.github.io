@@ -2,7 +2,7 @@
 layout: post
 title: "Critical HL7 Usecases With Camel, ActiveMQ, Elasticsearch"
 modified:
-categories: fuse
+categories: [fuse]
 comments: true
 tags: [camel, elasticsearch, activemq, microservices, architecture, integration, ESB]
 image:
