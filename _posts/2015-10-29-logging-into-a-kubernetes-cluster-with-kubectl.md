@@ -2,9 +2,9 @@
 layout: post
 title: "Logging Into a Kubernetes Cluster With Kubectl"
 modified:
-categories: 
+categories: kubernetes
 comments: true
-tags: []
+tags: [docker, kubernetes, how-to, openshift, containers, cloud, PaaS, CaaS]
 image:
   feature:
 date: 2015-10-29T16:27:56-07:00
