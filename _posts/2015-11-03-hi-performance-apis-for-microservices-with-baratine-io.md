@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Hi Performance APIs for Microservices With Baratine.io"
+title: "High Performance APIs for Microservices With Baratine.io"
 modified:
 categories: microservices
 comments: true
