@@ -173,7 +173,7 @@ In this example, Rectangle has an anonymous field of type `Shape`. Whatever fiel
 visible on `Rectangle` objects. 
 
 One thing to note, however, is that just because `Rectangle` "is-a" `Shape`, this is not like in Java where we could
-pass in a `Rectangle` to a function that takes a `Rectangle` as a parameter. This would fail in Go. To get that type
+pass in a `Rectangle` to a function that takes a `Shape` as a parameter. This would fail in Go. To get that type
 of "type" polymorphism, you should use Go interfaces (next section)
 
 ## Polymorphism, interfaces, and duck typing
