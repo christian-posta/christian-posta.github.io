@@ -83,7 +83,7 @@ Next, we should add the following to the spring-context/bean-factory:
 
 {% endhighlight %}
 
-This is all [run of the mill Spring ORM stuff][spring-orm]; nothing too fabrcy here, but is the boilerplate stuff that spring-data will need.
+This is all [run of the mill Spring ORM stuff][spring-orm]; nothing too fancy here, but is the boilerplate stuff that spring-data will need.
 
 To use JPA, we'll also want an `persistence.xml` file. If you want to use Mongo or something else, refer to that specific spring-data mdoule for how to do that.
 
