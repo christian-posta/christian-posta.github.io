@@ -225,9 +225,11 @@ However, when iterating of an array (or something that looks like an array eg, s
 use the range operator like this (assume `foo` is a list):
 
 {% highlight java %}
-for v := range foo {
-  fmt.println("value="+v);
+
+for _, v := range foo {
+  fmt.Println("value="+ strvonv.Itoa(v));
 }
+
 {% endhighlight %}
 
 
