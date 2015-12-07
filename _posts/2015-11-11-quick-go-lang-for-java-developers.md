@@ -222,12 +222,12 @@ for i := 1; i <= 10; i++ {
 {% endhighlight %}
 
 However, when iterating of an array (or something that looks like an array eg, string, map, slice, etc), you can
-use the range operator like this (assume `foo` is a list):
+use the range operator like this (assume `foo` is a list of strings):
 
 {% highlight java %}
 
 for _, v := range foo {
-  fmt.Println("value="+ strvonv.Itoa(v));
+  fmt.Println("value="+ v);
 }
 
 {% endhighlight %}
@@ -237,7 +237,7 @@ If you need to know the index of the list as you iterate through it, looks like 
 
 {% highlight java %}
 for i, v := range foo {
-  fmt.println("index " + i + "has value="+v);
+  fmt.Println("index " + strvonv.Itoa(i) + "has value="+v);
 }
 {% endhighlight %}
 
