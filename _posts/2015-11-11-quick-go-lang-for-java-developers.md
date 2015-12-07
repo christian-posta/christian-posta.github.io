@@ -236,9 +236,11 @@ for _, v := range foo {
 If you need to know the index of the list as you iterate through it, looks like this:
 
 {% highlight java %}
+
 for i, v := range foo {
   fmt.Println("index " + strvonv.Itoa(i) + "has value="+v);
 }
+
 {% endhighlight %}
 
 ## While loops
