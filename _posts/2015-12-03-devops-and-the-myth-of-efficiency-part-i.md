@@ -10,7 +10,7 @@ image:
 date: 2015-12-03T20:10:04-07:00
 ---
 
-This post is for those of you working in large companies or "enterprises" and are exploring what "DevOps" really means and why you're struggling with it. I've decided to split this into a two-part post to make it easy to digest some of the thoughts here; I suspect I'll be writing a lot here and build upon some [of my other posts][my-posts]. Hit me on twitter [@christianposta][twitter] to voice disagreements. 
+This post is for those of you working in large companies or "enterprises" and are exploring what "DevOps" really means and why you're struggling with it. I've decided to split this into a [two-part post][second-part] to make it easy to digest some of the thoughts here; I suspect I'll be writing a lot here and build upon some [of my other posts][my-posts]. Hit me on twitter [@christianposta][twitter] to voice disagreements. 
 
 There is some great stuff about DevOps, empathy, and organizational change on the 'nets. I travel far and wide to help enterprises develop and architect distributed systems (traditional, cloud-native, and in-between) for the purposes of providing business value. It's not a surprise that businesses want to deliver business value faster to remain competitive in their respective markets, and software/technology helps them do this. No, scratch that. **Software/technology is the KEY DIFFERENTIATOR and MEANS OF DELIVERY for that business value.** Yet, even with so much discussion, blogging, conferences talks, etc. companies are still *struggling* to understand what DevOps really means and how to approach it. If you've seen job postings for "DevOps engineer" or queries about joining a "DevOps team" you'll know exactly what I'm talking about. To deliver business value faster, we have to approach things differently than we've traditionally done. 
 
@@ -59,7 +59,7 @@ Back in the 1800s, it was common to have craftsman working their trades (like cu
    
 Does this sound somewhat similar to our software model a few years back? Waterfall efficiency, outsource developers, etc,etc?
 
-For much of the 20th century the goal of "efficiency" was the goal and management structures were put in place to squeeze as much efficiency and do away with expensive craftsmanship. We were further divided up into groups of specialization, told we don't need to know anything about the overall process just concentrate on our small chunk of the pie. Further, we were treated as dumb, expensive code-monkey, replaceable parts in a complicated machine. 
+For much of the 20th century  "efficiency" was the goal and management structures were put in place to squeeze as much efficiency and do away with expensive craftsmanship. We were further divided up into groups of specialization, told we don't need to know anything about the overall process just concentrate on our small chunk of the pie. Further, we were treated as dumb, expensive code-monkey, replaceable parts in a complicated machine. 
 
 This works great when we're dealing with mere complicated systems. With known inputs, known processes, 18-month planning cycles, and our predictions for a complicated landscape, we could reliably churn out products with this reductionist, efficient model. But when things are complex, unknown, unpredictable, trying to play by the same rulebook is liable to put you out of business. Just ask Kodak... or Borders... or Blockbuster.
  
@@ -81,7 +81,7 @@ And actually slows down our teams to be able to deliver software, and in turn de
 
 ## Part II
 
-In part II we'll look at a historic event of the United States' race to space and how what we term "DevOps" made that possible. Management, teams, etc were the difference with technology being a second consideration. Sound familiar?
+[In part II we'll look at][second-part] a historic event of the United States' race to space and how what we term "DevOps" made that possible. Management, teams, etc were the difference with technology being a second consideration. Sound familiar?
 
 
 
@@ -94,3 +94,4 @@ In part II we'll look at a historic event of the United States' race to space an
 [another-way]: https://larrycuban.wordpress.com/2010/06/08/the-difference-between-complicated-and-complex-matters/
 [fred-taylor]: https://en.wikipedia.org/wiki/Frederick_Winslow_Taylor
 [gold-medal]: http://www.units.miamioh.edu/technologyandhumanities/taylor.htm
+[second-part]: http://blog.christianposta.com/devops/devops-and-the-myth-of-efficiency-part-ii/
