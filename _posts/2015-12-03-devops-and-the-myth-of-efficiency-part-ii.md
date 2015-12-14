@@ -25,6 +25,8 @@ So let's get back to the story and [recap a bit][previous]:
 * Focusing on *efficiency* breeds management that may be suitable for complicated systems, but not complex systems
 * To deal with complex systems, we need flexibility
 * DevOps does not embrace these traditional reductionist management techniques made miraculous by Taylor et. al. 
+
+![Micro](/images/cloud_22.jpg)
   
   
 ## Dealing with Complex systems ... in the 1960s
@@ -65,7 +67,7 @@ This approach, systems management/thinking, is predicated on a core tenant which
 
 In the end, what NASA created was a "shared understanding" across all teams of the project as a whole, even if establishing that understanding took time away from other duties and was "inefficient". NASA leadership understood that when creating a highly complex, even unknown product, confining specialists to a silo was stupid; high-level success depended on low-level efficiencies. Even one of the top executives, one of the most ardently against Mueller's approach, Wernher von Braun revealed "the real mechanism that makes NASA tick is a continuous cross-feed between the right and left side of the house" 
 
-
+![Micro](/images/Innovation-cartoon.png)
 
 ## Does this mean we should all be generalists?
 
