@@ -107,7 +107,7 @@ I've experienced a lot of these forces first hand and was looking for a good way
 
 ## Part III?
 
-So what about the cool technology that's coming out and branded as "DevOps" etc? What about CI/CD, build automation, etc? How do these all play into the narrative I've outlined above? Stay tuned to part III!
+So what about the cool technology that's coming out and branded as "DevOps" etc? What about CI/CD, build automation, etc? How do these all play into the narrative I've outlined above? I was oringinally planning to write two parts, but I've got more to say. Stay tuned to part III!
 
 
 
