@@ -10,7 +10,7 @@ image:
 date: 2015-12-03T20:10:08-07:00
 ---
 
-In the [previous post][previous] post, I outlined why [DevOps is not about efficiency][previous], and how our old ways of looking at "complicated" problems by solving for efficiency first is actually not effective or flexible in our now very [complex world][complex]. In fact, **letting go of our century-long instincts to apply reductionist management theories** to create efficient workplaces may lead to building complex systems a little more *effectively* with room for flexibility and innovation. And at the end of the day [innovation powers our companies forward, not efficiently protecting what we already have][efficiency-myth].
+In the [previous post][previous] post, I outlined why [DevOps is not about efficiency][previous], and how our old ways of looking at "complicated" problems by solving for efficiency first is actually not effective or flexible in our now very [complex world][complex]. In fact, **letting go of our century-long instincts to apply reductionist management theories** to create efficient workplaces may lead to building complex systems a little more *effectively* with room for flexibility and innovation. And at the end of the day [innovation powers our companies forward, not efficiently protecting what we already have][efficiency-myth]. To voice an opinion, let me know [@christianposta][twitter]
 
 The motivation, by the way, for writing this post(s) is to connect the dots somehow with what I've seen first hand, and participated in at a [particularly heralded DevOps Internet Unicorn][reality] and what I see at enterprises that I visit to do architectural assessments, distributed-systems implementations, cloud-native applications, microservices, DevOps, etc. ... in fact, it's all highly related... as [@littleidea][littleidea] on twitter recently tweeted
 
@@ -29,7 +29,7 @@ So let's get back to the story and [recap a bit][previous]:
   
 ## Dealing with Complex systems ... in the 1960s
 
-I love this story from [General Stanley McChrystal's account of the NASA space program in his book Team of Teams][teams]. It's an illustration of  the foundation of DevOps and is obviously (as you'll see shortly) *not constrained* to a developer or operations world; in fact the principles are rooted in [systems-thinking](https://en.wikipedia.org/wiki/Systems_thinking) which goes back longer than the now-hyped DevOps movement. 
+I love this story from [General Stanley McChrystal's account of the NASA space program in his book Team of Teams][teams]. It's an illustration of  the foundation of DevOps principles and is obviously (as you'll see shortly) *not constrained* to a developer or operations world; in fact the principles are rooted in [systems-thinking](https://en.wikipedia.org/wiki/Systems_thinking) which goes back longer than the now-hyped DevOps movement. 
 
 On September 12, 1962, President John F. Kennedy gave his ["We choose to go to the moon" speech][speech] in front of 35,000 people at Rice University. He proclaimed that the United States would send humans to land on the moon, and return safely, before anyone else would:
 
@@ -55,11 +55,16 @@ In 1963 NASA brought [George Mueller](https://en.wikipedia.org/wiki/George_Muell
 
 Mueller created an environment where information was shared instantly, there were daily cross-discipline meetings, there were field centers with live updating information, test results, etc. Groups from across the organization could instantly communicate. It was the "internet" before the internet. "You got instantaneous communication up and down" ... an "instantaneous transmission of knowledge across the organization" One administrator recounted "the reason that it worked and that we got it ready on schedule was we had everybody in that room that we needed to make a decision ... it got to the point were we could identify a problem in the morning and by close of business we could solve it, get the money allocated, get decisions made, and get things working"
 
-This approach, systems management/thinking, is predicated on a core tenant which is intrinsically at odds with reductionist thinking:
+On the other side of the pond at ELDO, different countries produced different parts of the rockets, boosters, satellite test vehicles, etc. They did not share information, their contractors reported directly to their own national agencies, and each sought to maximize its own economic advantages. Multiple interface failures resulted in 5 separate failed launches and French journalist Jean-Jacques Servan-Schreiber argued that Europe's lag in the space race was not a question of money but of "methods of organisation above all" in his book *The American Challenge*.
+
+## Systems thinking
+
+This approach, systems management/thinking, is predicated on a core tenant which is intrinsically at odds with reductionist thinking... for systems with many intricate interactions, are complex and unknown:
 
 > One cannot understand a part of a system without having at least a rudimentary understanding of the whole. 
 
 In the end, what NASA created was a "shared understanding" across all teams of the project as a whole, even if establishing that understanding took time away from other duties and was "inefficient". NASA leadership understood that when creating a highly complex, even unknown product, confining specialists to a silo was stupid; high-level success depended on low-level efficiencies. Even one of the top executives, one of the most ardently against Mueller's approach, Wernher von Braun revealed "the real mechanism that makes NASA tick is a continuous cross-feed between the right and left side of the house" 
+
 
 
 ## Does this mean we should all be generalists?
@@ -75,15 +80,19 @@ Whatever you call it, our teams should be aware of the common purpose, see and u
 
 ## So does that mean we're "killing the developer"?
 
-So what about [How DevOps is killing the developer](https://jeffknupp.com/blog/2014/04/15/how-devops-is-killing-the-developer/)?
+So what about [how DevOps is killing the developer](https://jeffknupp.com/blog/2014/04/15/how-devops-is-killing-the-developer/)?
 
 So when we talk about "DevOps", we talk about creating  "shared consciousness" between developers and operations (and others really) teams. The steps, processes, automation and implementation of "devops" is really about creating "shared consciousness" between teams, and each organization may have its own way of doing this that are peculiar and specific to the context of that organization. Just "automating your builds" or buying a tool is not DevOps. In fact, [making something run efficiently that is not effective is a horrible use of time](http://blog.gardeviance.org/2015/12/efficiency-vs-effectiveness-repeated.html), regardless of what buzzword you try to associate for justification.
   
 So are we "killing the developer"?
 
+The article about "killing the developer" tries to draw a line between "DevOps", a familiarity with the the rest of the cross-functional responsibilities and then jumps to that necessitating a "full stack developer". And because of this full-stack developer mindset, which the author claims originated from startups, that we're killing developers by making them generalists. 
+
 Nope. DevOps is making the developer more effective.
  
 Let's take it a step further: DevOps, Microservices, Cloud, etc are all about [making organizations more effective](http://blog.christianposta.com/microservices/the-real-success-story-of-microservices-architectures/). It's laying the groundwork to treat our organizations as complex systems, not machines. This approach lends itself to *really understanding* the value of **feedback**, **failure**, **learning**, **autonomy**, and **emergent behavior** which are critical for any complex system to exhibit to evolve and stay relevant in a complex, not merely complicated, world.
+
+
 
 ## Inspiration for this dot-connecting
 
@@ -96,7 +105,8 @@ I've experienced a lot of these forces first hand and was looking for a good way
 
 ## Part III?
 
-Would be happy to take this post-series in any direction after these two parts, with you as the reader directing it if there's interest. Reach out to me [@christianposta][twitter] for suggestions!
+So what about the cool technology that's coming out and branded as "DevOps" etc? What about CI/CD, build automation, etc? How do these all play into the narrative I've outlined above? Stay tuned to part III!
+
 
 
 [previous]: http://blog.christianposta.com/devops/devops-and-the-myth-of-efficiency-part-i/
