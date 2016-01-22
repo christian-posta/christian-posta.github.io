@@ -210,11 +210,12 @@ the filename of kubernetes.json are enforced).
  
 Add the following to your maven `pom.xml`
 
+{% highlight xml %}
   <dependency>
     <groupId>io.fabric8</groupId>
     <artifactId>kubernetes-generator</artifactId>
   </dependency>
-  
+{% endhighlight %}  
   
 For this example, let's say we want to add Persistent Volume details to our Kubernetes.json/yml files. The key to this
 is simple create a POJO and annotate it with `@KubernetesModelProcessor` like this:
