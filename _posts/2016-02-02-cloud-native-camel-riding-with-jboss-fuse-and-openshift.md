@@ -261,6 +261,7 @@ Please take a look at the [Rider Auto][rider-auto-docs] project to see more deta
 * Connecting to local/remote docker daemon/openshift installations
 * Exposing SOAP and REST HTTP services via Kubernetes Services
 * Using Spring inside Karaf
+* Integration testing on Kubernetes with fabric8-arquillian
 
 
 [camel-boot]: http://camel.apache.org/camel-boot.html
