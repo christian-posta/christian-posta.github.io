@@ -268,7 +268,7 @@ Please take a look at the [Rider Auto][rider-auto-docs] project to see more deta
 [rolling-upgrades]: http://blog.christianposta.com/deploy/blue-green-deployments-a-b-testing-and-canary-releases/
 [karaf-assembly]: https://karaf.apache.org/manual/latest/developers-guide/custom-distribution.html
 [openshift]: https://www.openshift.com/enterprise/features.html
-[rider-auto-docs]: https://github.com/christian-posta/rider-auto-osgi
+[rider-auto-docs]: https://github.com/christian-posta/rider-auto-osgi/tree/fis-enable
 [fabric8]: http://fabric8.io
 [fabric8-maven]: http://fabric8.io/guide/mavenFabric8Json.html
 [rider-auto-file]: https://github.com/christian-posta/rider-auto-osgi/tree/fis-enable/rider-auto-file
