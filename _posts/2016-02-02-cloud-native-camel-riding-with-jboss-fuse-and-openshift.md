@@ -10,7 +10,7 @@ image:
 date: 2016-02-02T08:52:57-07:00
 ---
 
-Red Hat [recently released a Microservices integration toolkit](https://www.openshift.com/enterprise/middleware-services.html) for running our microservices in a Docker and Kubernetes environment on [OpenShift v3][openshift]. To help people understand this a little bit better, I've migrated the [Rider Auto aookucatuib](https://github.com/RedHatWorkshops/rider-auto-osgi), which has been around for a while for demoing Apache Camel and JBoss Fuse, into a set of microservices that you can run on OpenShift/Kubernetes via Docker containers. This blog details some background on that and points to specific examples of "how-to" for a mostly non-trivial app. I'll also do a set of videos demonstrating this so follow this blog ([http://blog.christianposta.com][blog]) for updates or follow me on twitter [@christianposta][twiter-ceposta].
+Red Hat [recently released a Microservices integration toolkit](https://www.openshift.com/enterprise/middleware-services.html) for running our microservices in a Docker and Kubernetes environment on [OpenShift v3][openshift]. To help people understand this a little bit better, I've migrated the [Rider Auto aookucatuib](https://github.com/RedHatWorkshops/rider-auto-osgi), which has been around for a while for demoing Apache Camel and JBoss Fuse, into a set of microservices that you can run on OpenShift/Kubernetes via Docker containers. This blog details some background on that and points to specific examples of "how-to" for a mostly non-trivial app. I'll also do a set of videos demonstrating this so follow this blog ([http://blog.christianposta.com][blog]) for updates or follow me on twitter [@christianposta][twitter-ceposta].
 
 ![openshift](/images/ose.png)
 
@@ -272,5 +272,5 @@ Please take a look at the [Rider Auto][rider-auto-docs] project to see more deta
 [fabric8]: http://fabric8.io
 [fabric8-maven]: http://fabric8.io/guide/mavenFabric8Json.html
 [rider-auto-file]: https://github.com/christian-posta/rider-auto-osgi/tree/fis-enable/rider-auto-file
-[my-blog]: http://blog.christianposta.com
+[blog]: http://blog.christianposta.com
 [twitter-ceposta]: http://www.twitter.com/christianposta
