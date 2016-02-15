@@ -27,7 +27,7 @@ So, in an effort to not only help out others wanting to get started with Pax Exa
 ## itests
 I typically build out automated integration tests along with the project I'm going to test in a submodule named __itests__. You can feel free to do the same, or put your integration tests into a separate project. For this guide, I've built the integration tests into the [Rider Auto OSGI][rider] sample project that is adapted from [Claus Ibsen][davsclaus] and [Jon Anstey][janstey]'s book [Camel in Action][cia]. Feel free to browse that project to get a feel for what the modules do. 
 
-To get started, I highly recommend you take a browse of the [Pax Exam][paxexam] documentation and then poke your head into the file named [FuseTestSupport](https://github.com/christian-posta/rider-auto-osgi/blob/master/itests/src/test/java/org/jboss/fuse/example/support/FuseTestSupport.java#L80). In it, you'll see the method that contributes the `@Configuration` of the OSGI container:
+To get started, I highly recommend you take a browse of the [Pax Exam][paxexam] documentation and then poke your head into the file named [FuseTestSupport](https://github.com/christian-posta/rider-auto-osgi-itests/blob/master/itests/src/test/java/org/jboss/fuse/example/support/FuseTestSupport.java#L80). In it, you'll see the method that contributes the `@Configuration` of the OSGI container:
 
 <script src="https://gist.github.com/christian-posta/1f4cc982d4ccc4e989eb.js"></script>
 
@@ -35,7 +35,7 @@ Note, that we're using the _actual_ distribution of JBoss Fuse, not some hacked-
 
 You can also take a look at the configuration options, including editing some of the out of the box configuration options, adding features, altering the log level, etc. You can [take a look at the KarafDistributionOption documentation](https://ops4j1.jira.com/wiki/display/PAXEXAM3/Karaf+Test+Container+Reference) or the [CoreOptions](https://ops4j1.jira.com/wiki/display/PAXEXAM3/Configuration+Options) that detail all of the available options.
 
-This part is fairly straight forward. Here's an example of a [simple test that's built on top of that configuration](https://github.com/christian-posta/rider-auto-osgi/blob/master/itests/src/test/java/org/jboss/fuse/example/itests/BootstrapIT.java):
+This part is fairly straight forward. Here's an example of a [simple test that's built on top of that configuration](https://github.com/christian-posta/rider-auto-osgi-itests/blob/master/itests/src/test/java/org/jboss/fuse/example/itests/BootstrapIT.java):
 
 <script src="https://gist.github.com/christian-posta/87f0354a9950a02935c5.js"></script>
 
@@ -46,11 +46,11 @@ Being able to run your automated integration tests in such a way that gives comp
 
 Luckily, the Pax Exam [project also includes a maven plugin that plugs into the maven lifecycle integration testing phases](https://ops4j1.jira.com/wiki/display/PAXEXAM3/Exam+Maven+Plugin)
 
-For example, [include this in  your pom.xml](https://github.com/christian-posta/rider-auto-osgi/blob/master/itests/pom.xml):
+For example, [include this in  your pom.xml](https://github.com/christian-posta/rider-auto-osgi-itests/blob/master/pom.xml):
 
 <script src="https://gist.github.com/christian-posta/dc10125904e6cc79b061.js"></script>
 
-Please [take a look at the entire pom.xml](https://github.com/christian-posta/rider-auto-osgi/blob/master/itests/pom.xml) which shows how you can break things up into maven profiles and attach to the [Maven failsafe plugin](https://maven.apache.org/surefire/maven-failsafe-plugin/) for integration testing.
+Please [take a look at the entire pom.xml](https://github.com/christian-posta/rider-auto-osgi-itests/blob/master/pom.xml) which shows how you can break things up into maven profiles and attach to the [Maven failsafe plugin](https://maven.apache.org/surefire/maven-failsafe-plugin/) for integration testing.
 
 ## supporting services
 So far, Pax Exam is doing a lot of heavy lifting for running our automated integration tests with JBoss Fuse. However, what if we want to attach additional services to the bootstrap of the container? Maybe we want to initiate an instance of [ActiveMQ](http://activemq.apache.org) before the container comes up (since maybe we have services that will need to attach to an external ActiveMQ... and we can then use the results of messages in the queues/DLQs to assert behavior, etc), and make sure to tear it down at the end of a test. You can [extend one of the different Pax Exam reactors] to do just that:
@@ -73,7 +73,7 @@ This post covers writing integration tests against stand alone versions of Fuse.
 [arq]: http://arquillian.org
 [arq-osgi]: http://arquillian.org/modules/arquillian-osgi-karaf-embedded-container-adapter/
 [paxexam]: https://ops4j1.jira.com/wiki/display/PAXEXAM3/Pax+Exam
-[rider]: https://github.com/christian-posta/rider-auto-osgi
+[rider]: https://github.com/christian-posta/rider-auto-osgi-itests
 [davsclaus]: http://www.davsclaus.com
 [janstey]: http://janstey.blogspot.com
 [cia]: http://www.manning.com/ibsen/
