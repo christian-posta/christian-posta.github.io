@@ -34,6 +34,7 @@ Producer:
   * Retries if NACK or timeout or failover
 
 Broker:
+
 * receives message
 * stores message to disk
 * sends back ACK
