@@ -30,7 +30,7 @@ So what happens when things don't go as planned? Let's look at a non-computer ex
   
  It's important to think this way when providing a service in a microservice architecture. What happens when collaborator services are unavailable? What fallback procedures are available to me? A lot of times this fallback may be dictated by the business. Maybe you returned a canned response. Maybe you call a different service as a back up. Maybe you do a simplified calculation yourself. Either way, in the face of some unexpected fault, you should think through what alternatives there are to help fulfill (or partially fulfill) the service promise. 
  
-[Apche Camel][camel] and [Netflix Hystrix][hystrix] helps with this.
+[Apache Camel][camel] and [Netflix Hystrix][hystrix] helps with this.
 
 ## Consumer contracts
 
