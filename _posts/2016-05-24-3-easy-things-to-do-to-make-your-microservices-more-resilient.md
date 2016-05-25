@@ -46,11 +46,11 @@ A solution to this is based on the principle to be "conservative in what we send
 
 What happens when things go wrong? Or when services fail? A service may go down in the middle of a transaction. A mis-behaving service may be inadvertently pounding our service with requests. A consuming service may experience latency in the network (expect this in cloud deployments!) and may have timed-out and retried. A system that expects to receive once-and-only once delivery of a message is brittle by definition. If you build your services to be able to deal with these kinds of "unexpected" behavior they will be far more resilient. We need [idempotent services][idempotent]. 
  
-One example is to not exchange messages between systems as "deltas". These are not idempotent messages; if you receive a message multiple times that says "increment X by 20" , you will probably end up with an inconsistent value. Maybe prefer "current-value" type messages where if you recieve them multiple times, they don't add to any inconsistencies in the data. 
+One example is to not exchange messages between systems as "deltas". These are not idempotent messages; if you receive a message multiple times that says "increment X by 20" , you will probably end up with an inconsistent value. Maybe prefer "current-value" type messages where if you receive them multiple times, they don't add to any inconsistencies in the data. 
 
 Another option is to employ infrastructure that can filter out duplicates. For example, in a failover scenario, [Apache ActiveMQ][activemq] can filter out duplicates when a producer sends a message to the broker and then ends up failing over to a different broker for some reason; the broker index can track and identify duplicates and discard them. 
 
-Yet another option is to track unique identifiers in your services and reject those that have been processed successfully. Storing this information in a LRU cache is helps you quickly diagnose whether you've seen a message and either return a canned response, the original response, or ignore it. [Apache Camel][camel] makes it really easy to build services that use this idempotent-consumer pattern. 
+Yet another option is to track unique identifiers in the messages you receive in your services and reject those that have been processed successfully. Storing this information in a LRU cache helps you quickly diagnose whether you've seen a message and either return a canned response, the original response, or ignore it. [Apache Camel][camel] makes it really easy to build services that use this idempotent-consumer pattern. 
 
 
 
