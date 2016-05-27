@@ -8,7 +8,7 @@ tags: [kafka, microservices, debezium, autonomy]
 image:
   feature:
 date: 2016-05-27T05:40:01-07:00
--------------------------------
+---
 
 
 I've been working on a series of articles showing how to build microservices using an event-driven approach (which IMHO is the only real way to build microservices :) or... any complex distributed architecture). I'll explore DDD, CQRS, Event-sourcing, even streaming, complex-event processing and more. I'm using a reference monolith application [based on Java EE](http://developers.redhat.com/ticket-monster/) that uses all the typical Java EE technology and dives _deep_ into what makes it tick, what drawbacks it has, and how to evolve it to a microservices architecture. I'll show implementation details all the way from containers (Docker, Kubernetes) to the JVM layer (Spring Boot and WildFly Swarm) to the application architecture (events, commands, streaming, raw events, aggregates, aggregate roots, transactions, CQRS, etc). Hopefully it will be ready for my [Red Hat Summit][https://www.redhat.com/en/summit] talk in San Francisco in June! Follow me on twitter @christianposta for updates on this project.
