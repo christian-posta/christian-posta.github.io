@@ -41,7 +41,7 @@ Broker:
 
 ![amq persistent flow](/images/activemq-durable/amq-persistent.png)
 
-For "non-persistent" sends, the flow is different. We send in a "fire and forget" mode. The main producer thread does not get blocked and any ACK or other response happens asynchronously on the ActiveMQ Connection Transport thread:
+For "non-persistent" sends, the flow is different. The producer sends a "fire and forget" message. The main producer thread does not get blocked and any ACK or other response happens asynchronously on the ActiveMQ Connection Transport thread. On the broker side, messages stay in memory until they're dispatched. If memory begins to fill, we will try to spool them to disk in a temporary storage location. These messages would not be reconstituted in the event of a broker failover or restart and therefor would be lost.
 
 * Producer sends message
 * Producer continues on with its thread and does not block
