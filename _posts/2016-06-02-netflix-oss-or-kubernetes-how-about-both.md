@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Netflix OSS or Kubernetes? How About Both!"
+title: "Netflix OSS, Spring Cloud, or Kubernetes? How About All of Them!"
 modified:
 categories: microservices
 comments: true
