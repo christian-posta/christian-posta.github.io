@@ -50,7 +50,7 @@ Well, that solves our client-library problem right? [DNS](https://en.wikipedia.o
 The drawback: DNS kinda sucks for elastic, dynamic clusters of services. What happens when services are added to your cluster? Or taken away? The IP addresses for the services may be cached in DNS servers/routers (even some you don't own) and even your own IP stack. What if your services/applications are listening on non-port-80 ports? DNS was made with standard ports like port 80 in mind. To use non-standard ports with DNS, you could use [DNS SRV records](https://en.wikipedia.org/wiki/SRV_record) but then you're back to needing special clients at the application layer to discover these entries. 
 
 ### Kubernetes Services
-Let's just use [Kubernetes](http://kubernetes.io). We're gonna run things in [Docker](http://docker.io)/linux containers containers anyway and Kubernetes is the best place to run your Docker containers. Or [Rocket containers](https://coreos.com/blog/rocket/). Or [Hyper.sh "containers"](https://coreos.com/blog/rocket/). 
+Let's just use [Kubernetes](http://kubernetes.io). We're gonna run things in [Docker](http://docker.io)/linux containers containers anyway and Kubernetes is the best place to run your Docker containers. Or [Rocket containers](https://coreos.com/blog/rocket/). Or [Hyper.sh "containers"](https://hyper.sh). 
  
 (Note, I'm a sucker for technology, and even more so technology that appears "simple"... because you cannot build complex systems with complex parts. You want simple parts. But making simple parts is in-itself complex. What Google and Red Hat have done with Kubernetes to simplify distributed systems deployment/management/etc is simply awesome to me :) )
 
@@ -72,7 +72,7 @@ The last concept is _Services_. Also simple. A service is a [fixed cluster IP ad
 
 ![Kubernetes Services](/images/netflixoss/kubeservices-simple.png)
 
-Another added benefit of using Kubernetes Services for selecting pods that belog to a service is that Kubernetes is smart about which pods belong to a service with respect to its liveness and health. Kubernetes can use built-in [liveness and health checking](http://kubernetes.io/docs/user-guide/liveness/) to determine whether or not a pod should be included in the cluster of pods for a specific service based on whether or not it's alive and/or functioning properly. It can evict those that are not. 
+Another added benefit of using Kubernetes Services for selecting pods that belong to a service is that Kubernetes is smart about which pods belong to a service with respect to its liveness and health. Kubernetes can use built-in [liveness and health checking](http://kubernetes.io/docs/user-guide/liveness/) to determine whether or not a pod should be included in the cluster of pods for a specific service based on whether or not it's alive and/or functioning properly. It can evict those that are not. 
 
 _Note_ an instance of a Kubernetes Service is not a "thing" or an appliance or a docker container or anything..it's a virtual "thing"... so there are no single points of failure. It's an IP address that gets routed by Kubernetes.
 
@@ -152,7 +152,7 @@ In the 5% use case you may wish to dynamically change configuration at runtime. 
  
 ## So what about Spring Cloud?
 
-Java folks developing microservices using [Spring](http://projects.spring.io/spring-boot/) often equate [Spring Cloud](http://projects.spring.io/spring-cloud/) with Netflix OSS since a lot of it is based on Netflix OSS. The fabrjc8.io community also has lots of goodies from running Spring Cloud on Kubernetes. Please check out the [https://github.com/fabric8io/spring-cloud-kubernetes](https://github.com/fabric8io/spring-cloud-kubernetes) for more. A lot of these patterns (including configuration, tracing, etc) can run great on Kubernetes without additional, complex, infrastructure (like service-discovery engines, config engines, etc). 
+Java folks developing microservices using [Spring](http://projects.spring.io/spring-boot/) often equate [Spring Cloud](http://projects.spring.io/spring-cloud/) with Netflix OSS since a lot of it is based on Netflix OSS. The fabric8.io community also has lots of goodies from running Spring Cloud on Kubernetes. Please check out the [https://github.com/fabric8io/spring-cloud-kubernetes](https://github.com/fabric8io/spring-cloud-kubernetes) for more. A lot of these patterns (including configuration, tracing, etc) can run great on Kubernetes without additional, complex, infrastructure (like service-discovery engines, config engines, etc). 
 
 
 ## Summary

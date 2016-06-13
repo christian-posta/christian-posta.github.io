@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Carving the Java EE Monolith Into Microservices: Perfer Verticals Not Layers"
+title: "Carving the Java EE Monolith Into Microservices: Prefer Verticals Not Layers"
 modified:
 categories: microservices
 comments: true
