@@ -1,54 +1,72 @@
----
-layout: post
-title: "The Hardest Part About Microservices: The Data"
-modified:
-categories: microservices
-comments: true
-tags: [microservices, monlith, wildfly-swarm, docker, kuberetes, openshift, architecture]
-image:
-  feature:
-date: 2016-06-27T11:43:58-07:00
----
-
-As I've been promising in my past few articles about [event-driven systems](http://blog.christianposta.com/microservices/why-microservices-should-be-event-driven-autonomy-vs-authority/) and [carving up the monolith](http://blog.christianposta.com/microservices/carving-the-java-ee-monolith-into-microservices-perfer-verticals-not-layers/), here's the next installment in a series of articles trying to tackle the hard parts about microservices. Follow me ([@christianposta](http://twitter.com/christianposta)) to keep up! 
-
-So what do I mean about "hard parts"? Well, instead of just waving  hands around saying "your microservices should have their own database" or  "your microservice should do one thing well", or my personal favorite "your microservice should be replaceable" I think people need to understand that microservices is not a free lunch and require a completely different way of thinking to be successful (see below). These are all useless platitudes IMHO but they're repeated ad-naseum. Anybody can say "your microservice should have separate databases" as though a commandment from the Microservices gods, but that doesn't really help anybody. What about transactions? What about consistency? What about queries? What about database partitioning? What about database changes? What about all of the network hops and overhead you introduce by breaking up your databases?
-
-Stick with me: the hardest part about microservices is your data and you cannot hand-wave this away. 
-
-I'll refer to the work I've been doing to help illustrate these concepts along the way in the [TicketMonster microservices implementation](https://github.com/search?utf8=✓&user=christian-posta&q=ticket). You should refer to the [Ticket Monster monolith](http://developers.redhat.com/ticket-monster/) as well for reference.
-
-##  What are we thinking!?
 
 
-Let's take a quick step back. The goals of a microservices architecture is:
+# Ticket Monster moves to microservices
 
-* Business agility
-* Autonomous systems and teams
-* Scalability 
+At the fictitious Ticket Monster company the VPs are lamenting how long it takes to make changes to their bread and butter ticket-selling website. Over the past few years, it also became more and more expensive to sustain. They want to add new features like a waitlist for tickets that aren't currently available, a rewards program for those folks who buy a lot of tickets, a recommendation engine, personalized mobile app, social integration and much more. With such a large number of developers working on the project, the complexity, technical debt, and rigidity of the apps architecture, it's been difficult to coordinate how best to add this new functionality. On top of it, deployments were tricky and often caused outages. 
 
-But we don't think in terms of that in any appreciable way. This is how we think:
+Ticket Broker, a new boutique startup is capturing mind share and market by integrating more closely with social platforms, offering new services through their mobile apps, and Ticket Monster realizes they need to play catchup to compete going forward. They've decided that technology should become a core competency of their company and work much closer with the business to implement some of these new business initiatives. They're exploring things like cloud, devops and microservices, but with all of the buzz they're not quite sure what to believe and how to get started. They want to cautiously introduce technology where it fits and can benefit them. 
+
+They're exploring ways they can:
  
-* We try to ignore the domain as much as we can
-* We are too brainwashed to think only in terms of a "single database" and single "canonical data model"
-* We strive for "efficiency" above all else 
+* improve the developer experience for working on their systems
+* speed up deployment cycles; currently they only deploy once a quarter
+* improve their confidence for deployments and not have to have "all hands on deck" in the late evening & over the weekends
+* improve instrumentation and diagnostics into their systems so they can quickly identify problems/bottelnecks/failures
+* implement new features faster and explore where in their architecture things may be slowing them down
+* be able to experiment and run split tests / A-B tests / and counter-factual tests to guage customer interest 
+* reduce the costs of running these experiments so they can quickly learn and innovate
 
-When we think like that, we are at odds with what we really want to achieve: business agility. You can call your new code base a "microservice" all you want, but it doesn't matter what you call it. 
 
-For example SOA, when it started, had a lot of the same goals as microservices. But we proceeded to build layers and layers of "reusable" services kind of like the way we build machines.  We build machines by efficiently reproducing the individual parts that make up a machine and then carefully assembling the pieces. The parts for a specific machine are quite purpose built. This ends up being great if we are trying to churn out lots and lots of machines. It becomes very expensive and brittle in response to change. If we want to change one component in a purpose-built machine, we'll probably need to change the component adjacent to it and so on. Machines are not built for flexibility by design; they're built to do a set of functions over and over. Nor have our monoliths or SOA implementations been built for flexibility. We build a common set of "reusable" data services. On top of that we build a few layers of activity services. On top of that, we build process services, and so on and on. And if you didn't do these layers "you weren't doing SOA" and that's what we did strive for right? Thing is, you change one of those business process services now you have to change every layer underneath it and you have nasty ripple effects. [Don't build your overall architecture in layers!]((http://blog.christianposta.com/microservices/carving-the-java-ee-monolith-into-microservices-perfer-verticals-not-layers/) 
+## What to do with their existing architecture?
 
-We've even built our teams as efficiently as possible. We have DBAs who only focus on database maintenance. We have developers only focused on coding, QA on testing, etc. Each team is shielded from the overall goal of the system and to make any changes we've got to file tickets and processes, and workflows, and so forth. Trying to build for business agility by focusing on efficiency, premature optimization, and ["reuse" is a terrible idea](http://blog.christianposta.com/design/the-cost-of-code-reuse-abuse/). Why should it take loads of tickets and 18 month planning cycles to make a change to your system?
+Ticket Monster is a successful company up to this point and they've invested a lot over the years in making their current application and its associated infrastructure work. They are interested in modernizing toward the cloud but they've struggled to figure out how to attack the problem. After some consultation they came up with a three-phase strategy:
+  
+### Phase I
+For the first phase of their strategy for modernization, they decided they wanted to tackle some of the environment around the application before they attack the app directly. Their initial goals were simple:
 
-What about databases? Why do we assume everything is one single large database? Maybe because the vendors who've sold us large SOA suites and monolithic application server suites all have their flagship products based on that thinking? We've built our distributed systems as though they're all a single in-memory process and mimic that with lots of RPC and even lots of baggage on top of RPC.. remember SOAP, WS-*? We've tried implementing transactions across distributed systems as though it's all just one big database with Two Phase Commit transactions etc. 
+* simplify and streamline the management/deployment tools for deploying their application
+* take better advantage of their existing hardware investments and contain costs
+* develop/improve their methodologies for reducing deployment risk and time for issue recovery
+* put themselves into position to use cloud providers (perhaps multiple different ones) for commodity server/storage/network and services
 
-Lastly, we somehow thought lots and lots of centralized governance and micromanagement was a conduit to business agility. How that came about I still don't know. Management teams practice "agile" to squeeze even more pain out of their developers. And we employed lots of complex governance workflows and processes that cause any small amount of change to cause 5 different silos with 5 different VPs to get together and come up with the lowest common denominator.
- 
-So what if we thought about things differently. Let's see.
+To do this, their teams decided to get their application running on an open-source, linux-container based platform and take advantage of some of the developer productivity gains. 
+  
+### Phase II
+For Phase II, the teams at Ticket Monster wanted to add new functionality to their applications using their new strategic platform from Phase I as a solid foundation. They decided for phase II to explore delivering new functionality using a Microservices-style approach. Some of the goals for phase II:
 
-## Ticket Monster moves to microservices
-At the fictitious Ticket Monster company the VPs are lamenting how long it takes to make changes to their bread and butter ticket-selling website. They want to add new features like a waitlist for tickets that aren't currently available, a rewards program for those folks who buy a lot of tickets, a recommendation engine, personalized mobile app, social integration and much more. They've decided to organize their teams around the business functionality that underpins the website and are even willing to adopt new technology where it fits. They want to improve their local development processes across developers as it's currently quite difficult to get the current version of the code deployed locally to work on. They currently have a complicated big-bang release process that they will also need to sort out. 
+* Create new microservices for adding waitlist and search functionality
+* Integrate it with the existing legacy application and make it appear seamless to users
+* Expose this functionality for mobile devices for both internal support and consumer facing
 
-The Ticket Monster app is a layered Java EE with a single backing database. The teams agreed to start off the decomposition process by implementing a process based on an important first principle: We want to encourage changes to the system (otherwise how are we going to decompose!) so we need to have a safe way to deploy changes, test them, AND even more importantly, a way to rollback or undo a change. The teams decided that using Docker they can package their applications and configuration in a repeatable, consistent manner. With Docker, they can package all of their dependencies (including the JVM! remember, the JVM is a very important implementation detail of any application) and run them on their laptops as well as in dev/qa/production and remove some of the guessing about what's different across systems. No matter how much we try, how stringent our change process is, or what best-of-breed configuration automation, we always seem to end up with differences in the operating system, the app servers, and the databases. Docker helps ease that pain and helps us reason about a consistent software supply chain to deliver our applications. More on that in a bit. 
+In Phase II, the teams quickly ran into questions:
+
+* What technology to use to build these new services?
+* How do they decide what functionality goes into which service, and how big should these services be?
+* How would they leverage existing data in their legacy services?
+* How would they write services that would be better exposed for mobile devices?
+* How would they secure their new services and integrate with their legacy system?
+* How do they solve some of the issues that come up with a distributed system like data provenance, causal sequence interactions, latency tracing, SLA monitoring, logging, etc.
+* How could they build a data pipeline for analytics, machine learning, auditing, etc
+
+
+The teams looked to solve these challenges while achieving their goals for this phase all the while taking advantage of the platform they now have from Phase I. They also realized that although they'd be able to solve most of the problems from this phase, this phase is probably a constantly evolving phase as new features and functionality are added to the Ticket Master business and set of applications. In some ways, Phase II and Phase III could also proceed in parallel, though some up-front coordination would be necessary.
+
+### Phase III
+
+In the final Phase, the teams at Ticket Monster wanted to take a realistic view at what to do with their monolithic legacy application. They wanted to explore the benefits and tradeoffs of breaking up their monolith and what methodologies and strategies they could use if they decided to do so. Some of this would include re-writing parts of the monolith into new microservices and sunsetting the functionality in the legacy app. Another option would be to take apart the application without a re-write and focus on building the modules as services. Again, alternatively, they could just add minor enhancements to the monolith to help make it play nicer in a modern microservices architecture. Lastly, they also conceived of just keeping the monolith around but not adding any new functionality to it.  
+
+
+Let's take a look at how all of this unfolded and look closely at the principles, patterns, and practices that guided some of these decisions. Also, as a part of implementing these three phases, we also look at some tools and technology to help us along. Here we go!
+
+
+## Exploring the Ticket Monster application
+
+
+The main Ticket Monster app is a layered Java EE application with a single backing database. The app was written in 2005, and that's the approach we all took back then. The application source code was stored in a SVN repository that was eventually moved to git.  
+
+
+
+The teams agreed to start off the decomposition process by implementing a process based on an important first principle: We want to encourage changes to the system (otherwise how are we going to decompose!) so we need to have a safe way to deploy changes, test them, AND even more importantly, a way to rollback or undo a change. The teams decided that using Docker they can package their applications and configuration in a repeatable, consistent manner. With Docker, they can package all of their dependencies (including the JVM! remember, the JVM is a very important implementation detail of any application) and run them on their laptops as well as in dev/qa/production and remove some of the guessing about what's different across systems. No matter how much we try, how stringent our change process is, or what best-of-breed configuration automation, we always seem to end up with differences in the operating system, the app servers, and the databases. Docker helps ease that pain and helps us reason about a consistent software supply chain to deliver our applications. More on that in a bit. 
 
 The original Ticket Monster application is a Java EE war file with all of the layers packaged as a single deployable. It gets deployed into a WildFly 10/EAP 7 application server and has extra notes in the JIRA tickets to configure the database connections and so forth. Our first step is to codify all of this from the WAR to the WildFly server to the JVM and all of the JVM dependencies into a single Docker container. We will continue to run the database outside of the Docker environment to begin. Later we'll come back and see how a Docker environment can easy our automation of managing and upgrading the database as well. 
 
