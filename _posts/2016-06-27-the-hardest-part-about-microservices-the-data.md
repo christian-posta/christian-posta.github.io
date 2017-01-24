@@ -64,13 +64,73 @@ Let's take a look at how all of this unfolded and look closely at the principles
 
 The main Ticket Monster app is a layered Java EE application with a single backing database. The app was written in 2005, and that's the approach we all took back then. The application source code was stored in a SVN repository that was eventually moved to git.  
 
+### Deploying to OpenShift
 
 
+
+## Phase I
 The teams agreed to start off the decomposition process by implementing a process based on an important first principle: We want to encourage changes to the system (otherwise how are we going to decompose!) so we need to have a safe way to deploy changes, test them, AND even more importantly, a way to rollback or undo a change. The teams decided that using Docker they can package their applications and configuration in a repeatable, consistent manner. With Docker, they can package all of their dependencies (including the JVM! remember, the JVM is a very important implementation detail of any application) and run them on their laptops as well as in dev/qa/production and remove some of the guessing about what's different across systems. No matter how much we try, how stringent our change process is, or what best-of-breed configuration automation, we always seem to end up with differences in the operating system, the app servers, and the databases. Docker helps ease that pain and helps us reason about a consistent software supply chain to deliver our applications. More on that in a bit. 
 
-The original Ticket Monster application is a Java EE war file with all of the layers packaged as a single deployable. It gets deployed into a WildFly 10/EAP 7 application server and has extra notes in the JIRA tickets to configure the database connections and so forth. Our first step is to codify all of this from the WAR to the WildFly server to the JVM and all of the JVM dependencies into a single Docker container. We will continue to run the database outside of the Docker environment to begin. Later we'll come back and see how a Docker environment can easy our automation of managing and upgrading the database as well. 
+The original Ticket Monster application is a Java EE war file with all of the layers packaged as a single deployable. It gets deployed into a WildFly 10/EAP 7 application server and has extra notes in the JIRA tickets to configure the database connections and so forth. Our first step is to codify all of this from the WAR to the WildFly server to the JVM and all of the JVM dependencies into a single Docker container. We will continue to run the database outside of the Docker environment to begin. Later we'll come back and see how a Docker environment can help our automation of managing and upgrading the database as well. 
 
 At first, the development team started by making their development environments (on their laptops) Docker capable. They also changed their shared Dev environment to match similarly to their laptops with Docker. They set up a Jenkins CI build to build their docker container and deploy into Dev when they had new versions. They did this as a first step to get their hands familiar with Docker and identify what type of software supply chain they would need (OS, Middleware, tooling, and eventually their code) as well as get familiar with immutable delivery principles.  But everything from QA on up to Prod was still the old way of doing things. They were off in the right direction, but still not there.
+
+
+### Deploying self contained in openshift
+ 
+
+
+> mvn clean install
+> mkdir -p target/openshift/deployments
+> mv target/ticket-monster.war target/openshift/deployments/ROOT.war
+> cd target/openshift
+
+```
+oc new-build --binary=true --strategy=source --image-stream=wildfly:10.0 --name=ticket-monster-full 
+oc start-build ticket-monster-full --from-dir=.
+oc new-app ticket-monster-full
+oc deploy ticket-monster-full
+oc expose svc/ticket-monster-full
+```
+
+### deploying w/ mysql
+
+navigate to $PROJ_ROOT/demo
+
+```
+oc create -f openshift-mysql.yml
+oc process ticket-monster-mysql | oc create -f -
+oc deploy mysql --latest
+```
+
+Now let's build the artifact w/ mysql as the backend in mind:
+
+First build the app with the mysql profile:
+
+> mvn clean install -Pmysql-openshift
+> mkdir -p target/openshift/deployments
+> mv target/ticket-monster.war target/openshift/deployments/ROOT.war
+> cd target/openshift
+
+
+```
+oc new-build --binary=true --strategy=source --image-stream=wildfly:10.0 --name=ticket-monster-full --env=MYSQL_DATABASE=ticketmonster,MYSQL_USER=ticket,MYSQL_PASSWORD=monster
+oc start-build ticket-monster-full --from-dir=.
+oc new-app ticket-monster-full
+oc deploy ticket-monster-full
+oc expose svc/ticket-monster-full
+```
+
+
+To do Jenkins Pipelines, add the Jenkinsfile to the root of the $PROJECT_ROOT/demo folder and (need latest version of `oc` to do this)
+
+
+```
+oc new-build https://github.com/christian-posta/ticket-monster#monolith-master --strategy=pipeline --context-dir=demo --name=ticket-monster-pipeline
+```
+
+> we need this to allow permissions: `oc policy add-role-to-user edit system:serviceaccount:ticketmonster-monolith:default`
+
 
 ### Deployments
 The ticket monster teams were taking good advantage of Docker for deployments but they wanted to be able to do more sophisticated things like clustering their application and ability to do blue-green deployments to move to zero-downtime deployments. See here for [more about blue-green deployments and other deployments like canary and A/B testing, etc](http://blog.christianposta.com/deploy/blue-green-deployments-a-b-testing-and-canary-releases/). They also thought initially about breaking up their services and wondered how they would discovery and load balance across each other. Since they were already using Docker, they decided the awesome [Kubernetes project](http://kubernetes.io) would help them get to a _smarter_ cluster deployment. They decided to leverage Kubernetes to deploy their application in a cluster and started to take advantage of blue-green deployments which are a native feature of Kubernetes. They ran into some issues, however. What do they do with the database? A blue-green deployment basically allows you to stand up a new version of your application alongside the existing version. Initially, it does not take any load and is hidden from clients. You can start it up, do some basic smoke tests, and when you're ready, switch over the load to the new version. The team had questions about what to do with the database?
