@@ -4,7 +4,7 @@ title: "Netflix OSS, Spring Cloud, or Kubernetes? How About All of Them!"
 modified:
 categories: microservices
 comments: true
-tags: [spring, microservices, netflix, kubernetes, fabric8, openshift]
+tags: [spring, microservices, netflix, kubernetes, fabric8, openshift, popular]
 image:
   feature:
 date: 2016-06-02T07:57:04-07:00

@@ -4,7 +4,7 @@ title: "The Hardest Part About Microservices: Your Data"
 modified:
 categories: microservices 
 comments: true
-tags: [microservices, data, debezium, CQRS, distributed systems]
+tags: [microservices, data, debezium, CQRS, distributed systems, popular]
 image:
   feature:
 date: 2016-07-14T11:21:07-04:00

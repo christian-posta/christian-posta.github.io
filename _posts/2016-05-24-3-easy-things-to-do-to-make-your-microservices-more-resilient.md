@@ -4,7 +4,7 @@ title: "3 Easy Things to Do to Make Your Microservices More Resilient"
 modified:
 categories: microservices
 comments: true
-tags: [microservices, resiliency, architecture, cqrs]
+tags: [microservices, resiliency, architecture, cqrs, popular]
 image:
   feature:
 date: 2016-05-24T13:22:16-07:00

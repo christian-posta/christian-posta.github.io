@@ -4,7 +4,7 @@ title: "Blue-green Deployments, A/B Testing, and Canary Releases"
 modified:
 categories: deploy
 comments: true
-tags: [immutable, docker, openshift, deployment, blue-green, canary, testing]
+tags: [immutable, docker, openshift, deployment, blue-green, canary, testing, popular]
 image:
   feature: blue_green.jpg
 date: 2015-08-03T14:02:49-07:00

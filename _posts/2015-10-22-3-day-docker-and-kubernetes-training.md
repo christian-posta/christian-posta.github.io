@@ -4,7 +4,7 @@ title: "4-day Docker and Kubernetes Training"
 modified:
 categories: [kubernetes]
 comments: true
-tags: [openshift, kubernetes, docker, training, PaaS, cloud, containers]
+tags: [openshift, kubernetes, docker, training, PaaS, cloud, containers, popular]
 image:
   feature:
 date: 2015-10-22T16:10:41-07:00
