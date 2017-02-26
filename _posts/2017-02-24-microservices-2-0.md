@@ -39,7 +39,7 @@ When building microservices, we really just diving deeper into distributed syste
 * metrics exposure, collection
 
 
-I may have missed some -- feel free to reach out (@christianposta) anytime if you think I've missed something glaring there. 
+I may have missed some -- feel free to reach out ([@christianposta](http://twitter.com/christianposta)) anytime if you think I've missed something glaring there. 
 
 Netflix and other internet companies have been AMAZING at revealing some of the things they've done to solve some of these problems (like opensourcing their software, or writing papers). What they implemented (pick a compnay, story is the same) they had to implement from scratch because there wasn't anything like it out there. But privately, each would tell you that they'd love another shot at redoing it because they'd change some things. 
 
@@ -49,7 +49,7 @@ For example, Kubernetes is Google's and Red Hat's (each) 3rd time at building a 
 
 ![kube](/images/little-kube.png)
 
-Another example is something like circuit breaking. Anyone can write a circuit breaker (and many have). Netflix even released their circuit breaker ([the Hystrix library][https://www.google.com/search?client=safari&rls=en&q=hystrix&ie=UTF-8&oe=UTF-8]) as OSS. The hystrix circuit breaker library gets used by an application to implement that functionality when it makes outgoing network calls and wants to protect itself from downstream anomalies and try to contain the blast radius of failures. The drawback to this (for circuit breaking, service discovery, tracing, metrics, and the list goes on) is that it's incumbent upon the developer to pull in the right libraries and actually get all of these things right. That's really hard. 
+Another example is something like circuit breaking. Anyone can write a circuit breaker (and many have). Netflix even released their circuit breaker ([the Hystrix library](https://github.com/Netflix/Hystrix)) as OSS. The hystrix circuit breaker library gets used by an application to implement that functionality when it makes outgoing network calls and wants to protect itself from downstream anomalies and try to contain the blast radius of failures. The drawback to this (for circuit breaking, service discovery, tracing, metrics, and the list goes on) is that it's incumbent upon the developer to pull in the right libraries and actually get all of these things right. That's really hard. 
    
 I'm really loving a different way to solve this. What we'd really like is to not make our applications more complicated with more libraries/frameworks and hope that each developer uses them / applies them properly across projects or even more importantly, across programming languages. Trying to maintain many different implementations of the same thing across developers across projects is just madness. 
 
@@ -59,7 +59,7 @@ The "more elegant" way of doing this, IMHO, is put these things in a client-side
 
 ![grpc](/images/grpc.png)
 
-Lastly, building microservices with REST is definitely de-facto. Stand up a service, expose a REST endpoint and use that for all interactions/integrations between services. I'm seeing two things about this that's not "new" per-se, but it's evolving into something a bit more elegant. Some of the problems with REST at scale include tracking breaking changes between services, understanding type-safety across services, and that there's considerable overhead when comapred to alternative binary RPC style services (at least with HTTP 1.x). What I'm excited about is that things like non-blocking communication frameworks (ie, RxJava, [Vert.x][http://vertx.io]), asynchronous communication patterns (I'm a messaging guy at heart!), and even things like RPC ([yay gRPC!][http://www.grpc.io]) are becoming more elegant.
+Lastly, building microservices with REST is definitely de-facto. Stand up a service, expose a REST endpoint and use that for all interactions/integrations between services. I'm seeing two things about this that's not "new" per-se, but it's evolving into something a bit more elegant. Some of the problems with REST at scale include tracking breaking changes between services, understanding type-safety across services, and that there's considerable overhead when comapred to alternative binary RPC style services (at least with HTTP 1.x). What I'm excited about is that things like non-blocking communication frameworks (ie, RxJava, [Vert.x](http://vertx.io)), asynchronous communication patterns (I'm a messaging guy at heart!), and even things like RPC ([yay gRPC!](http://www.grpc.io)) are becoming more elegant.
 
 I guess what I'm excited about is the new tools that are coalescing in the open-source community (just checkout Kubernetes community!!) that further improve the experience of building applications by pushing more of the complicated stuff down a layer (and implementing it with best-of breed technology). 
  
