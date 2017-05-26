@@ -65,21 +65,21 @@ To start a demo, run the script (or do it manually) and pass in the parameters f
 
 The format for bootstrapping a demo is:
 
-```bash
+{% highlight java %}
 ./docker-run.sh -d <demo_name>
-```
+{% endhighlight %}
 
 For example, to run the `circuit-breaker` demo:
 
-```bash
+{% highlight bash %}
 ./docker-run.sh -d circuit-breaker
-```
+{% endhighlight %}
 
 You can stop the http-client's respective demos with:
 
-```bash
+{% highlight bash %}
 ./docker-stop.sh
-```
+{% endhighlight %}
 
 The other various scripts allow us to run the http client (which will be proxied by Envoy):
 
@@ -92,13 +92,13 @@ The other various scripts allow us to run the http client (which will be proxied
 
 Lastly, each demo contains a `http-client.env` file that controls the settings of the http-client we use. Example:
 
-```json
+{% highlight json %}
 NUM_THREADS=1
 DELAY_BETWEEN_CALLS=0
 NUM_CALLS_PER_CLIENT=5
 URL_UNDER_TEST=http://localhost:15001/get
 MIX_RESPONSE_TIMES=false
-```
+{% endhighlight %}
 
 We can control the concurrency with `NUM_THREADS` and the duration with `NUM_CALLS_PER_CLIENT`. For example, in the above configuration, we'll use a single HTTP connection to make five successive calls with no delays between calls (note that `DELAY_BETWEEN_CALLS` is `0`). We can adjust these settings for each of the demos.
 
@@ -107,13 +107,13 @@ We can control the concurrency with `NUM_THREADS` and the duration with `NUM_CAL
 
 To run the `circuit-breaker` demo:
 
-```bash
+{% highlight bash %}
 ./docker-run.sh -d circuit-breaker
-```
+{% endhighlight %}
 
 The Envoy configuration for circuit breakers looks like this (see the [full configuration here](https://github.com/christian-posta/envoy-microservices-patterns/blob/master/circuit-breaker/conf/envoy.json)):
 
-```json
+{% highlight json %}
 "circuit_breakers": {
   "default": {
     "max_connections": 1,
@@ -121,7 +121,7 @@ The Envoy configuration for circuit breakers looks like this (see the [full conf
     "max_retries": 3
   }
 }
-```
+{% endhighlight %}
 
 This configuration allows us to:
 
@@ -143,7 +143,7 @@ Let's see what envoy does when too many threads in an application try to make to
 
 Recall our circuit breaking settings for our upstream `httbin` cluster looks like this (see the [full configuration here](https://github.com/christian-posta/envoy-microservices-patterns/blob/master/circuit-breaker/conf/envoy.json)):
 
-```json
+{% highlight json %}
 "circuit_breakers": {
   "default": {
     "max_connections": 1,
@@ -151,98 +151,98 @@ Recall our circuit breaking settings for our upstream `httbin` cluster looks lik
     "max_retries": 3
   }
 }
-```
+{% endhighlight %}
 
 If we look at the `./circuit-breaker/http-client.env` settings file, we'll see that initially we'll start by running a single thread which creates a single connection and makes five calls and shuts down:
 
-```json
+{% highlight json %}
 NUM_THREADS=1
 DELAY_BETWEEN_CALLS=0
 NUM_CALLS_PER_CLIENT=5
 URL_UNDER_TEST=http://localhost:15001/get
 MIX_RESPONSE_TIMES=false
-```
+{% endhighlight %}
 
 Let's verify this. Run the demo:
 
-```bash
+{% highlight bash %}
 ./docker-run.sh -d circuit-breaker
-```
+{% endhighlight %}
 
 This sets up the application with its client libraries and also sets up Envoy Proxy. We will send traffic directly to Envoy Proxy to handle circuit breaking for us. Let's call our service:
 
-```bash
+{% highlight bash %}
 docker exec -it client bash -c 'java -jar http-client.jar'
-```
+{% endhighlight %}
 
 We should see output like this:
 
-```bash
+{% highlight bash %}
 using num threads: 1
 Starting pool-1-thread-1 with numCalls=5 delayBetweenCalls=0 url=http://localhost:15001/get mixedRespTimes=false
 pool-1-thread-1: successes=[5], failures=[0], duration=[545ms]
-```
+{% endhighlight %}
 
 We can see all five of our calls succeeded!
 
 Let's take a look at some of the metrics collected by Envoy Proxy:
 
-```bash
+{% highlight bash %}
 ./get-envoy-stats.sh
-```
+{% endhighlight %}
 
 WOW! That's a lot of metrics Envoy tracks for us! Let's grep through that:
 
-```bash
+{% highlight bash %}
 ./get-envoy-stats.sh | grep cluster.httpbin_service
-```
+{% endhighlight %}
 
 This will show the metrics for our configured upstream cluster named `httpbin_service`. Take a quick look through some of these statistics and [lookup their meaning in the Envoy documentation](https://lyft.github.io/envoy/docs/configuration/cluster_manager/cluster_stats.html). The important ones to note are called out here:
 
-```bash
+{% highlight bash %}
 cluster.httpbin_service.upstream_cx_http1_total: 1
 cluster.httpbin_service.upstream_rq_total: 5
 cluster.httpbin_service.upstream_rq_200: 5
 cluster.httpbin_service.upstream_rq_2xx: 5
 cluster.httpbin_service.upstream_rq_pending_overflow: 0
 cluster.httpbin_service.upstream_rq_retry: 0
-```
+{% endhighlight %}
 
 This tells us we had 1 http/1 connection, with 5 requests (total) and 5 of them ended in HTTP `2xx` (and even `200`). Great! But what happens if we try to use two concurrent connections? 
 
 First, let's reset the statistics:
 
-```bash
+{% highlight bash %}
 ./reset-envoy-stats.sh
 OK
-```
+{% endhighlight %}
 
 Let's invoke these calls with 2 threads:
 
-```bash
+{% highlight bash %}
 docker exec -it client bash -c 'NUM_THREADS=2; java -jar http-client.jar'
-```
+{% endhighlight %}
 
 We should see some output like this:
 
-```bash
+{% highlight bash %}
 using num threads: 2
 Starting pool-1-thread-1 with numCalls=5 delayBetweenCalls=0 url=http://localhost:15001/get mixedRespTimes=false
 Starting pool-1-thread-2 with numCalls=5 delayBetweenCalls=0 url=http://localhost:15001/get mixedRespTimes=false
 pool-1-thread-1: successes=[0], failures=[5], duration=[123ms]
 pool-1-thread-2: successes=[5], failures=[0], duration=[513ms]
-```
+{% endhighlight %}
 
 Woah.. one of our threads had 5 successes, but one of them didn't! One thread had all 5 of its requests failed! Let's take a look at the Envoy stats again:
 
 
-```bash
+{% highlight bash %}
 ./get-envoy-stats.sh | grep cluster.httpbin_service
-```
+{% endhighlight %}
 
 Now our stats from above look like this:
 
-```bash
+{% highlight bash %}
 cluster.httpbin_service.upstream_cx_http1_total: 1
 cluster.httpbin_service.upstream_rq_total: 5
 cluster.httpbin_service.upstream_rq_200: 5
@@ -251,7 +251,7 @@ cluster.httpbin_service.upstream_rq_503: 5
 cluster.httpbin_service.upstream_rq_5xx: 5
 cluster.httpbin_service.upstream_rq_pending_overflow: 5
 cluster.httpbin_service.upstream_rq_retry: 0
-```
+{% endhighlight %}
 
 From this output we can see that only one of our connections succeeded! We ended up with 5 requests that resulted in HTTP `200` and 5 requests that ended up with HTTP `503`. We also see that `upstream_rq_pending_overflow` has been incremented to `5`. That is our indication that the circuit breaker did it's job here. It short circuited any calls that didn't match our configuration settings.
 
@@ -263,7 +263,7 @@ Let's run some similar tests to exercise the `max_pending_requests` setting.
 
 Recall our circuit breaking settings for our upstream `httbin` cluster looks like this (see the [full configuration here](https://github.com/christian-posta/envoy-microservices-patterns/blob/master/circuit-breaker/conf/envoy.json)):
 
-```json
+{% highlight json %}
 "circuit_breakers": {
   "default": {
     "max_connections": 1,
@@ -271,28 +271,28 @@ Recall our circuit breaking settings for our upstream `httbin` cluster looks lik
     "max_retries": 3
   }
 }
-```
+{% endhighlight %}
 
 What we want to do is simulate multiple simultaneous requests happening on a single HTTP connection (since we're only allowed `max_connections` of 1). We expect the requests to queue up, but Envoy should reject the queued up messages since we have a `max_pending_requests` set to 1. We want to set upper limits on our queue depths and not allow retry storms, rogue downstream requests, DoS, and bugs in our system to cascade. 
 
 Continuing from the previous section, let's reset the Envoy stats:
 
-```bash
+{% highlight bash %}
 ./reset-envoy-stats.sh
 OK
-```
+{% endhighlight %}
 
 
 Let's invoke the client with 1 thread (ie, 1 HTTP connection) but send our requests in parallel (in batches of 5 by default). We will also want to randomize the delays we get on sends so that things can queue up:
 
 
-```bash
+{% highlight bash %}
 docker exec -it client bash -c 'NUM_THREADS=1 && PARALLEL_SENDS=true && MIX_RESPONSE_TIMES=true; java -jar http-client.jar'
-```
+{% endhighlight %}
 
 We should see output similar to this:
 
-```bash
+{% highlight bash %}
 using num threads: 1
 Starting pool-1-thread-1 with numCalls=5 parallelSends=true delayBetweenCalls=0 url=http://localhost:15001/get mixedRespTimes=true
 pool-2-thread-3: using delay of : 3
@@ -302,23 +302,23 @@ pool-2-thread-4: using delay of : 4
 pool-2-thread-5: using delay of : 0
 finished batch 0
 pool-1-thread-1: successes=[1], failures=[4], duration=[4242ms]
-```
+{% endhighlight %}
 
 Damn! four of our requests failed... let's check the Envoy stats:
 
 
-```bash
+{% highlight bash %}
 ./get-envoy-stats.sh | grep cluster.httpbin_service | grep pending
-```
+{% endhighlight %}
 
 Sure enough, we see that 4 of our requests were short circuited:
 
-```bash
+{% highlight bash %}
 cluster.httpbin_service.upstream_rq_pending_active: 0
 cluster.httpbin_service.upstream_rq_pending_failure_eject: 0
 cluster.httpbin_service.upstream_rq_pending_overflow: 4
 cluster.httpbin_service.upstream_rq_pending_total: 1
-```
+{% endhighlight %}
 
 #### What about when services go down completely?
 
@@ -326,49 +326,51 @@ We've seen what circuit breaking facilities Envoy has for short circuiting and b
 
 Envoy [has settings for "outlier detection"](https://lyft.github.io/envoy/docs/intro/arch_overview/outlier.html) which can detect when hosts in a cluster are not reliable and can eject them from the cluster rotation completely (for a period of time). One interesting phenomenon to understand is that by default, Envoy will eject hosts from the load balancing algorithms up to a certain point. Envoy's load balancer algorithms will detect a [panic threshold](https://lyft.github.io/envoy/docs/intro/arch_overview/load_balancing.html#arch-overview-load-balancing-panic-threshold) if too many (ie, > 50%) of the hosts have been deemed unhealthy and will just go back to load balancing against all of them. This panic threshold is configurable and to get circuit breaking functionality that sheds load (for a period of time) to all hosts during a severe outage, you can configure the outlier detection settings. In our [sample circuit breaker](https://github.com/christian-posta/envoy-microservices-patterns/blob/master/circuit-breaker/conf/envoy.json)) `envoy.json` config you can see the following:
 
-```bash
+{% highlight bash %}
     "outlier_detection" : {
       "consecutive_5xx": 5,
       "max_ejection_percent": 100,
       "interval_ms": 3
     }
-```
+{% endhighlight %}
    
 Let's test this case and see what happens. First, reset the stats:
     
     
-```bash
+{% highlight bash %}
 ./reset-envoy-stats.sh
 OK
-```    
+{% endhighlight %}
+
 
 Next, let's call our client with a URL that will give us back HTTP `500` results. We'll make 10 calls because our outlier detection will check for 5 consecutive 5xx responses, so we'll want to do more that 5 calls.
    
-```bash
+{% highlight bash %}
 docker exec -it client bash -c 'URL_UNDER_TEST=http://localhost:15001/status/500 && NUM_CALLS_PER_CLIENT=10; java -jar http-client.jar'
-```   
+{% endhighlight %}
+
 
 We should see a response like this where all the calls failed (as we expect: at least 5 of them would have gotten back HTTP 500):
 
-```bash
+{% highlight bash %}
 using num threads: 1
 Starting pool-1-thread-1 with numCalls=10 parallelSends=false delayBetweenCalls=0 url=http://localhost:15001/status/500 mixedRespTimes=false
 pool-1-thread-1: successes=[0], failures=[10], duration=[929ms]
-```
+{% endhighlight %}
 
 Let's now check the Envoy stats to see what happened exactly:
 
-```bash
+{% highlight bash %}
 ./get-envoy-stats.sh | grep cluster.httpbin_service | grep outlier
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 cluster.httpbin_service.outlier_detection.ejections_active: 0
 cluster.httpbin_service.outlier_detection.ejections_consecutive_5xx: 1
 cluster.httpbin_service.outlier_detection.ejections_overflow: 0
 cluster.httpbin_service.outlier_detection.ejections_success_rate: 0
 cluster.httpbin_service.outlier_detection.ejections_total: 1
-```
+{% endhighlight %}
 
 We can see we tripped the consecutive 5xx detection! We've also removed that host from our loadbalancing group. 
 
@@ -376,7 +378,7 @@ We can see we tripped the consecutive 5xx detection! We've also removed that hos
 
 For the retries demo, we'll be configuring our routing in Envoy like this:
 
-```json
+{% highlight json %}
   "routes": [
     {
       "timeout_ms": 0,
@@ -389,7 +391,7 @@ For the retries demo, we'll be configuring our routing in Envoy like this:
       }
 
     }
-```
+{% endhighlight %}
 
 Here we're saying to retry up to 3 times on HTTP status of 5xx.
 
@@ -397,25 +399,25 @@ If you've run previous demos, please make sure to get a clean start for this (or
 
 First stop any existing demos:
 
-```bash
+{% highlight bash %}
 ./docker-stop.sh
-```
+{% endhighlight %}
 
 Now let's get our `retries` demo up:
 
-```bash
+{% highlight bash %}
 ./docker-run.sh -d retries
-```
+{% endhighlight %}
 
 Now let's exercise the client with a *single* call which will hit an HTTP endpoint that should return an HTTP `500` error. We'll use the `curl.sh` script which is set up to call curl inside our demo container. 
 
-```bash
+{% highlight bash %}
 ./curl.sh -vvvv localhost:15001/status/500
-```
+{% endhighlight %}
 
 We should see something like this:
 
-```bash
+{% highlight bash %}
 * Hostname was NOT found in DNS cache
 *   Trying ::1...
 * connect to ::1 port 15001 failed: Connection refused
@@ -440,21 +442,21 @@ We should see something like this:
 < x-envoy-upstream-service-time: 684
 < 
 * Connection #0 to host localhost left intact
-```
+{% endhighlight %}
 
 Great! Now, let's check what Envoy has done for us:
 
-```bash
+{% highlight bash %}
 ./get-envoy-stats.sh | grep retry
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 cluster.httpbin_service.retry.upstream_rq_500: 3
 cluster.httpbin_service.retry.upstream_rq_5xx: 3
 cluster.httpbin_service.upstream_rq_retry: 3
 cluster.httpbin_service.upstream_rq_retry_overflow: 0
 cluster.httpbin_service.upstream_rq_retry_success: 0
-```
+{% endhighlight %}
 
 Yay! We see here that envoy has retried 3 times because of HTTP `500` errors.
 
@@ -468,7 +470,7 @@ Some things to keep in mind about retries:
 
 For the timeouts demo, we'll be configuring our routing in Envoy like this:
 
-```json
+{% highlight json %}
   "routes": [
     {
       "timeout_ms": 0,
@@ -477,7 +479,7 @@ For the timeouts demo, we'll be configuring our routing in Envoy like this:
       "cluster": "httpbin_service",
       "timeout_ms": 3000
     }
-```
+{% endhighlight %}
 
 This configuration is setting a global (ie, includes all retries) 3s timeout for any calls made through this route to the `httpbin_service` cluster.
 
@@ -485,25 +487,25 @@ If you've run previous demos, please make sure to get a clean start for this (or
 
 First stop any existing demos:
 
-```bash
+{% highlight bash %}
 ./docker-stop.sh
-```
+{% endhighlight %}
 
 Now let's get our `timeouts` demo up:
 
-```bash
+{% highlight bash %}
 ./docker-run.sh -d timeouts
-```
+{% endhighlight %}
 
 Now let's exercise the client with a *single* call which will hit an HTTP endpoint that should delay the response by about 5s. This delay should be enough to trigger the envoy timeout. We'll use the `curl.sh` script which is set up to call curl inside our demo container. 
 
-```bash
+{% highlight bash %}
 ./curl.sh -vvvv localhost:15001/delay/5
-```
+{% endhighlight %}
 
 We should see output similar to this:
 
-```bash
+{% highlight bash %}
 * Hostname was NOT found in DNS cache
 *   Trying ::1...
 * connect to ::1 port 15001 failed: Connection refused
@@ -523,33 +525,33 @@ We should see output similar to this:
 < 
 * Connection #0 to host localhost left intact
 upstream request timeout
-```
+{% endhighlight %}
 
 We see that our request was timed out!
 
 Let's check the Envoy stats:
 
-```bash
+{% highlight bash %}
 ./get-envoy-stats.sh | grep timeout
-```
+{% endhighlight %}
 
 Here we see 1 request (the one we sent in!) was timed out by Envoy.
 
-```bash
+{% highlight bash %}
 cluster.httpbin_service.upstream_cx_connect_timeout: 0
 cluster.httpbin_service.upstream_rq_per_try_timeout: 0
 cluster.httpbin_service.upstream_rq_timeout: 1
 http.admin.downstream_cx_idle_timeout: 0
 http.egress_http.downstream_cx_idle_timeout: 0
-```
+{% endhighlight %}
 
 If we send the request in, this time with a smaller delay, we should see the call go through:
 
-```bash
+{% highlight bash %}
 ./curl.sh -vvvv localhost:15001/delay/2
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 * Hostname was NOT found in DNS cache
 *   Trying ::1...
 * connect to ::1 port 15001 failed: Connection refused
@@ -589,7 +591,7 @@ If we send the request in, this time with a smaller delay, we should see the cal
   "url": "http://httpbin.org/delay/2"
 }
 * Connection #0 to host localhost left intact
-```
+{% endhighlight %}
 
 Also note that Envoy propagates the timeout headers so that upstream services have an idea about what to expect.
 
@@ -597,7 +599,7 @@ Also note that Envoy propagates the timeout headers so that upstream services ha
 
 For the tracing demo, we'll be configuring our Envoy with the following salient config ([see the full config for the rest of the context](https://github.com/christian-posta/envoy-microservices-patterns/blob/master/tracing/conf/envoy.json):
 
-```json
+{% highlight json %}
     "tracing": {
       "operation_name": "egress"
     },
@@ -630,27 +632,28 @@ For the tracing demo, we'll be configuring our Envoy with the following salient 
           ]
         }
     
-```
+{% endhighlight %}
 
 Here we're configuring our tracing driver and tracing cluster. In this case, to run this demo, we'll need to start up a Zipkin server:
 
 First stop any existing demos:
 
-```bash
+{% highlight bash %}
 ./docker-stop.sh
-```
+{% endhighlight %}
 
 Then bootstrap our zipkin server:
 
-```bash
+{% highlight bash %}
 ./tracing/docker-run-zipkin.sh
-```
+{% endhighlight %}
 
 This will expose zipkin onto ports `9411`. If you're using minikube or something similar to run these demos, you can directly export the minikube port to your host like this:
  
-```bash
+{% highlight bash %}
 ./port-forward-minikube.sh 9411
-``` 
+{% endhighlight %}
+ 
 
 Check out that command to port it to whatever your docker host may look like. Once you've gotten Zipkin up and running, navigate to the service (ie, on minikube, after doing the port forwarding, it would just be http://localhost:9411). You should see Zipkin:
 
@@ -658,19 +661,19 @@ Check out that command to port it to whatever your docker host may look like. On
 
 Now that we've got our zipkin server up, let's start up our `tracing` demo:
 
-```bash
+{% highlight bash %}
 ./docker-run.sh -d tracing
-```
+{% endhighlight %}
 
 Let's send some traffic through our client:
 
-```bash
+{% highlight bash %}
 ./curl.sh -vvvv localhost:15001/get
-```
+{% endhighlight %}
 
 We should get a response that looks like this:
 
-```bash
+{% highlight bash %}
 < HTTP/1.1 200 OK
 * Server envoy is not blacklisted
 < server: envoy
@@ -699,7 +702,7 @@ We should get a response that looks like this:
   "origin": "68.3.84.124", 
   "url": "http://httpbin.org/get"
 }
-```
+{% endhighlight %}
 
 Now if we go to our Zipkin server, we should see a single span/trace for this call (note, you may have to adjust the start/stop times in the zipkin filter:
 
