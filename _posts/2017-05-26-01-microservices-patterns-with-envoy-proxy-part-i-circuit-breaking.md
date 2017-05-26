@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Microservices Patterns With Envoy Proxy, Part I: Circuit Breaking"
+title: "Microservices Patterns With Envoy Sidecar Proxy, Part I: Circuit Breaking"
 modified:
 categories: microservices
 comments: true
@@ -10,9 +10,41 @@ image:
 date: 2017-05-26T05:34:38-07:00
 ---
 
-### Running the circuit-breaker demo
+This blog is [part of a series](microservices/00-microservices-patterns-with-envoy-proxy-series/) looking deeper at [Envoy Proxy](https://lyft.github.io/envoy/) and  [Istio.io](https://www.theregister.co.uk/2017/05/24/google_lyft_ibm_mix_microservices_into_management_mesh/) and how it enables a more elegant way to connect and manage microservices.  Follow me [@christianposta](http://twitter.com/christianposta) to stay up with these blog post releases. I think the flow for what I cover over the next series will be something like:
 
-To run the `circuit-breaker` demo:
+* What is [Envoy Proxy](https://lyft.github.io/envoy/), how does it work?
+* How to implement some of the basic patterns with [Envoy Proxy](https://lyft.github.io/envoy/)?
+* How [Istio Mesh](https://istio.io) fits into this picture
+* How [Istio Mesh](https://istio.io) works, and how it enables higher-order functionality across clusters with Envoy
+* How [Istio Mesh](https://istio.io) auth works 
+
+
+Here's the idea for the next couple of parts (will update the links as they're published):
+
+* [Circuit breakers (Part I)](/microservices/01-microservices-patterns-with-envoy-proxy-part-i-circuit-breaking/)
+* Retries / Timeouts (Part II)
+* Distributed Tracing (Part III)
+* Metrics collection with Prometheus (Part IV)
+* The next parts will cover more of the client-side functionality (Service Discovery, Request Shadowing, TLS, etc), just not sure which parts will be which yet :)
+
+
+## Part I - Circuit Breaking with Envoy Proxy
+
+This first blog post introduces you to Envoy Proxy's [implementation of circuit-breaking functionality](https://lyft.github.io/envoy/docs/intro/arch_overview/circuit_breaking.html#arch-overview-circuit-break). These demos are intentionally simple so that I can illustrate the patterns and usage individually. Please [download the source code for this demo](https://github.com/christian-posta/envoy-microservices-patterns) and follow along!
+
+This demo is comprised of a client and a service. The client is a Java http application that simulates making http calls to the "upstream" service (note, we're using [Envoys terminology here, and throught this repo](https://lyft.github.io/envoy/docs/intro/arch_overview/terminology.html)). The client is packaged in a Docker image named `docker.io/ceposta/http-envoy-client:latest`. Alongside the http-client Java application is an instance of [Envoy Proxy](https://lyft.github.io/envoy/docs/intro/what_is_envoy.html). In this deployment model, Envoy is deployed as a [sidecar](http://blog.kubernetes.io/2015/06/the-distributed-system-toolkit-patterns.html) alongside the service (the http client in this case). When the http-client makes outbound calls (to the "upstream" service), all of the calls go through the Envoy Proxy sidecar.
+
+The "upstream" service for these examples is [httpbin.org](http://httpbin.org). httpbin.org allows us to easily simulate HTTP service behavior. It's awesome, so check it out if you've not seen it.
+
+![Envoy Demo Overview](/images/envoy-demo-overview.png)
+
+The circuit-breaker demo [has it's own](https://github.com/christian-posta/envoy-microservices-patterns/blob/master/circuit-breaker/conf/envoy.json) `envoy.json` configuration file. I definitely recommend taking a look at the [reference documentation for each section of the configuration file](https://lyft.github.io/envoy/docs/configuration/configuration.html) to help understand the full configuration. The good folks at [datawire.io](datawire.io) also [put together a nice intro to Envoy and its configuration](https://www.datawire.io/guide/traffic/getting-started-lyft-envoy-microservices-resilience/) which you should check out too.
+
+
+
+## Running the circuit-breaker demo
+
+To run the `circuit-breaker` demo, [familiarize yourself with the demo framework](https://github.com/christian-posta/envoy-microservices-patterns) and then run:
 
 {% highlight bash %}
 ./docker-run.sh -d circuit-breaker
@@ -280,3 +312,8 @@ cluster.httpbin_service.outlier_detection.ejections_total: 1
 {% endhighlight %}
 
 We can see we tripped the consecutive 5xx detection! We've also removed that host from our loadbalancing group. 
+
+### Series
+
+Please [stay tuned](http://twitter.com/christianposta)! Part II and III on timeouts/retries/tracing should be landing next week!
+
