@@ -39,7 +39,7 @@ The "upstream" service for these examples is [httpbin.org](http://httpbin.org). 
 
 ![Envoy Demo Overview](/images/envoy-demo-overview.png)
 
-The circuit-breaker demo [has it's own](https://github.com/christian-posta/envoy-microservices-patterns/blob/master/circuit-breaker/conf/envoy.json) `envoy.json` configuration file. I definitely recommend taking a look at the [reference documentation for each section of the configuration file](https://lyft.github.io/envoy/docs/configuration/configuration.html) to help understand the full configuration. The good folks at [datawire.io](datawire.io) also [put together a nice intro to Envoy and its configuration](https://www.datawire.io/guide/traffic/getting-started-lyft-envoy-microservices-resilience/) which you should check out too.
+The circuit-breaker demo [has it's own](https://github.com/christian-posta/envoy-microservices-patterns/blob/master/circuit-breaker/conf/envoy.json) `envoy.json` configuration file. I definitely recommend taking a look at the [reference documentation for each section of the configuration file](https://lyft.github.io/envoy/docs/configuration/configuration.html) to help understand the full configuration. The good folks at [datawire.io](http://datawire.io) also [put together a nice intro to Envoy and its configuration](https://www.datawire.io/guide/traffic/getting-started-lyft-envoy-microservices-resilience/) which you should check out too.
 
 
 

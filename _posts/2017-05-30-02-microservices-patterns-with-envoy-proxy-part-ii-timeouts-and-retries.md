@@ -42,7 +42,7 @@ The "upstream" service for these examples is [httpbin.org](http://httpbin.org). 
 
 ![Envoy Demo Overview](/images/envoy-demo-overview.png)
 
-Both the `retries` and `timeouts` demos [have their own](https://github.com/christian-posta/envoy-microservices-patterns/blob/master/retries/conf/envoy.json) `envoy.json` configuration file. I definitely recommend taking a look at the [reference documentation for each section of the configuration file](https://lyft.github.io/envoy/docs/configuration/configuration.html) to help understand the full configuration. The good folks at [datawire.io](datawire.io) also [put together a nice intro to Envoy and its configuration](https://www.datawire.io/guide/traffic/getting-started-lyft-envoy-microservices-resilience/) which you should check out too.
+Both the `retries` and `timeouts` demos [have their own](https://github.com/christian-posta/envoy-microservices-patterns/blob/master/retries/conf/envoy.json) `envoy.json` configuration file. I definitely recommend taking a look at the [reference documentation for each section of the configuration file](https://lyft.github.io/envoy/docs/configuration/configuration.html) to help understand the full configuration. The good folks at [datawire.io](http://datawire.io) also [put together a nice intro to Envoy and its configuration](https://www.datawire.io/guide/traffic/getting-started-lyft-envoy-microservices-resilience/) which you should check out too.
 
 
 
@@ -164,7 +164,7 @@ Whenever dealing with timeouts we must be aware of the overall global timeout fo
 
 ![envoy](/images/timeoutexample.png)
 
-Envoy can help propagate timeout information, and protocols like [gRPC](grpc.io) can propagate `deadline` information. As we continue along with this series, we'll see how we can control the Envoy proxies with [Istio Mesh](istio.io) and a control plane can help us do fault injection to uncover timeout anomalies. 
+Envoy can help propagate timeout information, and protocols like [gRPC](grpc.io) can propagate `deadline` information. As we continue along with this series, we'll see how we can control the Envoy proxies with [Istio Mesh](http://istio.io) and a control plane can help us do fault injection to uncover timeout anomalies. 
 
 If you've run previous demos, please make sure to get a clean start for this (or any) demo. We have different Envoy configurations for each demo and want to make sure we start from a clean slate each time.
 
