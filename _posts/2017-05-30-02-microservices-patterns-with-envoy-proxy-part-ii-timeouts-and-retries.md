@@ -281,4 +281,4 @@ Also note that Envoy propagates the timeout headers so that upstream services ha
 
 ### Series
 
-Please [stay tuned](http://twitter.com/christianposta)! III tracing should be landing soon!
+Please [stay tuned](http://twitter.com/christianposta)! Part III tracing should be landing soon!
