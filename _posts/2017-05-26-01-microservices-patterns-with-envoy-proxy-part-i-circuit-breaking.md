@@ -10,7 +10,7 @@ image:
 date: 2017-05-26T05:34:38-07:00
 ---
 
-This blog is [part of a series](microservices/00-microservices-patterns-with-envoy-proxy-series/) looking deeper at [Envoy Proxy](https://lyft.github.io/envoy/) and  [Istio.io](https://www.theregister.co.uk/2017/05/24/google_lyft_ibm_mix_microservices_into_management_mesh/) and how it enables a more elegant way to connect and manage microservices.  Follow me [@christianposta](http://twitter.com/christianposta) to stay up with these blog post releases. I think the flow for what I cover over the next series will be something like:
+This blog is [part of a series](http://blog.christianposta.com/microservices/00-microservices-patterns-with-envoy-proxy-series/) looking deeper at [Envoy Proxy](https://lyft.github.io/envoy/) and  [Istio.io](https://www.theregister.co.uk/2017/05/24/google_lyft_ibm_mix_microservices_into_management_mesh/) and how it enables a more elegant way to connect and manage microservices.  Follow me [@christianposta](http://twitter.com/christianposta) to stay up with these blog post releases. I think the flow for what I cover over the next series will be something like:
 
 * What is [Envoy Proxy](https://lyft.github.io/envoy/), how does it work?
 * How to implement some of the basic patterns with [Envoy Proxy](https://lyft.github.io/envoy/)?
@@ -21,11 +21,12 @@ This blog is [part of a series](microservices/00-microservices-patterns-with-env
 
 Here's the idea for the next couple of parts (will update the links as they're published):
 
-* [Circuit breakers (Part I)](/microservices/01-microservices-patterns-with-envoy-proxy-part-i-circuit-breaking/)
-* Retries / Timeouts (Part II)
+* [Circuit breakers (Part I)](http://blog.christianposta.com/microservices/01-microservices-patterns-with-envoy-proxy-part-i-circuit-breaking/)
+* [Retries / Timeouts (Part II)](http://blog.christianposta.com/microservices/02-microservices-patterns-with-envoy-proxy-part-ii-timeouts-and-retries/)
 * Distributed Tracing (Part III)
 * Metrics collection with Prometheus (Part IV)
-* The next parts will cover more of the client-side functionality (Service Discovery, Request Shadowing, TLS, etc), just not sure which parts will be which yet :)
+* Service Discovery (Part V)
+* The next parts will cover more of the client-side functionality (Request Shadowing, TLS, etc), just not sure which parts will be which yet :)
 
 
 ## Part I - Circuit Breaking with Envoy Proxy

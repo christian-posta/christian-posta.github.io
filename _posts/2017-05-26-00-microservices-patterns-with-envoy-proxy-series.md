@@ -43,11 +43,12 @@ I'm going to cover those aforemention topics in a "deep dive" approach: i.e., ho
 
 Here's the idea for the next couple of parts (will update the links as they're published):
 
-* [Circuit breakers (Part I)](/microservices/01-microservices-patterns-with-envoy-proxy-part-i-circuit-breaking/)
-* Retries / Timeouts (Part II)
+* [Circuit breakers (Part I)](http://blog.christianposta.com/microservices/01-microservices-patterns-with-envoy-proxy-part-i-circuit-breaking/)
+* [Retries / Timeouts (Part II)](http://blog.christianposta.com/microservices/02-microservices-patterns-with-envoy-proxy-part-ii-timeouts-and-retries/)
 * Distributed Tracing (Part III)
 * Metrics collection with Prometheus (Part IV)
-* The next parts will cover more of the client-side functionality (Service Discovery, Request Shadowing, TLS, etc), just not sure which parts will be which yet :)
+* Service Discovery (Part V)
+* The next parts will cover more of the client-side functionality (Request Shadowing, TLS, etc), just not sure which parts will be which yet :)
 
 Part II and III should be coming next week: [feel free to follow along!](http://twitter.com/christianposta)
 
@@ -74,5 +75,5 @@ The "upstream" service for these examples is [httpbin.org](http://httpbin.org). 
 
 Each demo will have it's own `envoy.json` configuration file. I definitely recommend taking a look at the [reference documentation for each section of the configuration file](https://lyft.github.io/envoy/docs/configuration/configuration.html) to help understand the configuration. The good folks at [datawire.io](datawire.io) also [put together a nice intro to Envoy and its configuration](https://www.datawire.io/guide/traffic/getting-started-lyft-envoy-microservices-resilience/) which you should check out too.
 
-Please [stay tuned](http://twitter.com/christianposta)! [Part I is already up](/microservices/01-microservices-patterns-with-envoy-proxy-part-i-circuit-breaking/) and more coming later next week!
+Please [stay tuned](http://twitter.com/christianposta)! [Part I is already up](http://blog.christianposta.com/microservices/01-microservices-patterns-with-envoy-proxy-part-i-circuit-breaking/) and more coming later next week!
 
