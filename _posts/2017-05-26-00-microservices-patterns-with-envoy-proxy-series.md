@@ -75,5 +75,5 @@ The "upstream" service for these examples is [httpbin.org](http://httpbin.org). 
 
 Each demo will have it's own `envoy.json` configuration file. I definitely recommend taking a look at the [reference documentation for each section of the configuration file](https://lyft.github.io/envoy/docs/configuration/configuration.html) to help understand the configuration. The good folks at [datawire.io](datawire.io) also [put together a nice intro to Envoy and its configuration](https://www.datawire.io/guide/traffic/getting-started-lyft-envoy-microservices-resilience/) which you should check out too.
 
-Please [stay tuned](http://twitter.com/christianposta)! [Part I is already up](http://blog.christianposta.com/microservices/01-microservices-patterns-with-envoy-proxy-part-i-circuit-breaking/) and more coming later next week!
+Please [stay tuned](http://twitter.com/christianposta)! [Part I and II are already up](http://blog.christianposta.com/microservices/01-microservices-patterns-with-envoy-proxy-part-i-circuit-breaking/) and more coming later next week!
 
