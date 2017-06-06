@@ -23,7 +23,7 @@ Here's the idea for the next couple of parts (will update the links as they're p
 
 * [Circuit breakers (Part I)](http://blog.christianposta.com/microservices/01-microservices-patterns-with-envoy-proxy-part-i-circuit-breaking/)
 * [Retries / Timeouts (Part II)](http://blog.christianposta.com/microservices/02-microservices-patterns-with-envoy-proxy-part-ii-timeouts-and-retries/)
-* Distributed Tracing (Part III)
+* [Distributed Tracing (Part III)](http://blog.christianposta.com/microservices/03-microservices-patterns-with-envoy-proxy-part-iii-distributed-tracing/)
 * Metrics collection with Prometheus (Part IV)
 * Service Discovery (Part V)
 * The next parts will cover more of the client-side functionality (Request Shadowing, TLS, etc), just not sure which parts will be which yet :)
