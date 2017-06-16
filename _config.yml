@@ -28,7 +28,7 @@ kramdown:
 owner:
   name: Christian Posta
   avatar: bio-photo.jpg
-  bio: "Principal Middleware Architect @ Red Hat, open-source enthusiast, committer @ Apache, Cloud, Integration, Kubernetes, Docker, OpenShift, Fabric8, #blogger"
+  bio: "Chief Architect, cloud application development @ Red Hat, author Microservices for Java Developers, open-source enthusiast, committer @ Apache, Cloud, Integration, Kubernetes, Docker, OpenShift, Fabric8, #blogger"
   email: 
   disqus-shortname: ceposta-blog
   twitter: christianposta

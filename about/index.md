@@ -8,17 +8,29 @@ image:
 ---
 
 
-My name is Christian, and I work for Red Hat as a Principal Solutions Architect in the Middleware Specialist group. I specialize in helping companies I work with use technology to make lots of money. I've worked with companies and technology groups in the shipping, banking, retail/e-retail, insurance, finance, healthcare, telecom, and government industries. I currently take on may roles: software architect, proficient developer, consultant, mentor, trainer, evangelist, speaker, and blogger. I'm passionate about software, teaching, doing things right, and keeping things simple.
+Christian Posta (@christianposta) is a Chief Architect at Red Hat with 15+ years of experience building and designing highly scalable, resilient, distributed systems. He recently authored the book "Microservices for Java Developers" for O’Reilly and Red Hat (http://www.oreilly.com/programming/free/microservices-for-java-developers.csp).
 
-## Focus
-My focus is on building high-performing, scalable, available, fault-tolerant distributed systems using _Open Source_ technology. Creating these types of systems is a dark art, and I enjoy the challenge. Systems that I've worked on directly, architected, or guided, touch revenue streams of _billions_ of dollars in some of the most critical business paths for very household company names.  
+Christian has spent time at web-scale internet companies, as a specialist consultant in the integration and messaging space, as well as at traditional enterprises in the manufacturing, power-distribution, retail, and financial-services space. Christian now works closely with Red Hat’s strategic customers and partners to realize business value through technology by implementing cloud-native solutions using opensource including Red Hat’s extensive open-source portfolio. Christian guides customers covering topics such as high-performance messaging, integration, caching, stream processing, data-intensive architectures and how we deliver those in a cloud-native way with containers. He’s a committer in various open-source communities including Apache ActiveMQ, Apache Camel, fabric8.io, and frequent contributor to the Kafka, Debezium, and Kubernetes communities and many others. He’s also on the project board/PMC of ActiveMQ.
 
-## Open Source
-I'm a firm believer in collaborative solutions, and believe working on technology _in the open_ is key to achieving the highest quality solutions. The more people involved, the more eyes on a solution, the better our solutions. I am a committer on a handful of opensource projects including [Apache ActiveMQ](http://activemq.apache.org) (also on PMC), [Apache Camel](http://camel.apache.org), as well as contributor to projects like [fabric8.io](http://fabric8.io) and others that I come across that look interesting. 
+Christian writes on a popular blog (35K+ views per month) at http://blog.christianposta.com as well as top developer communities like techbeacon.com, DZone.com, InfoQ and others . Lastly, you can catch him mentoring, training, and leading teams to be successful with distributed-systems concepts, devops, and cloud-native application design, or speaking at top technology conferences like Devoxx, JavaOne, KubeCon, or Red Hat Summit.
 
 ## Speaker
 I enjoy talking about the technology that I work with and the solutions that I work on. You can find me talking about the latest trends in 
-cloud computing, microservices, integration, open-source, and design at the [Phoenix JUG](http://phxjug.org), [Red Hat Summit](http://www.redhat.com/summit/)/[DevNation](http://www.devnation.org), [DevNexus](http://www.devnexus.com/s/index) and others. Here's a list of past speaking engagements and slides:
+cloud computing, microservices, integration, open-source, and design at many of the top developer conferences and regional user groups. Here's a list of some of the past speaking engagements and slides:
+
+* DevNexus (2015, 2017) [https://www.devnexus.com/s/speakers/4223](https://www.devnexus.com/s/speakers/4223)
+* OReilly Software Architecture Conference (2017) [https://conferences.oreilly.com/software-architecture/sa-ny/public/schedule/speaker/196155](https://conferences.oreilly.com/software-architecture/sa-ny/public/schedule/speaker/196155)
+* Microservices Practitioner Summit (2017) [https://www.microservices.com/summit/](https://www.microservices.com/summit/)
+* Java One (2016) [https://developers.redhat.com/events/javaone/2016/](https://developers.redhat.com/events/javaone/2016/)
+* Devoxx US (2017) [http://cfp.devoxx.us/2017/speaker/christian_posta](http://cfp.devoxx.us/2017/speaker/christian_posta)
+* Kubecon/Cloud-NativeCon (2016, 2015) [https://cnkc16.sched.com/christian.posta1](https://cnkc16.sched.com/christian.posta1)
+[https://kubecon2015.sched.com/speaker/christianposta2](https://kubecon2015.sched.com/speaker/christianposta2)
+* Red Hat Summit (2017, 2016, 2015, 2014) [https://rh2016.smarteventscloud.com/connect/speakerDetail.ww?PERSON_ID=F400C3CF64BDFF894C95E332B8CFD595](https://rh2016.smarteventscloud.com/connect/speakerDetail.ww?PERSON_ID=F400C3CF64BDFF894C95E332B8CFD595)
+* Developerweek 2016 San Francisco
+* Pivotal / Spring One Platform [https://2016.event.springoneplatform.io/presenters/christian_posta.html](https://2016.event.springoneplatform.io/presenters/christian_posta.html)
+* Barcelona Java Developers Conference [http://www.jbcnconf.com/2016/infoSpeaker.html?ref=cposta](http://www.jbcnconf.com/2016/infoSpeaker.html?ref=cposta)
+
+Older talks:
 
 * **Microservices with Apache Camel, Docker, and Fabric8v2** Red Hat Summit 2015 [slides](http://www.slideshare.net/ceposta/camel-microservicesfabric8)
 * **Why real integration developers ride Camels** Red Hat Summit 2015 [slides](http://www.slideshare.net/ceposta/why-real-integration-developers-ride-camels)
