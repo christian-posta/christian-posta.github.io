@@ -281,8 +281,5 @@ Also note that Envoy propagates the timeout headers so that upstream services ha
 
 ### Series
 
-<<<<<<< HEAD
-Please [stay tuned](http://twitter.com/christianposta)! Part III tracing should be landing soon!
-=======
 Please [stay tuned](http://twitter.com/christianposta)! [Part III, tracing,](http://blog.christianposta.com/microservices/03-microservices-patterns-with-envoy-proxy-part-iii-distributed-tracing/) should be landing soon!
->>>>>>> added distributed tracing blog
+
