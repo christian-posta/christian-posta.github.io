@@ -99,7 +99,7 @@ From this image, we're illustrating that the `Monolith` has all modules/componen
 
 In this step, we're going to decouple the `UI` from the `Monolith`. Actually in this architecture, we don't actually remove anything from the `Monolith`. We start to reduce risk by just adding a new deployment which contains the UI. The new UI component in this architecture should be very close to the same UI (exactly?) that's in the `Monolith` and just calls back to the `Monolith`'s REST API... of course this implies the monolith has a reasonable API that an external UI could use. We may very well find that this is not the case: typically this type of API may resemble more of an "internal" API at which point we'd need to think about some integration between the separate UI component and the backend monolith and what a more consumable public-facing API might look like. 
 
-We can deploy this new `UI` component into our architecture and use our platform to slowly route traffic to it while still routing to the old monolith. This way we can introduce it without taking downtime. Again, in the second part of the blog post we'll see how to do this in more detail; however the concept of dark launch/canary release/rolling release are all very important here (and for subsequent steps). 
+We can deploy this new `UI` component into our architecture and use our platform to slowly route traffic to it while still routing to the old monolith. This way we can introduce it without taking downtime. Again, in the second part of the blog post we'll see how to do this in more detail; however the concept of [dark launch/canary release/rolling release](http://blog.christianposta.com/deploy/blue-green-deployments-a-b-testing-and-canary-releases/) are all very important here (and for subsequent steps). 
 
 
 #### Considerations
@@ -107,7 +107,7 @@ We can deploy this new `UI` component into our architecture and use our platform
 * Don't modify the monolith for this first step; just copy/past UI into separate component
 * We need to have a reasonable remoting API between the UI and monolith -- this may not always be the case
 * Security surface increases
-* We need a way to route/split traffic in a controlled manner to the new UI and/or the monolith directly to support dark launch/canary/rolling release
+* We need a way to route/split traffic in a controlled manner to the new UI and/or the monolith directly to support [dark launch/canary/rolling release](http://blog.christianposta.com/deploy/blue-green-deployments-a-b-testing-and-canary-releases/)
 
 
 ### Drop the UI from the monolith
@@ -170,9 +170,9 @@ When we make a change to our monolith/backend, we don't want to replace the old 
 
 Another thing to note. If we enable the monolith to send the execution to both the old code path as well as calling our new service, we need a way to flag this transaction/call to the new service as a "synthetic" call. If your new service is less critical than in this example, an order service, and you can deal with duplicates, then maybe this synthetic-request identification is less important. If your new service tends to serve more read-only traffic, again you may not worry as much about identifying synthetic transactions. In the case of a synthentic transaction, however, you want to be able to run the entire service end-to-end including storing into the database. You may take options here to either store the data with a "synthetic" flag, or just rollback the transaction if your data store supports that.
 
-The last thing to note here is when we make our change to the monolith/backend, we want to again use a dark launch/canary/rolling release approach. We will need our infrastructure to support this. We will look closer at this in the second part. 
+The last thing to note here is when we make our change to the monolith/backend, we want to again use a [dark launch/canary/rolling release](http://blog.christianposta.com/deploy/blue-green-deployments-a-b-testing-and-canary-releases/) approach. We will need our infrastructure to support this. We will look closer at this in the second part. 
 
-At this point we're forcing the traffic back through the monolith. We're trying not to perturb the main call flow as much as possible so we can quickly roll back in the event a canary doesn't go well. On the other hand, it may be useful to deploy a gateway/control component that can more fine-grain control the call to the new service instead of forcing to the monolith. In this case, the gateway would have the control logic whether to send the transaction to the monolith, to the new service, or both.
+At this point we're forcing the traffic back through the monolith. We're trying not to perturb the main call flow as much as possible so we can quickly roll back in the event a [canary](http://blog.christianposta.com/deploy/blue-green-deployments-a-b-testing-and-canary-releases/) doesn't go well. On the other hand, it may be useful to deploy a gateway/control component that can more fine-grain control the call to the new service instead of forcing to the monolith. In this case, the gateway would have the control logic whether to send the transaction to the monolith, to the new service, or both.
 
 ![](/images/decomp/decomp06.png)
 
