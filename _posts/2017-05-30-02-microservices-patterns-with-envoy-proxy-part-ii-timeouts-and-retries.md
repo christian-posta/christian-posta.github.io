@@ -12,10 +12,10 @@ date: 2017-05-30T05:02:14-07:00
 
 
 
-This blog is [part of a series](http://blog.christianposta.com/microservices/00-microservices-patterns-with-envoy-proxy-series/) looking deeper at [Envoy Proxy](https://lyft.github.io/envoy/) and  [Istio.io](https://www.theregister.co.uk/2017/05/24/google_lyft_ibm_mix_microservices_into_management_mesh/) and how it enables a more elegant way to connect and manage microservices.  Follow me [@christianposta](http://twitter.com/christianposta) to stay up with these blog post releases. 
+This blog is [part of a series](http://blog.christianposta.com/microservices/00-microservices-patterns-with-envoy-proxy-series/) looking deeper at [Envoy Proxy](https://envoyproxy.github.io/) and  [Istio.io](https://www.theregister.co.uk/2017/05/24/google_lyft_ibm_mix_microservices_into_management_mesh/) and how it enables a more elegant way to connect and manage microservices.  Follow me [@christianposta](http://twitter.com/christianposta) to stay up with these blog post releases. 
 
-* What is [Envoy Proxy](https://lyft.github.io/envoy/), how does it work?
-* How to implement some of the basic patterns with [Envoy Proxy](https://lyft.github.io/envoy/)?
+* What is [Envoy Proxy](https://envoyproxy.github.io/), how does it work?
+* How to implement some of the basic patterns with [Envoy Proxy](https://envoyproxy.github.io/)?
 * How [Istio Mesh](https://istio.io) fits into this picture
 * How [Istio Mesh](https://istio.io) works, and how it enables higher-order functionality across clusters with Envoy
 * How [Istio Mesh](https://istio.io) auth works 
@@ -34,15 +34,15 @@ Here's the idea for the next couple of parts (will update the links as they're p
 ## Part II - Timeouts and Retries with Envoy Proxy
 
 
-The first blog post introduced you to Envoy Proxy's [implementation of circuit-breaking functionality](https://lyft.github.io/envoy/docs/intro/arch_overview/circuit_breaking.html#arch-overview-circuit-break). In this second part, we'll take a closer look at how to enable additional resilience features like timeouts and retries. These demos are intentionally simple so that I can illustrate the patterns and usage individually. Please [download the source code for this demo](https://github.com/christian-posta/envoy-microservices-patterns) and follow along!
+The first blog post introduced you to Envoy Proxy's [implementation of circuit-breaking functionality](https://envoyproxy.github.io/envoy/intro/arch_overview/circuit_breaking.html#arch-overview-circuit-break). In this second part, we'll take a closer look at how to enable additional resilience features like timeouts and retries. These demos are intentionally simple so that I can illustrate the patterns and usage individually. Please [download the source code for this demo](https://github.com/christian-posta/envoy-microservices-patterns) and follow along!
 
-This demo is comprised of a client and a service. The client is a Java http application that simulates making http calls to the "upstream" service (note, we're using [Envoys terminology here, and throught this repo](https://lyft.github.io/envoy/docs/intro/arch_overview/terminology.html)). The client is packaged in a Docker image named `docker.io/ceposta/http-envoy-client:latest`. Alongside the http-client Java application is an instance of [Envoy Proxy](https://lyft.github.io/envoy/docs/intro/what_is_envoy.html). In this deployment model, Envoy is deployed as a [sidecar](http://blog.kubernetes.io/2015/06/the-distributed-system-toolkit-patterns.html) alongside the service (the http client in this case). When the http-client makes outbound calls (to the "upstream" service), all of the calls go through the Envoy Proxy sidecar.
+This demo is comprised of a client and a service. The client is a Java http application that simulates making http calls to the "upstream" service (note, we're using [Envoys terminology here, and throught this repo](https://envoyproxy.github.io/envoy/intro/arch_overview/terminology.html)). The client is packaged in a Docker image named `docker.io/ceposta/http-envoy-client:latest`. Alongside the http-client Java application is an instance of [Envoy Proxy](https://envoyproxy.github.io/envoy/intro/what_is_envoy.html). In this deployment model, Envoy is deployed as a [sidecar](http://blog.kubernetes.io/2015/06/the-distributed-system-toolkit-patterns.html) alongside the service (the http client in this case). When the http-client makes outbound calls (to the "upstream" service), all of the calls go through the Envoy Proxy sidecar.
 
 The "upstream" service for these examples is [httpbin.org](http://httpbin.org). httpbin.org allows us to easily simulate HTTP service behavior. It's awesome, so check it out if you've not seen it.
 
 ![Envoy Demo Overview](/images/envoy-demo-overview.png)
 
-Both the `retries` and `timeouts` demos [have their own](https://github.com/christian-posta/envoy-microservices-patterns/blob/master/retries/conf/envoy.json) `envoy.json` configuration file. I definitely recommend taking a look at the [reference documentation for each section of the configuration file](https://lyft.github.io/envoy/docs/configuration/configuration.html) to help understand the full configuration. The good folks at [datawire.io](http://datawire.io) also [put together a nice intro to Envoy and its configuration](https://www.datawire.io/guide/traffic/getting-started-lyft-envoy-microservices-resilience/) which you should check out too.
+Both the `retries` and `timeouts` demos [have their own](https://github.com/christian-posta/envoy-microservices-patterns/blob/master/retries/conf/envoy.json) `envoy.json` configuration file. I definitely recommend taking a look at the [reference documentation for each section of the configuration file](https://envoyproxy.github.io/envoy/configuration/configuration.html) to help understand the full configuration. The good folks at [datawire.io](http://datawire.io) also [put together a nice intro to Envoy and its configuration](https://www.datawire.io/guide/traffic/getting-started-lyft-envoy-microservices-resilience/) which you should check out too.
 
 
 
@@ -139,9 +139,9 @@ Retries can have harmful effects on your services architectures if treated naive
 
 Some things to keep in mind about retries:
 
-* Envoy will do automatic exponential retry with jittering. See [the docs for more](https://lyft.github.io/envoy/docs/configuration/http_filters/router_filter.html)
+* Envoy will do automatic exponential retry with jittering. See [the docs for more](https://envoyproxy.github.io/envoy/configuration/http_filters/router_filter.html)
 * You can set retry timeouts (timeout for each retry), but the overall route timeout (configured for the routing table; see the `timeouts` demo for the exact configuration) will still hold/apply; this is to short circuit any run away retry/exponential backoff 
-* You should always set the circuit breaker retry configuration to limit the amount of quota for retries when you may have large numbers of connections. See the [active retries in the circuit breaker section in the Envoy documentation](https://lyft.github.io/envoy/docs/intro/arch_overview/circuit_breaking.html#arch-overview-circuit-break)
+* You should always set the circuit breaker retry configuration to limit the amount of quota for retries when you may have large numbers of connections. See the [active retries in the circuit breaker section in the Envoy documentation](https://envoyproxy.github.io/envoy/intro/arch_overview/circuit_breaking.html#arch-overview-circuit-break)
 
 ## Running the timeouts demo
 
