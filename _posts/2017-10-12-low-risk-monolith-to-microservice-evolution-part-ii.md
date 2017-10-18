@@ -323,7 +323,7 @@ In the case of our TicketMonster refactoring, we may want to keep a similar API 
 
 If we're building a greenfield API, or trying to imagine what our API looks like after iterating using a domain-driven design approach, we can use [apicur.io](http://www.apicur.io) tooling to build a Swagger/Open API spec. 
 
-![](/images/decomp2/apicurio.png)
+![](/images/decomp2/apcurio.png)
  
 In the case of TicketMonster, We used hoverfly to capture traffic from our application to our backend services by starting hoverfly in `proxy` mode and capturing the traffic. We can easily set an HTTP proxy in our browser settings to send all traffic through hoverfly. This stores the simulation of each request/response pair in a JSON file.  From here we use the request/response pairs in a mock or even better, use them to start writing tests that codify behavior we want in our implementation.
 
