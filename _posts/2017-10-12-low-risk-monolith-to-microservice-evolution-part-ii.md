@@ -23,6 +23,7 @@ From the previous part, here are some of the considerations we want to solve:
 * We would like a way to route traffic to our new changes, or enable changes (or kill switch) any new features/changes
 * We will be dealing with lots of nasty data integration challenges
 
+## Technologies
 
 The technologies we'll use to help guide us on this journey:
 
