@@ -231,7 +231,7 @@ tm-ui-v2         1         1         1            1           4d
 
 
 
-At this point `ticket-monster` and the `tm-ui-v1` deployments are taking live load. The `backend-v1` and the UI that points to it, `tm-ui-v2` take no load. One thing to note, the `backend-v` deployment shares the same database as the `ticket-monster` deployment since it's nearly identical, but has a slightly different outward facing API. 
+At this point `ticket-monster` and the `tm-ui-v1` deployments are taking live load. The `backend-v1` and the UI that points to it, `tm-ui-v2` take no load. One thing to note, the `backend-v1` deployment shares the same database as the `ticket-monster` deployment since it's nearly identical, but has a slightly different outward facing API. 
 
 Our new `backend-v1` and `tm-ui-v2` components have been deployed to production. This is a good time to focus on a simple, but crucial, fact here: we've deployed our changes to production, but we've not **released** them to anyone. The great folks at [turbinelabs.io](https://www.turbinelabs.io) have a great blog [that articulates this in more detail](https://blog.turbinelabs.io/deploy-not-equal-release-part-one-4724bc1e726b). We have an opportunity to do an informal dark launch. Maybe we want to unroll this deployment slowly to our internal users first or maybe to a subset of users in a particular region on a particular device, etc. 
 
@@ -273,7 +273,31 @@ Then click "Start" to start the header modification and refresh the page:
 
 ![](/images/decomp2/tm-monolith-ui-v2.png)
 
-We see we've now been redirected to the dark launch of our services. From here we can begin a release to our customer base by doing a canary release (maybe we do 1% of live traffic to our new deployment) and slowly increasing the traffic load (5%, 10%, 50%, etc) if we see there are no adverse effects. Being able to "see" or "observe" the effects of this release is crucial and we'll talk a bit more about that later on. Also note, this canary release approach is currently being done at the edge of our architecture, but inter-service communication/interaction can be controlled with istio for canaries as well. In the next few steps, we'll start to see that.
+We see we've now been redirected to the dark launch of our services. From here we can begin a release to our customer base by doing a canary release (maybe we do 1% of live traffic to our new deployment) and slowly increasing the traffic load (5%, 10%, 50%, etc) if we see there are no adverse effects. Here's an example of an Istio route rule that canaries the v2 traffic at 1%:
+ 
+{% highlight yaml %}
+ 
+apiVersion: config.istio.io/v1alpha2
+kind: RouteRule
+metadata:
+  name: tm-ui-v2-1pct-canary
+spec:
+  destination:
+    name: tm-ui
+  precedence: 20
+  route:
+  - labels:
+      version: v1
+    weight: 99
+  - labels:
+      version: v2
+    weight: 1
+    
+{% endhighlight %}
+    
+
+
+Being able to "see" or "observe" the effects of this release is crucial and we'll talk a bit more about that later on. Also note, this canary release approach is currently being done at the edge of our architecture, but inter-service communication/interaction can be controlled with istio for canaries as well. In the next few steps, we'll start to see that.
 
 ![](/images/decomp2/backend-v1-canary.png)
 
