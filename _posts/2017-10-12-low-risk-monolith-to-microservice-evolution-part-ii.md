@@ -28,6 +28,7 @@ From the previous part, here are some of the considerations we want to solve:
 The technologies we'll use to help guide us on this journey:
 
 * Developer service frameworks ([Spring Boot](https://projects.spring.io/spring-boot/), [WildFly](http://wildfly.org), [WildFly Swarm](http://wildfly-swarm.io))
+* API Design  ([APCur.io](http://www.apicur.io))
 * Data frameworks ([Spring Boot Teiid](https://github.com/teiid/teiid-spring-boot), [Debezium.io](http://debezium.io))
 * Integration tools ([Apache Camel](http://camel.apache.org))
 * Service mesh ([Istio Service Mesh](https://istio.io))
@@ -318,9 +319,13 @@ Being able to "see" or "observe" the effects of this release is crucial and we'l
 
 In this step, we are starting to design the API we want for the new Orders service and this will likely align more to the boundaries we determine through some domain-driven design exercises. Instead of putting in massive effort to build an API up front only to find later that it needs to be constantly changed, we can use API modeling tools to design an API, deploy a virtualized implementation of it, and iterate on it with our consumers. 
 
-In the case of our TicketMonster refactoring, we may want to keep a similar API to what we have in the monolith to make the decomposition initially as painless and low-risk as possible. In either case, we can leverage a testing tool called [Hoverfly](https://hoverfly.io). Hoverlfy is a great tool for simulating APIs or capturing existing API traffic so it can be used to simulate a mock endpoint. 
+In the case of our TicketMonster refactoring, we may want to keep a similar API to what we have in the monolith to make the decomposition initially as painless and low-risk as possible. In either case, we can leverage two awesome tools to help us: a web-based API designer called [apicur.io](http://www.apicur.io) and a testing/API virtualization tool called [Hoverfly](https://hoverfly.io). Hoverlfy is a great tool for simulating APIs or capturing existing API traffic so it can be used to simulate a mock endpoint. 
+
+If we're building a greenfield API, or trying to imagine what our API looks like after iterating using a domain-driven design approach, we can use [apicur.io](http://www.apicur.io) tooling to build a Swagger/Open API spec. 
+
+![](/images/decomp2/apicurio.png)
  
-We used hoverfly to capture traffic from our application to our backend services by starting hoverfly in `proxy` mode and capturing the traffic. We can easily set an HTTP proxy in our browser settings to send all traffic through hoverfly. Then we can save the request/response pairs and use them in a mock or even better, use them to start writing tests that codify behavior we want in our implementation.
+In the case of TicketMonster, We used hoverfly to capture traffic from our application to our backend services by starting hoverfly in `proxy` mode and capturing the traffic. We can easily set an HTTP proxy in our browser settings to send all traffic through hoverfly. This stores the simulation of each request/response pair in a JSON file.  From here we use the request/response pairs in a mock or even better, use them to start writing tests that codify behavior we want in our implementation.
 
 For the request/response pairs we care about, we can create a JSON schema (check out [https://jsonschema.net/#/editor](https://jsonschema.net/#/editor) and use this in our test. 
 
