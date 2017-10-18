@@ -28,7 +28,7 @@ From the previous part, here are some of the considerations we want to solve:
 The technologies we'll use to help guide us on this journey:
 
 * Developer service frameworks ([Spring Boot](https://projects.spring.io/spring-boot/), [WildFly](http://wildfly.org), [WildFly Swarm](http://wildfly-swarm.io))
-* API Design  ([APCur.io](http://www.apicur.io))
+* API Design  ([APICur.io](http://www.apicur.io))
 * Data frameworks ([Spring Boot Teiid](https://github.com/teiid/teiid-spring-boot), [Debezium.io](http://debezium.io))
 * Integration tools ([Apache Camel](http://camel.apache.org))
 * Service mesh ([Istio Service Mesh](https://istio.io))
