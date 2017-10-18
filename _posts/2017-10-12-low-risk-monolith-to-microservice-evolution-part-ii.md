@@ -33,7 +33,7 @@ The technologies we'll use to help guide us on this journey:
 * Integration tools ([Apache Camel](http://camel.apache.org))
 * Service mesh ([Istio Service Mesh](https://istio.io))
 * Database migration tools ([Liquibase](http://www.liquibase.org))
-* Dark launch / feature flag framework ([FF4J](https://istio.io))
+* Dark launch / feature flag framework ([FF4J](https://ff4j.org))
 * Deployment / CI-CD platform ([Kubernetes](https://kubernetes.io) / [OpenShift](https://www.openshift.org))
 * Kubernetes developer tools ([Fabric8.io](https://fabric8.io))
 * Testing tools ([Arquillian](http://arquillian.org), [Pact](https://github.com/pact-foundation/pact-specification)/[Arquillian Algeron](http://arquillian.org/arquillian-algeron/), [Hoverfly](https://hoverfly.io), [Spring-Boot Test](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-testing.html), [RestAssured](http://rest-assured.io), [Arquillian Cube](http://arquillian.org/arquillian-cube/)) 
