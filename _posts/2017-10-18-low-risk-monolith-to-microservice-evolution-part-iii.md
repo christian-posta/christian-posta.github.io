@@ -14,6 +14,8 @@ In [the first part (part I)](http://blog.christianposta.com/microservices/low-ri
 
  Follow along ([@christianposta](http://www.twitter.com/christianposta)) on twitter or [http://blog.christianposta.com](http://blog.christianposta.com) for the latest updates and discussion. 
  
+ You can find [Part I](http://blog.christianposta.com/microservices/low-risk-monolith-to-microservice-evolution/) and [Part II](http://blog.christianposta.com/microservices/low-risk-monolith-to-microservice-evolution-part-ii/).
+ 
 ## Technologies
  
  The technologies we'll use (in part II, III, and IV) to help guide us on this journey:

@@ -12,6 +12,8 @@ date: 2017-09-19T10:09:46-07:00
 
 As part of a two-day microservices workshop I'm putting together, I've been thinking a lot about how to explain monolith-application decomposition and what a transition to microservices might look like. This is a small subset of that material, but I want to share with you to get feedback (in the workshop we go into more detail about whether you should even break up your monolith!). This is based on my own tried and true real-life experience as well as my work with the many Red Hat customers I've met over North America for the last few years. Part I explores the architecture while the second part (to be released shortly) will cover some technology that can greatly help in this area. Follow along ([@christianposta](http://www.twitter.com/christianposta)) on twitter or [http://blog.christianposta.com](http://blog.christianposta.com) for the latest updates and discussion. 
 
+You can find [Part II](http://blog.christianposta.com/microservices/low-risk-monolith-to-microservice-evolution-part-ii/) and [Part III](http://blog.christianposta.com/microservices/low-risk-monolith-to-microservice-evolution-part-iii/).
+
 Before we dig in, let's set up some assumptions. 
 
 * Microservices architecture is not appropriate all the time (to be discussed in length)

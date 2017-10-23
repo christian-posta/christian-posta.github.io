@@ -14,6 +14,7 @@ Let's dive right in! In [the previous post (part I)](http://blog.christianposta.
 
  Follow along ([@christianposta](http://www.twitter.com/christianposta)) on twitter or [http://blog.christianposta.com](http://blog.christianposta.com) for the latest updates and discussion. 
 
+You can find [Part I](http://blog.christianposta.com/microservices/low-risk-monolith-to-microservice-evolution/) and [Part III](http://blog.christianposta.com/microservices/low-risk-monolith-to-microservice-evolution-part-iii/).
 
 From the previous part, here are some of the considerations we want to solve:
 
