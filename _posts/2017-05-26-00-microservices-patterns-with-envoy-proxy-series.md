@@ -12,15 +12,15 @@ date: 2017-05-26T05:34:38-07:00
 
 I've blogged in the past about ["how I'm excited for a '2.0' microservices stack"](http://blog.christianposta.com/microservices/microservices-2-0/) and what some of that entails. I even tried to lay out why [service interaction/conversations and the network](http://blog.christianposta.com/microservices/the-hardest-part-of-microservices-calling-your-services/) are the hardest parts of a practical microservices implementation. In this (and a next series of posts) post, I'd like to start to go a bit deeper.
 
-With the [recent announcement of the Istio Mesh project](https://www.theregister.co.uk/2017/05/24/google_lyft_ibm_mix_microservices_into_management_mesh/) including [Red Hat's support for the project](https://blog.openshift.com/red-hat-istio-launch/), I'd like to spend the next few blogs going deep inside this technology ([Envoy Proxy](https://lyft.github.io/envoy/), [Istio Mesh](https://istio.io), etc) and explain what it does, how it works, and why IMHO it's a game changer. Follow me [@christianposta](http://twitter.com/christianposta) to stay up with these blog post releases. I think the flow for what I cover over the next series will be something like:
+With the [recent announcement of the Istio Mesh project](https://www.theregister.co.uk/2017/05/24/google_lyft_ibm_mix_microservices_into_management_mesh/) including [Red Hat's support for the project](https://blog.openshift.com/red-hat-istio-launch/), I'd like to spend the next few blogs going deep inside this technology ([Envoy Proxy](https://www.envoyproxy.io), [Istio Mesh](https://istio.io), etc) and explain what it does, how it works, and why IMHO it's a game changer. Follow me [@christianposta](http://twitter.com/christianposta) to stay up with these blog post releases. I think the flow for what I cover over the next series will be something like:
 
-* What is [Envoy Proxy](https://lyft.github.io/envoy/), how does it work?
-* How to implement some of the basic patterns with [Envoy Proxy](https://lyft.github.io/envoy/)?
+* What is [Envoy Proxy](https://www.envoyproxy.io), how does it work?
+* How to implement some of the basic patterns with [Envoy Proxy](https://www.envoyproxy.io)?
 * How [Istio Mesh](https://istio.io) fits into this picture
 * How [Istio Mesh](https://istio.io) works, and how it enables higher-order functionality across clusters with Envoy
 * How [Istio Mesh](https://istio.io) auth works 
 
-In the next few blog posts specifically, I want to cover some of the client-side, service-interaction features that [Envoy Proxy](https://lyft.github.io/envoy/) provides. For a quick refresher, Envoy Proxy is a small, lightweight, native/C++ application that enables the following features (and more!):
+In the next few blog posts specifically, I want to cover some of the client-side, service-interaction features that [Envoy Proxy](https://www.envoyproxy.io) provides. For a quick refresher, Envoy Proxy is a small, lightweight, native/C++ application that enables the following features (and more!):
 
 * Service discovery
 * Adaptive routing / client side load balancing
