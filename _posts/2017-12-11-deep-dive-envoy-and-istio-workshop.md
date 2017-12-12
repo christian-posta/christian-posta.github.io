@@ -14,7 +14,7 @@ Just getting back from KubeCon 2017 and I can tell you the excitement about [Ist
 
 ![](/images/istiologo.png)
 
-There is [lots](https://blog.openshift.com/evaluate-istio-openshift/) [of great](http://blog.christianposta.com/microservices/00-microservices-patterns-with-envoy-proxy-series/) [material](https://developer.ibm.com/dwblog/2017/istio-service-mesh-kubecon-news-announcements/) coming out about Istio including a [istio workshop](https://github.com/ZackButcher/istio-workshop) delivered by [Zach Butcher](https://twitter.com/ZackButcher) et. al. at KubeCon. 
+There is [lots](https://blog.openshift.com/evaluate-istio-openshift/) [of great](http://blog.christianposta.com/microservices/00-microservices-patterns-with-envoy-proxy-series/) [material](https://developer.ibm.com/dwblog/2017/istio-service-mesh-kubecon-news-announcements/) coming out about Istio including a [istio workshop](https://github.com/ZackButcher/istio-workshop) delivered by [Zach Butcher](https://twitter.com/ZackButcher) et. al. at KubeCon. To see how to run Istio on [OpenShift](http://openshift.com) take a look at [Veer Muchandi's](https://twitter.com/VeerMuchandi) [demo repository](https://github.com/VeerMuchandi/istio-on-openshift).
 
 I've [started putting together a workshop diving deeper into how Istio works](http://blog.christianposta.com/istio-workshop/slides/#/title). including exploring in detail parts of Envoy (the default Istio proxy), and the core components like Pilot and Mixer. 
  
