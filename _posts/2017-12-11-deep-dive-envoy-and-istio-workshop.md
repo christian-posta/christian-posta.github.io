@@ -19,7 +19,7 @@ There is [lots](https://blog.openshift.com/evaluate-istio-openshift/) [of great]
 I've [started putting together a workshop diving deeper into how Istio works](http://blog.christianposta.com/istio-workshop/slides/#/title). including exploring in detail parts of Envoy (the default Istio proxy), and the core components like Pilot and Mixer. 
  
  
-This workshop starts off at a high level, but make no mistake: it's intended to be at a lower level and hands on. We walk through some pieces of the Istio technology with the hope of giving the attendee/reader a good understanding of how the pieces come together, how to debug things when there are issues, and how to become more comfortable with Istio and Envoy.
+This workshop starts off at a high level, but make no mistake: it's intended to be at a lower level and hands on. We walk through some the core pieces of the Istio technology with the hope of giving the attendee/reader a good understanding of how the pieces come together, how to debug things when there are issues, and how to become more comfortable with some of the magic of Istio and Envoy.
 
 
 DISCLAIMER: this material is a work in progress; expect to see updates frequently. 
@@ -30,7 +30,7 @@ The agenda as it is right now:
 * Meet Envoy Proxy
 * Hands on with Envoy Proxy
 * Meet Istio Service Mesh
-* Hands on with Istio Service Mesh<
+* Hands on with Istio Service Mesh
 * Additional resources
 
 
