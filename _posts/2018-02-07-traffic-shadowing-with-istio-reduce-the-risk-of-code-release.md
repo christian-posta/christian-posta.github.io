@@ -165,7 +165,7 @@ Here's a video showing this:
 <p><a href="https://vimeo.com/254681396">Istio Mirroring Demo</a> from <a href="https://vimeo.com/ceposta">Christian Posta</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
 
 
-Please see the [istio docs](https://istio.io/docs/reference/config/istio.routing.v1alpha1.html#RouteRule) for more details!
+Please see the offical [istio docs](https://istio.io/docs/tasks/traffic-management/mirroring.html) for more details!
 
 
 [istio-service-mesh]: https://istio.io
