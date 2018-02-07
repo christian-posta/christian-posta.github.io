@@ -9,7 +9,7 @@ image:
   feature:
 date: 2018-02-07T05:52:40-07:00
 ---
-
+We've [been](http://blog.christianposta.com/microservices/comparing-envoy-and-istio-circuit-breaking-with-netflix-hystrix/) [talking](http://blog.christianposta.com/microservices/deep-dive-envoy-and-istio-workshop/) [about Istio](http://blog.christianposta.com/microservices/low-risk-monolith-to-microservice-evolution-part-iii/) [and service mesh recently](http://blog.christianposta.com/microservices/application-network-functions-with-esbs-api-management-and-now-service-mesh/) (follow along [@christianposta](http://twitter.com/christianposta) for the latest) but one aspect of Istio can be glossed over.
 One of the most important aspects of [Istio.io][istio-service-mesh] is its ability to [control the routing of traffic between services][istio-control-routing]. With this fine-grained control of application-level traffic, we can do interesting resilience things like routing around failures, routing to different availability zones when necessary etc. IMHO, more importantly, we can also control the flow of traffic for our deployments so we can reduce the risk of change to the system. 
 
 With a services architecture, our goal is to increase our ability to go faster so we do things like implement microservices, automated testing pipelines, CI/CD etc. But what good is any of this if we have bottlenecks getting our code changes into production? Production is where we understand whether our changes have any positive impact to our KPIs, so we should reduce the bottlenecks of getting code into production.
