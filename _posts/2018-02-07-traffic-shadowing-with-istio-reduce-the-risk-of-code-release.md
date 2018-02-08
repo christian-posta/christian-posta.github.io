@@ -26,7 +26,7 @@ Please go read the [two-part series titled "Deploy != Release"](https://blog.tur
 
 ## Dark traffic 
 
-One strategy we can use to reduce risk for our releases, before we even expose to any type of user, is to shadow traffic live traffic to our deployment. With traffic shadowing, we can take a fraction of traffic and route it to our new deployment and observe how it behaves. We can do things like test for excpetions, performance, and result parity. Projects such as [Twitter Diffy](https://github.com/twitter/diffy) can be used to do comparisons between different released versions and unreleased versions.
+One strategy we can use to reduce risk for our releases, before we even expose to any type of user, is to shadow traffic live traffic to our deployment. With traffic shadowing, we can take a fraction of traffic and route it to our new deployment and observe how it behaves. We can do things like test for errors, exceptions, performance, and result parity. Projects such as [Twitter Diffy](https://github.com/twitter/diffy) can be used to do comparisons between different released versions and unreleased versions.
 
 With Istio, we can do this kind of traffic control by [Mirroring](https://istio.io/docs/reference/config/istio.routing.v1alpha1.html#RouteRule) traffic from one service to another. Let's take a look at an example.
 
