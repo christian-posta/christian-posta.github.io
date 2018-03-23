@@ -45,7 +45,7 @@ Second, if youre trying to do JWT verification across all of your microservices 
 
 Thankfully, Istio can help with both of these areas.
 
-Fisrt, Istio can automate the JWT verification for you regardless of the application framework/language.  You can define an `EndUserAuthenticationPolicySpec` which configures the identity provider/credential providers that will be used for verification:
+First, Istio can automate the JWT verification for you regardless of the application framework/language.  You can define an `EndUserAuthenticationPolicySpec` which [configures the identity provider/credential providers that will be used for verification](https://istio.io/docs/reference/config/istio.mixer.v1.config.client.html#EndUserAuthenticationPolicySpec):
 
 {% highlight yaml %}
 --- 
@@ -80,7 +80,9 @@ spec:
       namespace: tutorial
 {% endhighlight %}
 
-Note: this example came from my collegue [Kamesh Sampath](https://twitter.com/kamesh_sampath). In this configuration we've set up Keycloak to be the identity manager and issuer of JWT tokens (following OpenID Connect). For more information [see this blog](http://blog.keycloak.org/2018/02/keycloak-and-istio.html).
+Note: [this example came from my colleague](https://github.com/kameshsampath/istio-keycloak-demo) [Kamesh Sampath](https://twitter.com/kamesh_sampath). In this configuration we've set up Keycloak to be the identity manager and issuer of JWT tokens (following OpenID Connect). For more information [see this blog](http://blog.keycloak.org/2018/02/keycloak-and-istio.html). When a call comes into the service, it will be rejected if it does not have a JWT Bearer token. This configuration will install an [Envoy jwt filter](https://github.com/istio/proxy/blob/master/src/envoy/http/jwt_auth/README.md) that actually takes on the responsibility of verifying the signature of the JWT:
+
+![](/images/istio-jwt-verification.png)
 
 Lastly, what about propagation of the JWT token?
 
