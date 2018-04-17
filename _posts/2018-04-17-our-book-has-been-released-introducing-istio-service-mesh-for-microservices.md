@@ -33,11 +33,11 @@ The book covers the following topics:
 
  This book should be a nice quick intro to Istio. Please take a look at [Istio.io](http://istio.io) for more. The book is based on a hands-on workshop the wonderful [Red Hat Developers team](http://developers.redhat.com) put together. Find the [latest version of the workshop](https://github.com/redhat-developer-demos/istio-tutorial) as well as [the branch from the book](https://github.com/redhat-developer-demos/istio-tutorial/tree/book). 
 
- ### Printed books
+### Printed books
 
  We will have printed books to give away at [Red Hat Summit 2018](https://www.redhat.com/en/summit/2018) in San Francisco. The dates of the conference are May 8th - 10th at the Moscone Center. We'll also be doing a handful of microservices events across North America which should be another opportunity to get printed copies. Or, reach out to me [@christianposta](https://twitter.com/christianposta) and we'll find a way to ship you a printed copy.
 
- ### What's next?
+### What's next?
 
  Follow along on [my blog](http://blog.christianposta.com), the [Red Hat Developers blog](http://developers.redhat.com/blog/), the [Istio.io blog](https://istio.io/blog) and [Istio.io](http://istio.io).
 
