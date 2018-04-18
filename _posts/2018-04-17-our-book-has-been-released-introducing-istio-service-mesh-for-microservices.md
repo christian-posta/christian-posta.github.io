@@ -8,7 +8,7 @@ tags: []
 image:
   feature:
 date: 2018-04-17T14:04:00-07:00
-published: false
+published: true
 ---
 
 [Burr Sutter (@burrsutter)](https://twitter.com/burrsutter) and I ([@christianposta](https://twitter.com/christianposta)) have finished [writing a small book](https://developers.redhat.com/books/introducing-istio-service-mesh-microservices/) to help folks get up and running with [Istio.io](https://twitter.com/christianposta) service mesh! 
