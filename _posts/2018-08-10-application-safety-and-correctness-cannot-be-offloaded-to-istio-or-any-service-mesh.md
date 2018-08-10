@@ -95,7 +95,7 @@ Using a simple example of "add an item to a shopping cart", we can illustrate th
 
 ![](/images/end-to-end/shopping-cart.png)
 
-When a user clicks "add to cart" they expect to see the item added to their shopping cart. In the system, this may involve coordinating calls/call sequencing to a recommendation engine (hey, we added this to the cart, wonder if we can compute recommended offers to go along with it), an inventory service, and others before we actually call the service to insert into the shopping cart. We need to be able to handle transforming the message to the different backends, dealing with failures (and rolling back any changes we initiated), and in each one of the services we need to be able to deal with duplicates. What if for some reason the call ends up being slow and the user clicks "add to cart" again? No amount of reliable infrastructure can save us from a user doing this; we need to detect and implement duplication checking/idempotent services. 
+When a user clicks "add to cart" they expect to see the item added to their shopping cart. In the system, this may involve coordinating calls/call sequencing to a recommendation engine (hey, we added this to the cart, wonder if we can compute recommended offers to go along with it), an inventory service, and others before we actually call the service to insert into the shopping cart. We need to be able to handle transforming the message to the different backends, dealing with failures (and rolling back any changes we initiated), and in each one of the services we need to be able to deal with duplicates. What if for some reason the call ends up being slow and the user clicks "add to cart" again? No amount of reliable infrastructure can save us from a user doing this; we need to detect and implement duplication checking/idempotent services in the application.
 
 ### Application Networking
 
@@ -152,9 +152,9 @@ By doing so, we can optimize operability by doing the following:
 * Programmable by both application operators and application developers
 
 
-Istio and service mesh don't allow you to offload responsibility to the infrastructure, they just add some level of reliability and optimize for reliability. Just like in the end-to-end argument, TCP doesn't allow you to offload application responsibilities. 
+Istio and service mesh don't allow you to offload responsibility to the infrastructure, they just add some level of reliability and optimize for operability. Just like in the end-to-end argument, TCP doesn't allow you to offload application responsibilities. 
 
-Istio helps with application networking reliability and for developers there's a myriad of frameworks to help with the application-integration aspects. My favorite for Java developers is [Apache Camel](https://github.com/apache/camel) which provides a lot of the pieces needed to write correct and safe applications including:
+Istio helps with application networking class of problems, but what of the application-integration class of probelms? Luckily for developers there's a myriad of frameworks to help with the application-integration aspects. My favorite for Java developers is [Apache Camel](https://github.com/apache/camel) which provides a lot of the pieces needed to write correct and safe applications including:
 
 * [Call sequencing, multicasting, and orchestration]() 
 * []Aggregate responses, transforming message semantics, splitting messages, etc](https://github.com/apache/camel/blob/master/camel-core/src/main/docs/eips/aggregate-eip.adoc)
@@ -170,11 +170,11 @@ Istio helps with application networking reliability and for developers there's a
 
 ![](/images/end-to-end/layers-camel.png)
 
-Other frameworks include [Spring Integration](https://spring.io/projects/spring-integration) and even a interesting new programming Language from WSO2 called [Ballerina](https://ballerina.io)
+Other frameworks include [Spring Integration](https://spring.io/projects/spring-integration) and even a interesting new programming Language from WSO2 called [Ballerina](https://ballerina.io). Mind you, it's nice to reuse existing patterns and constructs, especially if they exist and are mature for your language of choice, but none of these patterns *require* you to use a framework.
 
 
 ## What about smart endpoints dumb pipes
-So with respect to microservices, a friend of mine posed a question regarding the catchy but simplistic "smart endpoints and dump pipes" phrase regarding microservices and how does "making the infrastructure smarter" affect that premise:
+So with respect to microservices, []a friend of mine posed a question regarding the catchy but simplistic](https://twitter.com/bibryam/status/1026429379587567616) "smart endpoints and dump pipes" phrase regarding microservices and how does "making the infrastructure smarter" affect that premise:
 
 
 ![](/images/end-to-end/twitter.png)
@@ -185,4 +185,4 @@ The answer I gave was:
 ![](/images/end-to-end/twitter2.png)
 
 
-The pipes are still dumb; we're not coercing application logic about application correctness and safety into the infrastructure by using a service mesh. We're simply making it more reliable, optimizing for operational aspects, and simplifying what the application has to *implement* not be responsible for. Feel free to leave comments or reach out on twitter [@christianposta](http://twitter.com/christianposta) if you disagree or have additional thoughts.  
+The pipes are still dumb; we're not coercing application logic about application correctness and safety into the infrastructure by using a service mesh. We're simply making it more reliable, optimizing for operational aspects, and simplifying what the application has to *implement* (not be responsible for). Feel free to leave comments or reach out on twitter [@christianposta](http://twitter.com/christianposta) if you disagree or have additional thoughts.  
