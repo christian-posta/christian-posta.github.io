@@ -170,6 +170,8 @@ Istio helps with application networking reliability and for developers there's a
 
 ![](/images/end-to-end/layers-camel.png)
 
+Other frameworks include [Spring Integration](https://spring.io/projects/spring-integration) and even a interesting new programming Language from WSO2 called [Ballerina](https://ballerina.io)
+
 
 ## What about smart endpoints dumb pipes
 So with respect to microservices, a friend of mine posed a question regarding the catchy but simplistic "smart endpoints and dump pipes" phrase regarding microservices and how does "making the infrastructure smarter" affect that premise:
