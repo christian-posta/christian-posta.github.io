@@ -85,6 +85,7 @@ These patterns crop up in the form of:
 * Atomicity, consistency issues, saga pattern
 * Anti-corruption layers, adapters, boundary transformations
 * Message retries, de-duplication/idempotency
+* Message re-ordering
 * Caching
 * Message-level routing
 * Retries, timeouts
@@ -153,7 +154,24 @@ By doing so, we can optimize operability by doing the following:
 
 Istio and service mesh don't allow you to offload responsibility to the infrastructure, they just add some level of reliability and optimize for reliability. Just like in the end-to-end argument, TCP doesn't allow you to offload application responsibilities. 
 
+Istio helps with application networking reliability and for developers there's a myriad of frameworks to help with the application-integration aspects. My favorite for Java developers is [Apache Camel](https://github.com/apache/camel) which provides a lot of the pieces needed to write correct and safe applications including:
 
+* [Call sequencing, multicasting, and orchestration]() 
+* []Aggregate responses, transforming message semantics, splitting messages, etc](https://github.com/apache/camel/blob/master/camel-core/src/main/docs/eips/aggregate-eip.adoc)
+* [Atomicity, consistency issues, saga pattern](https://github.com/apache/camel/blob/master/camel-core/src/main/docs/eips/saga-eip.adoc)
+* [Anti-corruption layers, adapters, boundary transformations](https://github.com/apache/camel/blob/master/components/readme.adoc)
+* []Message retries, de-duplication/idempotency](https://github.com/apache/camel/blob/master/camel-core/src/main/docs/eips/idempotentConsumer-eip.adoc)
+* [Message reordering](https://github.com/apache/camel/blob/master/camel-core/src/main/docs/eips/resequence-eip.adoc) 
+* Caching
+* [Message-level routing](https://github.com/apache/camel/blob/master/camel-core/src/main/docs/eips/content-based-router-eip.adoc)
+* Retries, timeouts
+* [Backend/legacy systems integration](https://github.com/apache/camel/blob/master/components/readme.adoc)
+
+
+![](/images/end-to-end/layers-camel.png)
+
+
+## What about smart endpoints dumb pipes
 So with respect to microservices, a friend of mine posed a question regarding the catchy but simplistic "smart endpoints and dump pipes" phrase regarding microservices and how does "making the infrastructure smarter" affect that premise:
 
 
