@@ -174,7 +174,7 @@ Other frameworks include [Spring Integration](https://spring.io/projects/spring-
 
 
 ## What about smart endpoints dumb pipes
-So with respect to microservices, []a friend of mine posed a question regarding the catchy but simplistic](https://twitter.com/bibryam/status/1026429379587567616) "smart endpoints and dump pipes" phrase regarding microservices and how does "making the infrastructure smarter" affect that premise:
+So with respect to microservices, [a friend of mine posed a question regarding the catchy but simplistic](https://twitter.com/bibryam/status/1026429379587567616) "smart endpoints and dump pipes" phrase regarding microservices and how does "making the infrastructure smarter" affect that premise:
 
 
 ![](/images/end-to-end/twitter.png)
@@ -186,3 +186,5 @@ The answer I gave was:
 
 
 The pipes are still dumb; we're not coercing application logic about application correctness and safety into the infrastructure by using a service mesh. We're simply making it more reliable, optimizing for operational aspects, and simplifying what the application has to *implement* (not be responsible for). Feel free to leave comments or reach out on twitter [@christianposta](http://twitter.com/christianposta) if you disagree or have additional thoughts.  
+
+If you'd like to learn more about Istio, checkout [http://istio.io](http://istio.io) or [the book I wrote about Istio](http://blog.christianposta.com/our-book-has-been-released-introducing-istio-service-mesh-for-microservices/)
