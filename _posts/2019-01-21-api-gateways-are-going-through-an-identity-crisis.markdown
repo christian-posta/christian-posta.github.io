@@ -82,6 +82,7 @@ Examples of these types of ingress implementations include:
     * Including [OpenShift’s Router](https://docs.openshift.com/container-platform/3.9/install_config/router/index.html)
 * [NGINX](https://github.com/kubernetes/ingress-nginx)
 * [Traefik](https://traefik.io)
+* [Kong](https://github.com/Kong/kubernetes-ingress-controller)
 
 This level of cluster ingress controller is operated by the platform team, however this piece of infrastructure is often associated with a more decentralized, self-service workflow (as you would expect from a cloud-native platform). [See the “GitOps” workflow as described by the good folks at Weaveworks](https://www.weave.works/blog/gitops-operations-by-pull-request)
 
