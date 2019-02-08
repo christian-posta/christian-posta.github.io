@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Navigating the Complex Waters of Exposing a Microservices/API Gateway in AWS with EKS
+title: Exposing microservices running in AWS EKS with a microservices/API gateway like Solo Gloo
 modified:
 categories:
 comments: true
@@ -12,15 +12,15 @@ date: 2019-02-07T21:10:27-05:00
 
 So you've decided to run your Kubernetes workloads in AWS. [As we've seen before](https://medium.com/solo-io/easy-aws-eks-cluster-provisioning-and-user-access-5e3cdc01dfc6) setting up [AWS EKS](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html) requires a lot of patience and headache. You may be able to get it working. For others, you should check out the `eksctl` [tool from Weaveworks](https://github.com/weaveworks/eksctl).
 
-Now that you've got a Kubernetes cluster, you want to start deploying your microservices to it and start exposing and integrating APIs and services to your clients and other parts of your organization. At [Solo.io](https://www.solo.io) we've [open-sourced a microservices gateway](https://medium.com/solo-io/announcing-gloo-the-function-gateway-3f0860ef6600) built on top of [Envoy Proxy](https://www.envoyproxy.io) named [Gloo](https://github.com/solo-io/gloo). [Gloo](https://github.com/solo-io/gloo) is a cloud-native (and Kubernetes-native) control plane for Envoy purposefully built to understand "function" level calls (think API path/method/heaers, gRPC calls, or Lambda functions) for the purposes of composing them and building richer APIs for both north-south AND east-west traffic. Gloo is highly complementary to service-mesh technology like [Istio](https://istio.io). 
+Now that you've got a Kubernetes cluster, you want to start deploying your microservices to it and start exposing and integrating APIs and services to your clients and other parts of your organization. At [Solo.io](https://www.solo.io) we've [open-sourced a microservices gateway](https://medium.com/solo-io/announcing-gloo-the-function-gateway-3f0860ef6600) built on top of [Envoy Proxy](https://www.envoyproxy.io) named [Gloo](https://github.com/solo-io/gloo). [Gloo](https://github.com/solo-io/gloo) is a platform agnostic control plane for Envoy purposefully built to understand "function" level calls (think combination of HTTP path/method/headers, gRPC calls, or Lambda functions) for the purposes of composing them and building richer APIs for both north-south AND east-west traffic. Gloo is also highly complementary to service-mesh technology like [Istio](https://istio.io). 
 
-Gloo's functionality include:
+Gloo's functionality includes:
 
 <a href="https://gloo.solo.io"><img src="/images/aws-eks/gloo.png" align="right" /></a>
 
-* Function routing (REST methods, gRPC endpoints, Lambda/CloudFunctions)
+* Function routing (REST methods, gRPC endpoints, Lambda/Cloud Functions)
 * Fine grained traffic shifting (function canary, function weighted routing, etc)
-* Request/content transformations (implict and explicit)
+* Request/content transformations (implicit and explicit)
 * Authorization / Authentication
 * Rate limiting
 * gRPC
@@ -29,12 +29,10 @@ Gloo's functionality include:
 * Deep metrics collection
 * GraphQL Engine for aggregate data APIs
 * powerful platform-agnostic discovery mechanisms
-* multi-service registry / multi-platform capable
-
 
 [Gloo](https://github.com/solo-io/gloo) has very deep Kubernetes-native support and can be run as a cluster-ingress for your Kubernetes cluster. As a side note, for some much-needed clarification on Ingress, API Gatweay, API Management (and even service mesh) take a look at the blog post ["API Gateways are going through an identity crisis"](http://blog.christianposta.com/microservices/api-gateways-are-going-through-an-identity-crisis/)
 
-So in a Kubernetes cluster, we could expose a microservices/API gateway like Gloo in the following ways: 
+In helping folks use Gloo in AWS EKS, we've had to navigate through the fairly complex choices of choosing and exposing services running in Kubernetes. These options will be the same for other Kuberentes-native ingress, API, or function gateways. Since AWS EKS is Kubernetes, we could expose a microservices/API gateway like Gloo in the following ways:
 
 * a Kubernetes [Ingress Resource](https://kubernetes.io/docs/concepts/services-networking/ingress/)
 * a Kubernetes [Service with type LoadBalancer](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer)
@@ -47,7 +45,7 @@ In the meantime, if you're running workloads on AWS EKS, you may have some quest
 Let's explore the options here. 
 
 ## Using AWS API Gateway with your EKS cluster
-AWS EKS is really a managed control plane for Kubernetes and you run your woker nodes yourself. A typical setup is to have your worker nodes (EC2 Hosts) in a private VPC and using all of the built in VPC isolation, security groups, IAM policies, etc. Once you start deploying workloads/microservices to your Kubernetes cluster, you may wish to expose them and/or provide a nicely decoupled API to your clients/customers/partners, etc. Your first question is probably along the lines of "well, since I'm using AWS, it should just be super easy to use the [AWS API Gateway](https://aws.amazon.com/api-gateway/) in front of my Kubernetes cluster". 
+AWS EKS is really a managed control plane for Kubernetes and you run your worker nodes yourself. A typical setup is to have your worker nodes (EC2 Hosts) in a private VPC and using all of the built in VPC isolation, security groups, IAM policies, etc. Once you start deploying workloads/microservices to your Kubernetes cluster, you may wish to expose them and/or provide a nicely decoupled API to your clients/customers/partners, etc. Your first question is probably along the lines of "well, since I'm using AWS, it should just be super easy to use the [AWS API Gateway](https://aws.amazon.com/api-gateway/) in front of my Kubernetes cluster". 
 
 ![](/images/aws-eks/question.png)
 
@@ -77,7 +75,7 @@ spec:
 type: LoadBalancer
 ```
 
-Adding the annotaton `service.beta.kubernetes.io/aws-load-balancer-type: "nlb"` will cause AWS to create a network load balancer when we create this service in EKS:
+Adding the annotation `service.beta.kubernetes.io/aws-load-balancer-type: "nlb"` will cause AWS to create a network load balancer when we create this service in EKS:
 
 ```yaml
 apiVersion: v1
@@ -105,7 +103,7 @@ At this point, we have the correct combination of load balancer (NLB in private 
 
 ![](/images/aws-eks/ingress.png)
 
-When we want to do things like canary releases, API aggegation, function routing and content transformation, we need to do that within the Kubernetes cluster. Gloo solves for that. So do you really need API Gateway -> NLB -> API Gateway? In this case, you could just promote your network load balancer to a public subnet, let Gloo handle all of the API Gateway routing, traffic shaping, rate limiting, and not lose any of the functionality of the AWS API Gateway (Lambda routing, AuthZ/N, Websockets, etc). 
+When we want to do things like canary releases, API aggregation, function routing and content transformation, we need to do that within the Kubernetes cluster. Gloo solves for that. So do you really need API Gateway -> NLB -> API Gateway? In this case, you could just promote your network load balancer to a public subnet, let Gloo handle all of the API Gateway routing, traffic shaping, rate limiting, and not lose any of the functionality of the AWS API Gateway (Lambda routing, AuthZ/N, Websockets, etc). 
 
 ![](/images/aws-eks/gloo-routing.png)
 
@@ -125,7 +123,7 @@ This is similar to the previous section, but instead of using a powerful microse
 
 ![](/images/aws-eks/gloo-routing.png)
 
-This is the usecase from the previous section. Now you've gained the power of a microservices gateway closer to the workloads in EKS, but you've got a redundant and expensive gateway at your edge. The benefit here is you still can take advantage of AWS web application firewalling.
+This is the usecase from the previous section. Now you've gained the power of a microservices gateway closer to the workloads in EKS, but you've got a redundant and expensive gateway at your edge. The benefit here is you still can take advantage of AWS web application firewall (WAF).
 
 ### Public NLB + powerful Kubernetes microservices gateway like Gloo
 
@@ -143,8 +141,8 @@ You can more finely control the public facing network requests with an Applicati
 
 ![](/images/aws-eks/alb-control.png)
 
-You can use the [Kubernetes Ingress with Application Load Balancer](https://aws.amazon.com/blogs/opensource/kubernetes-ingress-aws-alb-ingress-controller/) 3rd-party plugin to manage your ALB in Kubernetes. At this point you can run your API Gateweay locally and privately within your EKS cluster and still take advantagee of WAF because we're using an ALB. The downside is this functionality is provided by a third-party plugin and [you cannot centrally manage your certificates](https://www.sentialabs.io/2018/10/21/Integrating-EKS-with-other-AWS-services.html#fifth-challenge-deploying-api-gateway-in-front-of-eks) with cloud formation. That is, you have to use the [Ingress annotations to manage those](https://kubernetes-sigs.github.io/aws-alb-ingress-controller/guide/ingress/annotation/#ssl). 
+You can use the [Kubernetes Ingress with Application Load Balancer](https://aws.amazon.com/blogs/opensource/kubernetes-ingress-aws-alb-ingress-controller/) 3rd-party plugin to manage your ALB in Kubernetes. At this point you can run your API Gateweay locally and privately within your EKS cluster and still take advantage of WAF because we're using an ALB. The downside is this functionality is provided by a third-party plugin and [you cannot centrally manage your certificates](https://www.sentialabs.io/2018/10/21/Integrating-EKS-with-other-AWS-services.html#fifth-challenge-deploying-api-gateway-in-front-of-eks) with cloud formation. That is, you have to use the [Ingress annotations to manage those](https://kubernetes-sigs.github.io/aws-alb-ingress-controller/guide/ingress/annotation/#ssl). 
 
 ## Conclusion
 
-There are a handful of options to run your microservices/API Gateway in AWS EKS. Each combination comes with tradeoffs and should be carefully considered. We built [Gloo](https://github.com/solo-io/gloo) specifically to be a powerful cross platform, cross-cloud microservices API Gateway. This means you have even more options when running on AWS, on premises, or any other cloud. Each organization will have their unique constraints, opinions, and options. We belive there are good options to make a monolith to microserivces or on-premises hybrid deployment to public cloud a success. If you have an alternative suggestion for this use case, [please reach out to me @christianposta on twitter](http://www.twitter.com/christianposta) or in the comments of this blog.
+There are a handful of options to run your microservices/API Gateway in AWS EKS. Each combination comes with tradeoffs and should be carefully considered. We built [Gloo](https://github.com/solo-io/gloo) specifically to be a powerful cross platform, cross-cloud microservices API Gateway. This means you have even more options when running on AWS, on premises, or any other cloud. Each organization will have their unique constraints, opinions, and options. We believe there are good options to make a monolith to microserivces or on-premises hybrid deployment to public cloud a success. If you have an alternative suggestion for this use case, [please reach out to me @christianposta on twitter](http://www.twitter.com/christianposta) or in the comments of this blog.
