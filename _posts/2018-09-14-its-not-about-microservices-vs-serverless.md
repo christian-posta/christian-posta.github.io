@@ -14,7 +14,7 @@ No doubt, if you've been paying attention to technology trends, you've seen the 
 
 The best description of serverless I've seen thus far comes from [Patrick Debois](https://twitter.com/patrickdebois) in his ["serverless to service full" talk](https://www.slideshare.net/jedi4ever/from-serverless-to-service-full-how-the-role-of-devops-is-evolving). In that talk, he gives "serverless" a definition and _actually defining what it is_ and not what it's *not*. Focusing on what it's not (ie, no servers!!!!) actually distracts from any true meaning (of course there are servers!!). By focusing on the fact that it's more about using as-provided services (think things like SQS, DynamoDB, Gmail, Google Calendar, SalesForce, Fastly, etc) and stitching them together to provide some kind of functionality, we can arrive at [a more interesting definition](https://www.slideshare.net/ceposta/intro-to-knative-115084435):
 
-> outsourcing core infrastructure services to service providers and stitching it all together through APIs (and functions) to deliver business value
+> outsourcing core infrastructure services to service providers and stitching it all together through APIs (and functions) to deliver business value
 
 In many ways, this idea of "leveraging existing services and building on top of it" isn't new. It's an incarnation of the spirit behind "Services Oriented Architecture":
 
