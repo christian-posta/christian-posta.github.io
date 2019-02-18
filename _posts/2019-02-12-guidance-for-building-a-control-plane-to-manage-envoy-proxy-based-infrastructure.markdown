@@ -14,7 +14,7 @@ date: 2019-02-12T10:01:56-07:00
 
 ![](/images/control-plane/envoy.png)
 
-That not-withstanding, because of [Envoy's universal data plane API](https://blog.envoyproxy.io/the-universal-data-plane-api-d15cec7a), we've seen a multitude of implementations of a _management layer_ to configure and drive Envoy-based infrastructure.  We're going to take a deep dive into what it takes to build a control plane for Envoy so you can use this information to evaluate what type of infrastructure will fit your organization and usecases best. Because this is a broad topic, we'll tackle it in a multi-part series published over the next few weeks. Follow along ([@christianposta](https://twitter.com/christianposta), [@soloio_inc](https://twitter.com/soloio_inc)) for the next entries.
+Moreover, because of [Envoy's universal data plane API](https://blog.envoyproxy.io/the-universal-data-plane-api-d15cec7a), we've seen a multitude of implementations of a _management layer_ to configure and drive Envoy-based infrastructure.  We're going to take a deep dive into what it takes to build a control plane for Envoy so you can use this information to evaluate what type of infrastructure will fit your organization and usecases best. Because this is a broad topic, we'll tackle it in a multi-part series published over the next coming days. Follow along ([@christianposta](https://twitter.com/christianposta), [@soloio_inc](https://twitter.com/soloio_inc)) for the next entries.
 
 There were some [great talks at EnvoyCon/KubeCon](https://blog.envoyproxy.io/envoycon-recap-579d53576511) where some organizations shared their experiences adopting Envoy including how they built their own control planes. Some of the reasons folks chose to build their own control plane:
 
@@ -37,7 +37,7 @@ In this blog series, we'll take a look at the following areas:
 * Adopting a mechanism to dynamically update Envoy's routing, service discovery, and other configuration
 * Identifying what components make up your control plane, including backing stores, service discovery APIs, security components, et. al.
 * Establishing any domain-specific configuration objects and APIs that best fit your usecases and organization
-* Thinking ahead of time how best to make your control plane pluggable where you need it
+* Thinking of how best to make your control plane pluggable where you need it
 * Options for deploying your various control-plane components
 * Thinking through a testing harness for your control plane
 
@@ -68,7 +68,7 @@ In the case of Gloo, we use a control plane [based on go-control-plane](https://
 
 gRPC streaming is not the only way to update Envoy's configuration. In [previous versions of the Envoy xDS API](https://www.envoyproxy.io/docs/envoy/v1.5.0/api-v1/api), polling was the only option to determine whether new configuration was available. Although this was acceptable, and met the criteria for "eventually-consistent" configuration updates, it was less efficient in both network and compute usage. It can also be difficult to properly tune the polling configurations to reduce wasted resources. 
 
-Lastly, some Envoy management implementations opt to generate [static Envoy configuration files](https://www.envoyproxy.io/docs/envoy/latest/configuration/overview/v2_overview#static) and periodically replace the configuration files on disk for Envoy and then perform a [hot reload of the Envoy process](https://blog.envoyproxy.io/envoy-hot-restart-1d16b14555b5). In a highly dynamic environment (like Kubernetes, but really any ephemeral-compute based platform) the management of this file generation, delivery, hot-restart, etc can get unwieldy. Envoy was originally operated in an environment that performed updates like this (Lyft, where it was created), but now with the availability of the xDS services
+Lastly, some Envoy management implementations opt to generate [static Envoy configuration files](https://www.envoyproxy.io/docs/envoy/latest/configuration/overview/v2_overview#static) and periodically replace the configuration files on disk for Envoy and then perform a [hot reload of the Envoy process](https://blog.envoyproxy.io/envoy-hot-restart-1d16b14555b5). In a highly dynamic environment (like Kubernetes, but really any ephemeral-compute based platform) the management of this file generation, delivery, hot-restart, etc can get unwieldy. Envoy was originally operated in an environment that performed updates like this (Lyft, where it was created) but they are incrementally moving toward using the xDS APIs.
 
 ### Takeaway
 [The Gloo team](https://github.com/solo-io/gloo/graphs/contributors) believes using gRPC streaming and the xDS APIs is the ideal way to implement dynamic configuration and control for Envoy. Again, not all of the Envoy configurations should be served dynamically if you don't need that, however if you're operating in a highly dynamic environment (e.g., Kubernetes), the option to configure Envoy dynamically is critical. Other environments may not have this need. Either way, gRPC streaming API for the dynamic parts is ideal.  Some benefits to this approach:
