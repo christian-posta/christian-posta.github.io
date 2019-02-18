@@ -38,6 +38,7 @@ If Envoy is the heart and soul of your L7 networking, the control plane is the b
 * Resource usage -- You may wish to assign or throttle certain resource usage depending on your components. For example, your data plane may be more compute intensive vs the control plane (which may be more memory intensive) and you'd use different resource limits to fulfill those roles. Keeping them separate allows you more fine-grained resource pool options than just lumping them together. Additionally, if the control plane and data plane are collocated and competing for the same resources, you can get odd tail latencies which are hard to diagnose
 * Deployment/lifecycle -- You may wish to patch, upgrade, or otherwise service your control plane independently of your data plane
 * Storage -- If your control plane requires any kind of storage, you can configure this separately and without the data plane involved if you separate out your components
+* status -- understanding the state of your control plane
 
 
 For these reasons, it makes sense to keep the control plane at arms length and decoupled from the data plane. 
