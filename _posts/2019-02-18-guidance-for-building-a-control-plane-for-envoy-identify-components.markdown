@@ -8,6 +8,7 @@ tags: []
 image:
   feature:
 date: 2019-02-18T13:36:17-07:00
+hidden: 1
 ---
 
 ## Identify which components you need for your control plane

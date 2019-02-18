@@ -8,6 +8,7 @@ tags: []
 image:
   feature:
 date: 2019-02-18T13:38:21-07:00
+hidden: 1
 ---
 
 ## Building your control plane engine to be pluggable

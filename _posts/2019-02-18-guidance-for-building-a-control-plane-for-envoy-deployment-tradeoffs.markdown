@@ -8,6 +8,7 @@ tags: []
 image:
   feature:
 date: 2019-02-18T13:38:53-07:00
+hidden: 1
 ---
 
 ## Deploying control plane components

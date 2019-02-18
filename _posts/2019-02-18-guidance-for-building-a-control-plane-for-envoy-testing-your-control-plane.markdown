@@ -8,6 +8,7 @@ tags: []
 image:
   feature:
 date: 2019-02-18T13:41:25-07:00
+hidden: 1
 ---
 
 ## Testing your control plane

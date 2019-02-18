@@ -8,6 +8,7 @@ tags: []
 image:
   feature:
 date: 2019-02-18T13:36:36-07:00
+hidden: 1
 ---
 
 ## Establishing your control-plane interaction points and API surface

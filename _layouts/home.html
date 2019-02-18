@@ -35,6 +35,7 @@
   <div id="index">
     <h3>Most Recent Posts (last 15)&nbsp;<span class="home-limit"><a href="{{ site.url}}/posts/">See all of them</a></span></h3>
     {% for post in site.posts limit:15 %}
+    {% if post.hidden != 1 %}
     <article>
       {% if post.link %}
         <h2 class="link-post"><a href="{{ site.url }}{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a> <a href="{{ post.link }}" target="_blank" title="{{ post.title }}"><i class="fa fa-link"></i></h2>
@@ -43,6 +44,7 @@
         <p>{{ post.excerpt | strip_html | truncate: 215 }}</p>
       {% endif %}
     </article>
+    {% endif %}
     {% endfor %}
       <h3><a href="{{ site.url}}/tags/#popular">Popular Posts</a></h3>
       {% for post in site.tags.popular limit:5 %}
