@@ -16,6 +16,7 @@ sitemap: false
   {% if site.owner.email %}<email>{{ site.owner.email }}</email>{% endif %}
 </author>
 {% for post in site.posts limit:20 %}
+{% if post.hidden != 1 %}
 {% if post.author %}
   {% assign author = site.data.authors[post.author] %}
 {% else %}
@@ -39,5 +40,6 @@ sitemap: false
     {% include _feed-footer.html %}
   </content>
 </entry>
+{% endif %}
 {% endfor %}
 </feed>
