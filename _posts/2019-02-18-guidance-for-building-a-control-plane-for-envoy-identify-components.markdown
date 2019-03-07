@@ -16,7 +16,7 @@ In this blog series, we'll take a look at the following areas:
 
 * [Adopting a mechanism to dynamically update Envoy's routing, service discovery, and other configuration](https://blog.christianposta.com/envoy/guidance-for-building-a-control-plane-to-manage-envoy-proxy-based-infrastructure/)
 * Identifying what components make up your control plane, including backing stores, service discovery APIs, security components, et. al. _(this entry)_
-* [Establishing any domain-specific configuration objects and APIs that best fit your usecases and organization](https://blog.christianposta.com/)
+* [Establishing any domain-specific configuration objects and APIs that best fit your usecases and organization](https://blog.christianposta.com/envoy/guidance-for-building-a-control-plane-for-envoy-domain-specific-configuration-api/)
 * Thinking of how best to make your control plane pluggable where you need it
 * Options for deploying your various control-plane components
 * Thinking through a testing harness for your control plane
@@ -38,7 +38,7 @@ As the spectrum of operating environments varies wildly, so too could the compon
 On the other hand, if you opt to use the gRPC streaming xDS implementation, you'll need:
 
 * The core xDS service interface and an implementation
-* A component to handle registering/deregistering services into the service registry
+* A component to handle registering/de-registering services into the service registry
 * A service registry
 * An abstract object model to describe your Envoy configuration (optional)
 * A data store to hold the configuration
@@ -85,4 +85,4 @@ Contour uses an `init-container` to generate a static bootstrap configuration fi
 ### Takeaway
 Identify the core components you'll need for your control plane. Don't try to build a single, monolithic control plane abstraction as that will become a nightmare to maintain and update. Build the components you want for your control plane in a loosely coupled architecture. If you can build on top of Kubernetes, then do so: [Kubernetes provides a very powerful integration data plane](https://medium.com/@allingeek/kubernetes-as-a-common-ops-data-plane-f8f2cf40cd59) for operating distributed systems, such as an Envoy control plane. If you do build a control plane on top of Kubernetes, you should leverage [Custom Resource Definitions](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) to drive configuration of your control plane. Some folks have chosen to build their control plane using [Ingress definitions](https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md), [service annotations](https://www.getambassador.io/reference/configuration/), or [configuration maps]( https://www.youtube.com/watch?v=a1tXFUrqt5M&list=PLj6h78yzYM2PF_iYEBntfR0m4KAZET18Q&index=14&t=0s). These may have been appropriate work-arounds before Kubernetes CRDs were available but at this point you should avoid those paths and stick with CRDs. Like Tim Hockin (founder of Kubernetes) said on a recent podcast, annotations for driving an Ingress Gateway resource is a poor choice. 
 
-The next entry in this series is actually already posted: [Guidance for Building a Control Plane for Envoy Part 3 - Domain Specific Configuration API](http://blog.christianposta.com/)
+The next entry in this series is actually already posted: [Guidance for Building a Control Plane for Envoy Part 3 - Domain Specific Configuration API](https://blog.christianposta.com/envoy/guidance-for-building-a-control-plane-for-envoy-domain-specific-configuration-api/)
