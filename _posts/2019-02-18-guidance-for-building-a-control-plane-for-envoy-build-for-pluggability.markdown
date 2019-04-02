@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Guidance for Building a Control Plane for Envoy Part 4 - Build for Pluggability
+title: Guidance for Building a Control Plane for Envoy Part 4 - Build for Extensibility
 modified:
 categories: 
 comments: true
