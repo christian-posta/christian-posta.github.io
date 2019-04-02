@@ -11,7 +11,7 @@ date: 2019-02-18T13:38:21-07:00
 
 ---
 
-This is part 4 of a [series](https://blog.christianposta.com/envoy/guidance-for-building-a-control-plane-to-manage-envoy-proxy-based-infrastructure/) that explores building a control plane for Envoy Proxy. 
+This is part 4 of a [series](https://blog.christianposta.com/envoy/guidance-for-building-a-control-plane-to-manage-envoy-proxy-based-infrastructure/) that explores building a control plane for Envoy Proxy. Follow along [@christianposta](https://twitter.com/christianposta) and [@soloio_inc](https://twitter.com/soloio_inc) for the next part coming out in a week. 
 
 
 In this blog series, we'll take a look at the following areas:
@@ -303,6 +303,6 @@ Once you've created the resources and generated the type-safe clients, you will 
 
 A control plane can be as simple or as complicated as you need. The Gloo team recommends focusing on a simple core to the control plane and then extend it through plugins and microservices controllers through composability. Gloo's architecture is built like this and enables [the Gloo team](https://github.com/solo-io/gloo/graphs/contributors) to quickly add any new features to support any platforms, configurations, filters, and more as they come up. That's why, although Gloo is very Kubernetes-native, it is built to run on any platform on any cloud. The core control plane design allows this. 
 
-In the next part of this series, we'll take a look at the pros/cons of deploying control plane components for things like scalability, fault-tolerance, independence, and security. Stay tuned!
+In the next part of this series, we'll take a look at the pros/cons of deploying control plane components for things like scalability, fault-tolerance, independence, and security. [Stay tuned](https://twitter.com/christianposta)!
 
 
