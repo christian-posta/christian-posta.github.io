@@ -18,7 +18,7 @@ In this blog series, we'll take a look at the following areas:
 * Identifying what components make up your control plane, including backing stores, service discovery APIs, security components, et. al. _(this entry)_
 * [Establishing any domain-specific configuration objects and APIs that best fit your usecases and organization](https://blog.christianposta.com/envoy/guidance-for-building-a-control-plane-for-envoy-domain-specific-configuration-api/)
 * [Thinking of how best to make your control plane pluggable where you need it](https://blog.christianposta.com/guidance-for-building-a-control-plane-for-envoy-build-for-pluggability/)
-* Options for deploying your various control-plane components
+* [Options for deploying your various control-plane components](https://blog.christianposta.com/guidance-for-building-a-control-plane-for-envoy-deployment-tradeoffs/)
 * Thinking through a testing harness for your control plane
 
 In the [previous entry to this series](https://blog.christianposta.com/envoy/guidance-for-building-a-control-plane-to-manage-envoy-proxy-based-infrastructure/) we explored dynamically configuring Envoy which is an important part of running Envoy in a cloud-native environment. In this entry, we take a look at the cooperating components you may need to support your control plane. 
