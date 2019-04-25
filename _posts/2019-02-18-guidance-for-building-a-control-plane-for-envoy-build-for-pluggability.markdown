@@ -291,7 +291,7 @@ routes:
 
 To see the full list of plugins available on the Gloo [Proxy](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gloo/api/v1/proxy.proto.sk/) and [Upstream](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gloo/api/v1/upstream.proto.sk/) objects, see [the documentation here](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gloo/api/v1/plugins.proto.sk/)
 
-Once you've added new plugins to your control plane, you can extend your user-facing domain-specific configuration objects to take advantage of these new capabiliites. You can augment your existing controllers to do this or add new ones (following the principle of microservices loosely coordinating with each other). We've written [extensive examples to help you write controllers](https://gloo.solo.io/dev/example-proxy-controller/) to augment your control-plane functionality or reach out on [Slack](https://slack.solo.io) for any more pointers on this. 
+Once you've added new plugins to your control plane, you can extend your user-facing domain-specific configuration objects to take advantage of these new capabilities. You can augment your existing controllers to do this or add new ones (following the principle of microservices loosely coordinating with each other). We've written [extensive examples to help you write controllers](https://gloo.solo.io/dev/example-proxy-controller/) to augment your control-plane functionality or reach out on [Slack](https://slack.solo.io) for any more pointers on this. 
 
 ### Leverage tools to expedite the previous two bullets 
 
