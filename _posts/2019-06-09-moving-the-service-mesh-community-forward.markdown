@@ -14,7 +14,10 @@ Service mesh is an important set of capabilities that solve some difficult servi
 
 The only problem is, although Kubernetes has emerged as a powerful API for abstracting underlying infrastructure for scheduling workloads, there is no one, single pragmatic API that surfaces the capabilities needed in a service mesh.
 
-The [announcement of the “Service Mesh Interface”](https://cloudblogs.microsoft.com/opensource/2019/05/21/service-mesh-interface-smi-release/) at KubeCon EU 2019 was proposed recently to help address this. Although it’s very early days, the [SMI spec](https://github.com/deislabs/smi-spec) is intending to unify the capabilities and APIs expected of a service mesh running on Kubernetes (although this can help lay the ground work for a service mesh running outside of k8s as well). 
+
+The [announcement of the “Service Mesh Interface”](https://cloudblogs.microsoft.com/opensource/2019/05/21/service-mesh-interface-smi-release/) at KubeCon EU 2019 was proposed recently to help address this. Full disclosure: I work for Solo.io, one of the co-founders of SMI and leaders of the [original vision of unified service mesh](https://medium.com/solo-io/https-medium-com-solo-io-supergloo-ff2aae1fb96f).
+
+Although it’s very early days, the [SMI spec](https://github.com/deislabs/smi-spec) is intending to unify the capabilities and APIs expected of a service mesh running on Kubernetes (although this can help lay the ground work for a service mesh running outside of k8s as well). 
 
 Doing so has several direct benefits to the service-mesh community:
 
