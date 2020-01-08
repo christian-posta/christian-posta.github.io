@@ -17,8 +17,6 @@ I've been pretty invested in helping organizations with their cloud-native journ
 
 I've written in the past how I didn't think many teams [would be able to pull it off](https://blog.christianposta.com/microservices/youre-not-going-to-do-microservices/), [how there are "hard parts" to getting it working](https://blog.christianposta.com/microservices/the-hardest-part-about-microservices-data/), and even heads up about some technology that might [be beneficial to your efforts in the long run](https://blog.christianposta.com/microservices/the-hardest-part-of-microservices-calling-your-services/). FWIW I even [wrote a book](https://www.oreilly.com/library/view/microservices-for-java/9781492042228/) on the topic. 
 
-![Microservices book](/images/bookcover.png)
-
 [Staying away from microservices][when-not] is likely the best place to start, though many organizations are way passed that today. 
 
 ## You've already gone down the path of microservices
