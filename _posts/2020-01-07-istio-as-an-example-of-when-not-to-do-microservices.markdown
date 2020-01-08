@@ -104,6 +104,7 @@ For Istio going to a monolithic control plane, a significant amount of complexit
 
 See the [Istiod design doc][istiod] for more detail.
 
+Also as a side note: [you can check out a demo I did of this](https://www.youtube.com/watch?v=QD115XiBXwY) `istiod` approach which should appear in Istio 1.5. Just note, it's demo'd on a super alpha build of Istio, so not all polished like it will be :) 
 
 ## Conclusion
 
