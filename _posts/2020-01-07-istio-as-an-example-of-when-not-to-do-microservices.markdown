@@ -10,7 +10,7 @@ image:
 date: 2020-01-07T17:21:19-07:00
 ---
 
-I've been pretty invested in helping organizations with their cloud-native journeys for the last five years. Modernizing and improving a team (and eventually an organization's) velocity to deliver software-based technology is heavily influenced by it's people, process and eventual technology decisions. A microservices approach may be appropriate when the culmination of an application's architecture has become a bottleneck (as a result of the various people/process/tech factors) for making changes and "going faster", [but it's not the only approach][when-not].
+I've been pretty invested in helping organizations with their cloud-native journeys for the last five years. Modernizing and improving a team (and eventually an organization's) velocity to deliver software-based technology is heavily influenced by its people, process and eventual technology decisions. A microservices approach may be appropriate when the culmination of an application's architecture has become a bottleneck (as a result of the various people/process/tech factors) for making changes and "going faster", [but it is not the only approach][when-not].
 
 
 > Microservices is not THE "utopian application architecture". 
@@ -21,11 +21,11 @@ I've written in the past how I didn't think many teams [would be able to pull it
 
 ## You've already gone down the path of microservices
 
-If you do go down the path of microservices, be honest with yourself and the organization when it's not working. Correcting course may be the right move for the success of your product.
+If you do go down the path of microservices, be honest with yourself and the organization when it is not working. Correcting course may be the right move for the success of your product.
 
-## Honesty about when it's not working
+## Honesty about when it is not working
 
-Despite best intentions, it may be the right choice to go back to a monolith once you've started with microservices, even if it was for the right reasons. "It's okay" to go back to a monolith if your assumptions or the context around your decisions have changed. 
+Despite best intentions, it may be the right choice to go back to a monolith once you've started with microservices, even if it was for the right reasons. "It is okay" to go back to a monolith if your assumptions or the context around your decisions have changed. 
 
 <img src="/images/istiologo.png" align="right" />
 
@@ -58,9 +58,9 @@ These services would be driven by a set of operator-defined configuration and co
 
 ## Microservices benefits 
 
-Microservices can enable an organization to go faster by reducing friction to make changes to the system. With a microservices architecture, each service would likely be operated independently (each with their own team) and have it's own release cadence/lifecycle independent from others. This would give the developers and operators parallel tracks to move faster without the locking/synchronization/coordination of making changes which can serve to slow down deployments and feature changes. 
+Microservices can enable an organization to go faster by reducing friction to make changes to the system. With a microservices architecture, each service would likely be operated independently (each with their own team) and have its own release cadence/lifecycle independent from others. This would give the developers and operators parallel tracks to move faster without the locking/synchronization/coordination of making changes which can serve to slow down deployments and feature changes. 
 
-Another reason why a service may be further broken down is it's usage patterns and scaling properties. For a simple example, a service that has heavy reads and writes may benefit from separating out reads from writes because reads may be more memory intensive (maybe needing more cache space to make the reads super fast) while writes may be more storage or network intensive. You could optimize the read part of a service on machines/quotas that allow it to scale independently (more memory) then have the write part of the service on other machines that have SSD or optimized EBS/SAN, etc. 
+Another reason why a service may be further broken down is its usage patterns and scaling properties. For a simple example, a service that has heavy reads and writes may benefit from separating out reads from writes because reads may be more memory intensive (maybe needing more cache space to make the reads super fast) while writes may be more storage or network intensive. You could optimize the read part of a service on machines/quotas that allow it to scale independently (more memory) then have the write part of the service on other machines that have SSD or optimized EBS/SAN, etc. 
 
 Some other reasons why you might split an app into services:
 
