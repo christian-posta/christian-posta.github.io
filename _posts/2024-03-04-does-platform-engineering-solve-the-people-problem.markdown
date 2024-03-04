@@ -11,7 +11,7 @@ date: 2024-03-04T14:05:18-07:00
 ---
 
 
-Platform engineering has emerged recently in part because organizations recognize the value in improving developer experience and the need to improve app developer delivery speed. And in typical organizational fashion, spinning up a new team to own this effort is their answer. We've seen folks talk about how platform engineering is primarily motivated by the complexity of software architectures (think, Microservices, and the underlying infrastructure to support that e.g., Kubernetes, containers, etc). In fact Gartner specifically says that:
+Platform engineering has emerged recently in part because organizations recognize the value in improving developer experience and the need to improve app developer delivery speed. And in typical organizational fashion, spinning up a new team to own this effort is their answer. We've seen folks talk about how platform engineering is primarily motivated by the complexity of software architectures (think, Microservices, and the underlying infrastructure to support that e.g., Kubernetes, containers, etc). In fact [Gartner specifically says that](https://www.gartner.com/en/articles/what-is-platform-engineering):
 
 "Platform engineering emerged in response to the increasing complexity of modern software architectures."
 
@@ -19,7 +19,7 @@ So while there is truth in this viewpoint, I think we are missing an even bigger
 
 Enterprise IT organizations are highly silo'd. Do we think spinning up a new team will solve this people problem? What happened to "DevOps"? Wasn't that supposed to help here?
 
-We've seen organizations think about this problem in terms of "Dev" and "Ops" and getting them to work closer together. But what we see in the organizations we work with here at Solo.io is far more complex than just "Devs" or "Ops". For example, what we label as "Ops" in a typical organization includes teams like:
+We've seen organizations think about this problem in terms of "Dev" and "Ops" and getting them to work closer together. But what we see in the organizations we work with here at [Solo.io](https://solo.io) is far more complex than just "Devs" or "Ops". For example, what we label as "Ops" in a typical organization includes teams like:
 
 - Network operations
 - Information security (InfoSec)
