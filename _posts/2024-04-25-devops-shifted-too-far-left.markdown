@@ -41,4 +41,4 @@ I want to be clear, this is not inherently a "DevOps" issue. It's more how large
 
 Platform engineering is about the most "big enterprise" thing these organizations could do to best practice "DevOps" and the "you build it, you run it" mantra. Even when I worked at Amazon.com through my time at Zappos.com, the Amazonians living the "you build it, you run it" mantra had a massive amount of tooling to do builds, deploys, testing, monitoring, alerting, etc at their disposal. It was not as simple as "here's AWS, knock yourself out". That was over 10 years ago when I was there, so I cannot comment how it is now (please [reach out](https://www.linkedin.com/in/ceposta) if you have insight on what it's like now). 
 
-Will platform engineering being the appropriate solution? It's the next part of the journey most organizations are embarking on, there are still challenges around the people problem, but it seems to fit better from my observations.
+Will platform engineering be the appropriate solution? It's the next part of the journey most organizations are embarking on, there are still challenges around the people problem, but it seems to fit better from my observations.
