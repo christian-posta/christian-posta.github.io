@@ -11,7 +11,7 @@ image:
 date: 2025-02-03T17:19:11-05:00
 ---
 
-Things change quickly in the land of technology. AI is the "hot" thing. I feel for the platform engineers out there struggling With technologies like Docker, Kubernetes, Prometheus, Istio, ArgoCD, Zipkin, Backstage.io, and many many others. Those things are already confusing, complex, and require deep attention. These folks don't have time or attention to dig into AI and what's going on in that space. But little by little AI will land in their world. Platform engineers will need to understand AI. 
+Things change quickly in the land of technology. AI is the "hot" thing. I feel for the platform engineers out there struggling with technologies like [Docker](https://www.docker.com), [Kubernetes](https://kubernetes.io), [Prometheus](https://prometheus.io), [Istio](https://istio.io), [ArgoCD](https://argo-cd.readthedocs.io/en/stable/), [Zipkin](https://zipkin.io), [Backstage.io](https://backstage.io), and many many others. Those things are already confusing, complex, and require deep attention. These folks don't have time or attention to dig into AI and what's going on in that space. But little by little AI will land in their world. [Platform engineers](https://www.redhat.com/en/topics/devops/platform-engineering) will need to understand AI.
 
 In this blog, I try to present a simple mental model for "what is this AI/LLM stuff" for platform engineers. 
 
@@ -27,9 +27,9 @@ Well, let's take a look by understanding "what can you do with it" first. Then w
 
 ## Making Sense of Terabytes of Data
 
-Developers are starting to build applications that use LLMs. One of our customers, call them ACME company, is building an internal chat system/assistant for their internal company policies, procedures, and differentiations. Internal employees can use this system to help guide customers on their journey of adopting their company's products. If a customer runs into trouble, they can work with the company's representative (who's using this custom computer assistant behind the scenes) to diagnose their trouble and fix whatever it is that's wrong. This is a "helpful computer assistant" example. The chat assistant application uses an LLM behind the scene that is trained on the companies internal documentation, internal knowledge bases, maybe even old case files, and maybe even source code. Could you imagine a single person going through and understanding all of that documentation and knowledge? And then being able to recall it quickly?
+Developers are starting to build applications that use LLMs. [One of our customers](https://www.solo.io/customers), call them ACME company, is building an internal chat system/assistant for their internal company policies, procedures, and differentiations. Internal employees can use this system to help guide customers on their journey of adopting their company's products. If a customer runs into trouble, they can work with the company's representative (who's using this custom computer assistant behind the scenes) to diagnose their trouble and fix whatever it is that's wrong. This is a "helpful computer assistant" example. The chat assistant application uses an LLM behind the scene that is trained on the companies internal documentation, internal knowledge bases, maybe even old case files, and maybe even source code. Could you imagine a single person going through and understanding all of that documentation and knowledge? And then being able to recall it quickly?
 
-So an LLM is a system that can churn through a lot of data much easier than a human (or any other computer system) can do. Like, terabytes worth of data. And then it can identify and understand patterns and concepts in that data. This kinda sounds like a search engine, doesn't it? But with a search engine, the exact phrase you use for the search matters - a lot. Moreover, the search engine just returns the exact documents or URLs that match your phrase. The LLM, however can understand "concepts" and respond to you similarly to how a human would. 
+So an LLM is a system that can churn through a lot of data much easier than a human (or any other computer system) can do. Like, terabytes worth of data. And then it can identify and understand patterns and concepts in that data. This kinda sounds like a search engine, doesn't it? [But with a search engine](https://developers.google.com/search/docs/fundamentals/how-search-works), the exact phrase you use for the search matters - a lot. Moreover, the search engine just returns the exact documents or URLs that match your phrase. The LLM, however can understand "concepts" and respond to you similarly to how a human would. 
 
 ## Concepts vs Word Matching
 
@@ -38,6 +38,7 @@ Let's pause for a second and dig into this idea of "concepts" vs word matching. 
 Now, imagine an LLM-powered assistant instead. Instead of just doing a keyword match, it understands the concepts behind what you're asking. It recognizes that “database timeout” is semantically related to “SQL connection lost”, “query execution delay”, and “network latency to the database”. It then scans through terabytes of logs, traces, and documentation to summarize the root cause in natural language: This is what makes LLMs so powerful. It’s not just search, it’s understanding and synthesis—piecing together scattered information into something immediately useful.
 
 ## Natural Language
+
 An LLM can connect words, phrases, and concepts. Which brings us to the next important point about LLMs: they can understand and return data in "natural language". As in, the way you'd think a human could do. For example, ACME company's chat assistant can take in questions like "The engine light is on and I hear a clicking sound when I try to start it, help me diagnose what that is". The LLM could process that line of text and respond with something like:
 
 ![](/images/gentle-intro-llm/gemini-response.png)
@@ -55,7 +56,7 @@ This all sounds great, but how? How would an enterprise application do this? How
 
 ![](/images/gentle-intro-llm/llm-api-call.png)
 
-If you're not convinced, here's a very simple curl example that calls the OpenAI API asking how Siri works:
+If you're not convinced, here's a very simple curl example that calls the [OpenAI API](https://platform.openai.com) asking how Siri works:
 
 ```bash
 curl https://api.openai.com/v1/chat/completions \
@@ -121,7 +122,7 @@ While LLMs bring a ton of potential to platform engineering, there are some key 
 - **Accuracy and Reliability** – LLMs can generate responses that sound confident but may not always be factually correct. This can be a major issue in areas where precision matters, such as compliance or troubleshooting.
 - **Relevancy** – Unlike a traditional search engine, which returns documents verbatim, an LLM generates responses dynamically. Ensuring that responses stay relevant and on-topic requires careful prompt design, tuning, and sometimes even filtering mechanisms.
 - **Data Privacy Risks** – Feeding sensitive internal data into an LLM, especially one hosted externally, raises serious security and privacy concerns. How do you ensure proprietary information isn't inadvertently exposed?
-- **Compliance and Legal Risks** – If your company operates under strict regulations (GDPR, HIPAA, etc.), you need to be mindful of whether AI-generated outputs or training data violate these policies.
+- **Compliance and Legal Risks** – If your company operates under strict regulations ([GDPR](https://gdpr.eu/), [HIPAA](https://www.hhs.gov/hipaa/for-professionals/privacy/laws-regulations/index.html), etc.), you need to be mindful of whether AI-generated outputs or training data violate these policies.
 - **Misuse** – Users might rely too heavily on LLM-generated responses without verifying accuracy. There’s also the risk of using LLMs for unintended or unethical purposes.
 - **Cost and Performance** – Calling LLM APIs isn't free, and pricing is usually based on token usage. If you’re integrating LLMs into enterprise workflows, setting up cost control, attribution, and performance monitoring is critical.
 - **Ethical and Brand Risks** – If an LLM generates offensive, biased, or misleading responses, it can cause reputational damage. Guardrails, monitoring, and responsible AI policies are necessary to mitigate this.
@@ -132,5 +133,5 @@ For platform engineers, LLMs are another tool in the toolbox—one that enables 
 
 That said, blindly adopting LLMs without understanding their limitations can lead to headaches down the road. As with any new technology, the best approach is to experiment, learn, and iterate. 
 
-AI is coming to platform engineering whether we like it or not—the real question is, how do we make the most of it while staying in control?
+AI is coming to platform engineering whether we like it or not. If you found this blog useful, please let me know on social media [@christianposta](https://x.com/christianposta) or [in/ceposta](https://www.linkedin.com/in/ceposta).
 
