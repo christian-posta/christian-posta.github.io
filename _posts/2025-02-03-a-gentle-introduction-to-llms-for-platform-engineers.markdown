@@ -2,7 +2,7 @@
 layout: post
 title: A Gentle Introduction to LLMs for Platform Engineers
 modified:
-categories: 
+categories: ai
 comments: true
 sidebar: true
 tags: [ai, llms, machine learning, platform engineering, kubernetes, networking, devops]

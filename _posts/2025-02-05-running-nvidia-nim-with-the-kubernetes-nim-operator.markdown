@@ -2,7 +2,7 @@
 layout: post
 title: Running NVIDIA NIM on GKE With the Kubernetes NIM Operator
 modified:
-categories: 
+categories: ai
 comments: true
 tags: [ai, inference, kubernetes, nvidia, nim, LLM]
 image:

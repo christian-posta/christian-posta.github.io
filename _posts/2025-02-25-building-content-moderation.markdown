@@ -2,12 +2,12 @@
 layout: post
 title: Building an AI content moderation service backed by an LLM
 modified:
-categories: 
+categories: ai
 comments: true
 tags: [ai, inference, kubernetes, nvidia, nim, LLM, guardrails, security, moderation]
 image:
   feature:
-date: 2025-02-26T15:26:56-05:00
+date: 2025-02-25T15:26:56-05:00
 ---
 
 Organizations need to think about what data gets sent to any AI services. They also need to consider the LLM may respond with some unexpected or risky results. This is where guardrails come in. There are a number of opensource projects for building guardrails directly into your application. There are also a number of vendor-specific content moderation services. What about building your own? From working with enterprises, I can say they have a lot of opinions over how content creation should be moderated in this AI/LLM world. 
