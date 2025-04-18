@@ -28,7 +28,7 @@ kramdown:
 owner:
   name: Christian Posta
   avatar: bio-photo.jpg
-  bio: "Global Field CTO at solo.io, author 'Istio in Action', 'AI Gateways in the Enterprise' and other books. He is well known in the cloud-native community for being an architect, speaker, blogger and contributor to various open-source projects in the AI and cloud-native ecosystem"
+  bio: "Global Field CTO at solo.io, author 'Istio in Action', 'AI Gateways in the Enterprise' and other books. He is known for being an architect, speaker, blogger and contributor to AI and infrastructure open-source projects."
   email: 
   disqus-shortname: ceposta-blog
   linkedin: ceposta
