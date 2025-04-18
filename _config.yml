@@ -1,6 +1,6 @@
 # Site wide configuration
 
-title:            Software Blog
+title:            ceposta Technology Blog
 locale:           en_US
 url: https://blog.christianposta.com
 
@@ -28,21 +28,20 @@ kramdown:
 owner:
   name: Christian Posta
   avatar: bio-photo.jpg
-  bio: "Field CTO at solo.io, author Istio in Action and Microservices for Java Developers, open-source enthusiast, cloud application development, committer @ Apache, Serverless, Cloud, Integration, Kubernetes, Docker, Istio, Envoy #blogger"
+  bio: "Global Field CTO at solo.io, author 'Istio in Action', 'AI Gateways in the Enterprise' and other books. He is well known in the cloud-native community for being an architect, speaker, blogger and contributor to various open-source projects in the AI and cloud-native ecosystem"
   email: 
   disqus-shortname: ceposta-blog
+  linkedin: ceposta
   twitter: christianposta
   facebook: #username
   google:
-    plus: christianposta
     analytics: UA-60152356-1
     verify: 
     ad-client: 
     ad-slot: 
   bing-verify: 
   github: christian-posta
-  stackoverflow: ceposta
-  linkedin: christian-posta
+  stackoverflow: ceposta 
   instagram: #username
   lastfm: #username
   tumblr: #username

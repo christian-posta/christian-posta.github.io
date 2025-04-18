@@ -2,10 +2,10 @@
 
 ceposta:
   name: Christian Posta
-  web: http://blog.christianposta.com
+  web: https://blog.christianposta.com
   email:
   bio: "Global Field CTO - solo.io"
   avatar: bio-photo.jpg
+  linkedin: ceposta
   twitter: christianposta
-  google:
-    plus: christianposta
+  github: christian-posta
