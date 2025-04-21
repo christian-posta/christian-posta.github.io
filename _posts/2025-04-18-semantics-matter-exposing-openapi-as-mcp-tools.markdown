@@ -1,24 +1,24 @@
 ---
 layout: post
-title: Semantics Matter - Exposing OpenAPI as MCP Tools
+title: Exposing OpenAPI as MCP Tools - Semantics Matter
 modified:
 categories: 
 comments: true
 tags: [ai, rest, agents, agentic, capabilities, llm, architecture, mcp, tools, openapi, swagger, oas]
 image:
   feature:
-date: 2025-04-21T03:00:00-07:00
+date: 2025-04-20T03:00:00-07:00
 ---
 
-I was recently chatting with [Matt McLarty](https://www.linkedin.com/in/mattmclartybc/) and [Mike Amudsen](https://www.linkedin.com/in/mamund/) on [their podcast](https://podcasts.apple.com/us/podcast/the-api-experience-podcast/id1698168565) about a recent blog I wrote about [describing APIs in terms of capabilities](https://blog.christianposta.com/from-apis-to-capabilities-what-ai-agents-mean-for-application-architecture/). One thing that came up was the idea of describing APIs with semantic meaning direclty in the OpenAPI spec. I think I made a comment that "ideally, you'd go from your OpenAPI spec to generating an MCP server to expose your capabilities to an Agent or AI model". I wanted to go into a little more detail here since there is something very interesting there. 
+I was recently chatting with [Matt McLarty](https://www.linkedin.com/in/mattmclartybc/) and [Mike Amundsen](https://www.linkedin.com/in/mamund/) on [their podcast](https://podcasts.apple.com/us/podcast/the-api-experience-podcast/id1698168565) about a recent blog I wrote about [describing APIs in terms of capabilities](https://blog.christianposta.com/from-apis-to-capabilities-what-ai-agents-mean-for-application-architecture/). One thing that came up was the idea of describing APIs with semantic meaning directly in the OpenAPI spec. I think I made a comment that "ideally, you'd go from your OpenAPI spec to generating an MCP server to expose your capabilities to an Agent or AI model". This aligns (I think) with a particularly thoughtful observation from [Kevin Swiber](https://www.linkedin.com/in/kevinswiber/) that [MCP becomes the ultimate API consumer](https://www.layered.dev/mcp-the-ultimate-api-consumer-not-the-api-killer). I wanted to go into a little more detail here since there is something very interesting there. 
 
 ![](/images/mcp-openapi/visual.png)
 
-The first thought I had is that sure, people may use OpenAPI spec docs today to describe their APIs, but they probably fall short in terms of semantic descriptions and describing the API in terms of capabilities. When building with APIs directly, humans decided which APIs to use and were able to informally fill in the "semantic context" gaps on their own. But in the case of AI agents and tools, the LLM will need as much context as possible to make appropriate decisions about which tools to use. But we don't want to have bifurcation: where we have two different sources of truth for an API description, one for MCP and one for human's building with APIs directly. We want a single unified source:  and that should be the [OpenAPI spec](https://swagger.io/specification/). But this means we'll have to invest just a little more in building rich semantic meaning and capability descriptions into our OpenAPI spec. 
+The first thought I had is that sure, people may use OpenAPI spec docs today to describe their APIs. Mike Amundsen made the point they probably fall short in terms of semantic descriptions and describing the API in terms of capabilities. When building with APIs directly, humans decided which APIs to use and are able to fill in the "semantic context" gaps on their own. But in the case of AI agents and tools, the LLM will need as much context as possible to make appropriate decisions about which tools to use. But we don't want to have bifurcation: where we have two different sources of truth for an API description, one for MCP and one for human's building with APIs directly. We want a single unified source:  and that should be the [OpenAPI spec](https://swagger.io/specification/). But this means we'll have to invest just a little more in building rich semantic meaning and capability descriptions into an API's OpenAPI spec. 
 
 ## APIs to Capabilities
 
-Enterprises have invested 10-15+ years into exposing enterprise capabilities (internal and external) with APIs. That is not going away. MCP, as exciting as it is, is really just a simple protocol _shim_ for AI models to call tools. But to expose the tools correctly to the model, we need to [describe capabilities](https://blog.christianposta.com/from-apis-to-capabilities-what-ai-agents-mean-for-application-architecture/):
+Enterprises have invested 10-15+ years into exposing enterprise capabilities (internal and external) with APIs. That is not going away. MCP, as exciting as it is, is really just a simple protocol _shim_ for AI models to call tools. But to expose the tools correctly to the model, we need to [describe capabilities](https://blog.christianposta.com/from-apis-to-capabilities-what-ai-agents-mean-for-application-architecture/) not just API contract structure:
 
 * tool names should be unique, action oriented (e.g., "listAllTodoTasks" vs just "list")
 * include detailed _purpose explanations_
@@ -217,4 +217,4 @@ An important note about security here. LLM prompt injection is a top security co
 
 ## Where should this mapping happen?
 
-As mentioned earlier, although there may be some native MCP implementations, an enterprise is going to expose MCP tools by leveraging their existing API investment. So where should this mapping happen? You may find AI native tools to do this conversion that take into account these factors described here; you may find an API gateway that can expose REST endpoints as an MCP server. You may also build some custom mapping tools yourself. Some combination of this is what I would expec to see in the enterprise. If you have thoughts or comments on this [please let me know]((https://linkedin.com/in/ceposta))!
+As mentioned earlier, although there will be some native MCP implementations, an enterprise is going to expose MCP tools by leveraging their existing API investment. So where should this mapping happen? You may find AI native tools to do this conversion that take into account these factors described here; you may find an API gateway that can expose REST endpoints as an MCP server. You may also build some custom mapping tools yourself. Some combination of this is what I would expec to see in the enterprise. If you have thoughts or comments on this [please let me know]((https://linkedin.com/in/ceposta))!
