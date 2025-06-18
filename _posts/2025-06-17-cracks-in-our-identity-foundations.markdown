@@ -10,7 +10,7 @@ image:
 date: 2025-06-17T10:10:47-04:00
 ---
 
-I've been digging into [Agent Identity](https://blog.christianposta.com/do-we-even-need-agent-identity/), [authentication/authorization patterns](https://blog.christianposta.com/agent-identity-impersonation-or-delegation/), and how it fits in with [existing technology](https://blog.christianposta.com/ai-agents-and-oidc-ciba/) patterns (OAuth 2.0, OIDC, SPIFFE, etc) and where it may need new solutions. Someone made a point around identity and delegation to me recently that shines a bit of reality on an area of the problem people don't like talking about much because it's inconvenient:
+I've been digging into [Agent Identity](https://blog.christianposta.com/do-we-even-need-agent-identity/), [authentication/authorization patterns](https://blog.christianposta.com/agent-identity-impersonation-or-delegation/), and how it fits in with [existing technology](https://blog.christianposta.com/ai-agents-and-oidc-ciba/) patterns (OAuth 2.0, OIDC, SPIFFE, etc) and where it may need new solutions. Someone made a point around identity and delegation to me recently that shines a bit of reality on this area:
 
 > You can’t delegate what you don’t control.
 
