@@ -24,7 +24,7 @@ Note, see recent blogs, follow ([@christianposta](https://x.com/christianposta) 
 ---
 
 
-The TL;DR answer is yes, SPIFFE is a spec designed to be a very flexible Non Human Identity (NHI) that can apply to AI Agents. But not in the way we've been using it. Let's take a look at why that is.
+The TL;DR answer is yes, [SPIFFE](https://spiffe.io) is a spec designed to be a very flexible Non Human Identity (NHI) that can apply to AI Agents. But not in the way we've been using it. Let's take a look at why that is.
 
 > While SPIFFE can technically provide agent identities, current Kubernetes implementations treat all replicas as identical—a fundamental mismatch with agents' non-deterministic, context-dependent behavior that creates compliance and attribution gaps.
 
@@ -32,7 +32,7 @@ The TL;DR answer is yes, SPIFFE is a spec designed to be a very flexible Non Hum
 
 I'm going to take [Istio](https://ambientmesh.io) (and service mesh generally) as that is the easiest way to get [workload identity based on SPIFFE](https://ambientmesh.io/docs/security/) today. SPIRE, which is a more full implementation of the SPIFFE spec, can handle much more sophisticated attestation flows and CA integrations. But for this example, we'll look at Istio running in Kubernetes. If you use SPIRE directly, your scenarios may vary. 
 
-Workload identity based on SPIFFE today is based on service accounts in Kubernetes. That is, when a Pod comes up, it checks what service account has been assigned to it, and exchanges the service account token for X509 certificates issued by a CA. This X509 certificate has the workload identity encoded into the certificate for example `SAN: spiffe://acme-bank.com/ns/default/sa/trading-agent-sa`. 
+Workload identity based on [SPIFFE](https://spiffe.io) today is based on service accounts in Kubernetes. That is, when a Pod comes up, it checks what service account has been assigned to it, and exchanges the service account token for X509 certificates issued by a CA. This X509 certificate has the workload identity encoded into the certificate for example `SAN: spiffe://acme-bank.com/ns/default/sa/trading-agent-sa`. 
 
 ![](/images/spiffe-agent/istio-spiffe.gif)
 
