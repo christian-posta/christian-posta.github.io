@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Understanding MCP Authorization, Step by Step
+title: Understanding MCP Authorization, Step by Step (Part One)
 modified:
 categories: 
 comments: true
@@ -13,6 +13,8 @@ date: 2025-06-30T07:30:50-07:00
 
 Creating MCP Servers to connect functionality to LLM applications / AI agents is [fairly straight forward](https://modelcontextprotocol.io/examples). Most of the [examples you see](https://github.com/modelcontextprotocol/servers), however, are the simple [stdio-transport](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports#stdio) MCP servers. If you wish to build MCP shared services that are exposed to applications in the enterprise, they MUST be secured. The MCP community has been iterating on a specification for Authorization, and in its [recent release (ie, June 18, 2025)](https://modelcontextprotocol.io/specification/2025-06-18/changelog) we have an [updated Authorization spec](https://modelcontextprotocol.io/specification/2025-06-18/basic/authorization) that [fixes a lot of the challenges](https://blog.christianposta.com/the-updated-mcp-oauth-spec-is-a-mess/) of the previous spec. 
 
+---
+
 In this series of blog posts (three parts + [source code](https://github.com/christian-posta/mcp-auth-step-by-step)), we'll walk "step-by-step" through the latest MCP Authorization spec and implement it. I have made all of the [source code for each of the steps available on GitHub](https://github.com/christian-posta/mcp-auth-step-by-step).
 
 * Part 1: (This) - Implement a spec compliant remote MCP server with HTTP Transport
@@ -21,15 +23,19 @@ In this series of blog posts (three parts + [source code](https://github.com/chr
 
 Follow ([@christianposta](https://x.com/christianposta) or [/in/ceposta](https://linkedin.com/in/ceposta)) for the next parts. 
 
+---
+
 ## Pre-requisite to MCP Authorization: Use MCP HTTP Transport
 
-The MCP Authorization spec heavily leverages existing stanards (OAuth 2.1) and treats the MCP server as a OAuth [Resource Server](https://www.oauth.com/oauth2-servers/the-resource-server/). That means, we can leverage existin Identity Provider implementations (Auth0, Okta, Keycloak, etc) to protect the MCP server. But to use the Authorization spec, you will need to be using the [HTTP transport](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports#streamable-http) for MCP. So before we dig too deeply into the Authorization spec, we will need to build an MCP server and serve it over HTTP. If you already have an HTTP based MCP server, you can [skip directly to part two]() where we apply authorization. 
+To use the Authorization spec, you will need to be using the [HTTP transport](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports#streamable-http) for MCP. So before we dig too deeply into the Authorization spec, we will need to build an MCP server and serve it over HTTP. If you already have an HTTP based MCP server, you can [skip directly to part two]() where we apply authorization. 
 
 ## Building an MCP server with the HTTP Transport
 
 The HTTP transport for the MCP specification uses a single GET/POST endpoint (ie, /mcp) with optional streamable responses (ie, based on Server Sent Events - SSE). For simplicity, our HTTP server will not support SSE, but we will end with how it can easily be added. Let's build this server to support the Authorization specification one step at a time.
 
 ## Step 1: Bootstrap the FastAPI HTTP server
+
+Follow along with the source code [for this step](https://github.com/christian-posta/mcp-auth-step-by-step/blob/main/src/mcp_http/step1.py). 
 
 We will follow the HTTP Transport spec and start by implementing the [security warning](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports#security-warning):
 
@@ -104,14 +110,19 @@ Great! We have a basic HTTP server. Let's continue to step 2.
 
 ## Step 2: Add the basic MCP endpoint
 
+Follow along with the source code [for this step](https://github.com/christian-posta/mcp-auth-step-by-step/blob/main/src/mcp_http/step2.py). 
+
 In step 2, we will add an `/mcp` endpoint which will serve as the foundation of our MCP server. We will also define what an `MPCRequest` structure should look like, based on JSON-RPC.
 
 From the [MCP spec](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports#sending-messages-to-the-server):
 
 <blockquote>
 The client MUST use HTTP POST to send JSON-RPC messages to the MCP endpoint.<br>
+<br>
 The client MUST include an Accept header, listing both application/json and text/event-stream as supported content types.<br>
+<br>
 The body of the POST request MUST be a single JSON-RPC request, notification, or response.<br>
+<br>
 </blockquote>
 
 Let's define the structure of an MCPRequest:
@@ -165,7 +176,7 @@ In another window, let's run with the right origin:
 Let's try again with a origin that won't be validated:
 
 ```bash
- curl -s -w "%{http_code}" -X POST http://localhost:9000/mcp \
+❯ curl -s -w "%{http_code}" -X POST http://localhost:9000/mcp \
   -H "Content-Type: application/json" \
   -H "Origin: http://evil.com" \
   -d '{"jsonrpc": "2.0", "id": 4, "method": "ping"}'
@@ -176,8 +187,8 @@ Let's try again with a origin that won't be validated:
 To run the full suite of tests for step 2, run the following script from the root of the source code (stop the previous run of step2 so ports don't collide):
 
 ```bash
-./test_step2.sh
-
+❯ ./test_step2.sh
+...
 ...
 ...
 🎉 Step 2 tests completed successfully!
@@ -195,6 +206,8 @@ To run the full suite of tests for step 2, run the following script from the roo
 ```
 
 ## Step 3: Add tools to our MCP server
+
+Follow along with the source code [for this step](https://github.com/christian-posta/mcp-auth-step-by-step/blob/main/src/mcp_http/step3.py). 
 
 In this step, we're going to fill in a couple of the MCP messages for listing tools, listing prompts and calling tools.  We will create a very simple `echo` tool and implement this functionality which just returns what was passed wrapped as an `EchoRequest`
 
@@ -230,6 +243,8 @@ async def get_prompt(name: str, arguments: Optional[Dict[str, str]]) -> GetPromp
 At this point, our `/mcp` endpoint still doesn't handle the list or tool call messages, but we should be ready to do that in step 4. 
 
 ## Step 4: Connect Pieces for A Viable HTTP MCP Server
+
+Follow along with the source code [for this step](https://github.com/christian-posta/mcp-auth-step-by-step/blob/main/src/mcp_http/step4.py). 
 
 We have all the pieces to make this a viable HTTP MCP Server (without SSE at the moment). Let's connect the HTTP POST to `/mcp` to the tool listing and execution we defined in the previous step:
 
@@ -292,14 +307,14 @@ Let's test the new MCP server.
 From one window, run the following:
 
 ```bash
-uv run step4
+❯ uv run step4
 ```
 
 For this last step, let's use the [mcp-inspector project](https://github.com/modelcontextprotocol/inspector) which gives a nice UI for connecting to an MCP server. Run the following from your terminal:
 
 
 ```bash
-npx @modelcontextprotocol/inspector
+❯ npx @modelcontextprotocol/inspector
 ```
 
 You should see something like:
