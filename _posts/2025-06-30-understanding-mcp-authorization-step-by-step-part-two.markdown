@@ -414,7 +414,7 @@ MUST be included in both authorization requests and token requests.<br>
 MUST identify the MCP server that the client intends to use the token with.<br>
 <br>
 MUST use the canonical URI of the MCP server as defined in RFC 8707 Section 2.<br>
-<blockquote>
+</blockquote>
 
 [RFC 8707 goes into detail about](https://www.rfc-editor.org/rfc/rfc8707.html) indicating resource/audience to the Authorization Server. This means MCP clients should very clearly state which MCP server they want to use. This is a great step to make clear the intended audience instead of potentially issuing tokens for broad audiences which can cause issues. It makes token scoping explicit and predictable, enables better multi-tenant behavior, supports fine-grained delegation, prevents accidentally using the same token across unrelated MCP servers. 
 
