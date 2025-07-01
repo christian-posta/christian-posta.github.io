@@ -394,8 +394,28 @@ echo "✅ All previous MCP and OAuth functionality still works"
 echo "✅ Ready for next step!" 
 ```
 
+We now have the foundation for a fully-compliant MCP server that implements the MCP Authorization spec! We used local keys for this implementation, but in the next post, we'll look at how to easily convert this to use a production IdP. 
+
 
 ## Last Considerations
 
+When building real-world MCP clients and servers, following the MCP Authorization spec, we will want to consider the use of Dynamic Client Registration on the MCP client side. [Section 2.4](https://modelcontextprotocol.io/specification/2025-06-18/basic/authorization#dynamic-client-registration) of the spec gives great reasons for doing so:
 
+* Clients may not know all possible MCP servers and their authorization servers in advance.
+* Manual registration would create friction for users.
+* It enables seamless connection to new MCP servers and their authorization servers.
+* Authorization servers can implement their own registration policies.
 
+Additionally, the spec in [section 2.5.1](https://modelcontextprotocol.io/specification/2025-06-18/basic/authorization#resource-parameter-implementation) says MCP clients MUST use resource indicators when requesting tokens from the Authorization Server with the following "MUSTS":
+
+<blockquote>
+MUST be included in both authorization requests and token requests.<br>
+<br>
+MUST identify the MCP server that the client intends to use the token with.<br>
+<br>
+MUST use the canonical URI of the MCP server as defined in RFC 8707 Section 2.<br>
+<blockquote>
+
+[RFC 8707 goes into detail about](https://www.rfc-editor.org/rfc/rfc8707.html) indicating resource/audience to the Authorization Server. This means MCP clients should very clearly state which MCP server they want to use. This is a great step to make clear the intended audience instead of potentially issuing tokens for broad audiences which can cause issues. It makes token scoping explicit and predictable, enables better multi-tenant behavior, supports fine-grained delegation, prevents accidentally using the same token across unrelated MCP servers. 
+
+At this point we have a [MCP 6-18-25 compliant HTTP server that implements the Authorization spec](https://modelcontextprotocol.io/specification/2025-06-18). This server doesn't use a production IdP yet, but that's what we'll do in the next post. Stay tuned!
