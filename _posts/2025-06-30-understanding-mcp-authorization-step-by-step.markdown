@@ -1,10 +1,10 @@
 ---
 layout: post
-title: Understanding MCP Authorization, Step by Step (Part One)
+title: Understanding MCP Authorization, Step by Step, Part One
 modified:
 categories: 
 comments: true
-tags: []
+tags: [ai, rest, agents, agentic, capabilities, llm, architecture, mcp, tools, openapi, swagger, oas]
 image:
   feature:
 date: 2025-06-30T07:30:50-07:00
@@ -17,8 +17,8 @@ Creating MCP Servers to connect functionality to LLM applications / AI agents is
 
 In this series of blog posts (three parts + [source code](https://github.com/christian-posta/mcp-auth-step-by-step)), we'll walk "step-by-step" through the latest MCP Authorization spec and implement it. I have made all of the [source code for each of the steps available on GitHub](https://github.com/christian-posta/mcp-auth-step-by-step).
 
-* Part 1: (This) - Implement a spec compliant remote MCP server with HTTP Transport
-* Part 2: Layer in Authorization specification with OAuth 2.1
+* Part 1: (This) Implement a spec compliant remote MCP server with HTTP Transport
+* Part 2: [Layer in Authorization specification with OAuth 2.1](https://blog.christianposta.com/understanding-mcp-authorization-step-by-step-part-two/)
 * Part 3: Bring in a production Identity Provider (Keycloak)
 
 Follow ([@christianposta](https://x.com/christianposta) or [/in/ceposta](https://linkedin.com/in/ceposta)) for the next parts. 
@@ -88,7 +88,7 @@ if __name__ == "__main__":
 ```
 Note, since these examples are all run from `localhost`, we will only check `http://localhost` and `http://127.0.0.1`. The MCP spec also says to use `127.0.0.1` if just running on localhost. We will instead bind to `0.0.0.0` because we will eventually be running this in a container and want to run it on the network interfaces. 
 
-With this first step, we have the foundation for an HTTP based MCP server that checks origin. Actually, at the moment, it will check origin on anythign except `/health`. When we add the `/mcp` endpoint, we'll make sure to verify this origin check. At the moemnt, let's run this and test it. 
+With this first step, we have the foundation for an HTTP based MCP server that checks origin. Actually, at the moment, it will check origin on anything except `/health`. When we add the `/mcp` endpoint, we'll make sure to verify this origin check. At the moment, let's run this and test it. 
 
 ```bash
 ❯ uv run step1
@@ -344,4 +344,4 @@ At this point, once connected, you should be able to click on "Tools" -> "List T
 
 ## Where to go from here?
 
-At this point we have a [MCP 6-18-25 compliant HTTP server](https://modelcontextprotocol.io/specification/2025-06-18). This server doesn't support SSE, sessions, heartbeating, resumability (but these could easily be added) since I want to keep it focused on the Authorization specification (next post). In the next post, we will dig into Authorization "step by step". 
+At this point we have a [MCP 6-18-25 compliant HTTP server](https://modelcontextprotocol.io/specification/2025-06-18). This server doesn't support SSE, sessions, heartbeating, resumability (but these could easily be added) since I want to keep it focused on the Authorization specification. In the [next post, we will dig into Authorization "step by step".](https://blog.christianposta.com/understanding-mcp-authorization-step-by-step-part-two/) 

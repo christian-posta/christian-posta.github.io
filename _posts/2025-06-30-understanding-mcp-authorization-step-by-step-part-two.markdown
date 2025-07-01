@@ -4,20 +4,20 @@ title: Understanding MCP Authorization, Step by Step, Part Two
 modified:
 categories: 
 comments: true
-tags: []
+tags: [ai, rest, agents, agentic, capabilities, llm, architecture, mcp, tools, openapi, swagger, oas]
 image:
   feature:
 date: 2025-06-30T16:05:02-07:00
 ---
 
-In this post (part two of three), we'll dig into the [June 2025 MCP Authorization](https://modelcontextprotocol.io/specification/2025-06-18/basic/authorization) specification more closely. 
+In this post (part two of three), we'll dig into the [June 2025 MCP Authorization](https://modelcontextprotocol.io/specification/2025-06-18/basic/authorization) specification more closely. See Part One for setting up the [MCP Server using HTTP Transport](https://blog.christianposta.com/understanding-mcp-authorization-step-by-step/). 
 
 ---
 
 Generally, in this series of blog posts (three parts + [source code](https://github.com/christian-posta/mcp-auth-step-by-step)), we'll walk "step-by-step" through the latest MCP Authorization spec and implement it. I have made all of the [source code for each of the steps available on GitHub](https://github.com/christian-posta/mcp-auth-step-by-step).
 
-* Part 1: (This) - Implement a spec compliant remote MCP server with HTTP Transport
-* Part 2: Layer in Authorization specification with OAuth 2.1
+* Part 1: [Implement a spec compliant remote MCP server with HTTP Transport](https://blog.christianposta.com/understanding-mcp-authorization-step-by-step/)
+* Part 2: (This) Layer in Authorization specification with OAuth 2.1
 * Part 3: Bring in a production Identity Provider (Keycloak)
 
 Follow ([@christianposta](https://x.com/christianposta) or [/in/ceposta](https://linkedin.com/in/ceposta)) for the next parts. 
