@@ -215,7 +215,7 @@ echo "✅ Ready for next step: OAuth 2.0 metadata"
 We are almost there! We need to implement the `oauth-protected-resource` response. 
 
 
-Step 7: Implementing Protected Resource Metadata
+## Step 7: Implementing Protected Resource Metadata
 
 Follow along with the source code [for this step](https://github.com/christian-posta/mcp-auth-step-by-step/blob/main/src/mcp_http/step7.py). 
 
@@ -325,7 +325,7 @@ echo "✅ Ready for next step: Scope-based authorization"
 ```
 
 
-Step 8: Checking Scopes
+## Step 8: Checking Scopes
 
 Follow along with the source code [for this step](https://github.com/christian-posta/mcp-auth-step-by-step/blob/main/src/mcp_http/step8.py). 
 
