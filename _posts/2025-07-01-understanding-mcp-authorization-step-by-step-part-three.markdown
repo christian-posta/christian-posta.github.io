@@ -7,7 +7,7 @@ comments: true
 tags: [ai, rest, agents, agentic, capabilities, llm, architecture, mcp, tools, openapi, swagger, oas]
 image:
   feature:
-date: 2025-07-05T10:20:10-04:00
+date: 2025-07-06T10:20:10-04:00
 ---
 
 This is the final post in a three-part series on [MCP Authorization](https://modelcontextprotocol.io/specification/2025-06-18/basic/authorization) following the June 2025 revisions. In the first two posts, we built an [MCP server with the HTTP transport](https://blog.christianposta.com/understanding-mcp-authorization-step-by-step/) and implemented the right OAuth [token handling and verification](https://blog.christianposta.com/understanding-mcp-authorization-step-by-step-part-two/). Up until now, we used a local identity provider (IdP) and in this post, we'll make the right updates to use a production IdP. For this post, we'll use the [Keycloak project](https://www.keycloak.org), but the same can be done with any other OAuth capable IdP. 
@@ -219,11 +219,13 @@ At this point, you’ve got a working, standards-compliant MCP server that deleg
 
 * Validating tokens with the right `aud` and `iss`
 * Pulling JWKS dynamically
-* Enforcing scopes and aligning them with real users and roles
+* Enforcing client scopes
 * Advertising the protected resource and auth server metadata
 
 A few optional finishing touches you might consider:
 
+* Implement full RBAC taking into account user roles and checking [scopes within the capabilities of the user](https://www.linkedin.com/posts/marjansterjev_mcp-authz-aws-activity-7347159758858018817-BXPB?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAMWH4UBw_-YAxeRzLxcvLeZfq_ikOQxqX4)
+* Consider using [Cedar to check](https://aws.amazon.com/about-aws/whats-new/2023/05/cedar-open-source-language-access-control/) user permissions
 * Add support for refresh tokens — helpful for longer-lived sessions or interactive use.
 * Use Dynamic Client Registration - simplifies MCP client registration to the IdP
 * Log JWT validation failures clearly — aids in debugging and securing your service.
@@ -239,7 +241,6 @@ Allowing clients to register with the Authorization Server dynamically (e.g., vi
 
 **Resource Indicators (RFC 8707)**
 Right now, we're faking the `aud` claim via scope mapping in Keycloak. When Keycloak supports [RFC 8707](https://www.rfc-editor.org/rfc/rfc8707.html), it’ll allow cleaner and more secure token issuance per resource, making multi-tenant deployments more manageable.
-
 
 **Human-in-the-loop & Delegation Flows**
 As AI agents adopt MCP, expect richer delegation scenarios. Specs like [OIDC CIBA](https://blog.christianposta.com/ai-agents-and-oidc-ciba/) and structured authorization layers will be essential.
