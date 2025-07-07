@@ -18,7 +18,7 @@ Generally, in this series of blog posts (three parts + [source code](https://git
 
 * Part 1: [Implement a spec compliant remote MCP server with HTTP Transport](https://blog.christianposta.com/understanding-mcp-authorization-step-by-step/)
 * Part 2: (This) Layer in Authorization specification with OAuth 2.1
-* Part 3: Bring in a production Identity Provider (Keycloak)
+* Part 3: [Bring in a production Identity Provider (Keycloak)](https://blog.christianposta.com/understanding-mcp-authorization-step-by-step-part-three/)
 
 Follow ([@christianposta](https://x.com/christianposta) or [/in/ceposta](https://linkedin.com/in/ceposta)) for the next parts. 
 
