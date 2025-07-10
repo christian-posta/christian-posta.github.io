@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Understanding MCP Authorization With Dynamic Client Registration
+title: MCP Authorization With Dynamic Client Registration
 modified:
 categories: 
 comments: true
