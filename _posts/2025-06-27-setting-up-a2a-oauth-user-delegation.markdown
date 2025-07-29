@@ -124,6 +124,24 @@ Why? Because agents that act *on behalf of a user* can invoke tools, perform act
 
 Instead, we follow a delegation flow using [OAuth 2.0 Token Exchange](https://tools.ietf.org/html/rfc8693). You take a user’s broad-scope access token and exchange it for a **narrow, fine-grained, downscoped** token for a specific agent (audience) and use case.
 
+
+```bash
+calculator_exchange_response = await client.post(
+    f"{KEYCLOAK_URL}/realms/{REALM_NAME}/protocol/openid-connect/token",
+    data={
+        "grant_type": "urn:ietf:params:oauth:grant-type:token-exchange",
+        "client_id": AGENT_TAX_OPTIMIZER_CLIENT_ID,
+        "client_secret": agent_tax_optimizer_secret,
+        "subject_token": tax_optimizer_token,
+        "subject_token_type": "urn:ietf:params:oauth:token-type:access_token",
+        "requested_token_type": "urn:ietf:params:oauth:token-type:access_token",
+        "audience": AGENT_CALCULATOR_CLIENT_ID,
+        "scope": "tax:calculate"
+    },
+    headers={"Content-Type": "application/x-www-form-urlencoded"}
+)
+```
+
 For example, here’s what a downscoped token might look like:
 
 ```json
