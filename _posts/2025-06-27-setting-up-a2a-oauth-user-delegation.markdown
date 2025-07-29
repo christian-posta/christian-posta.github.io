@@ -1,13 +1,13 @@
 ---
 layout: post
-title: Setting Up A2A OAuth User Delegation
+title: Understanding A2A OAuth User Delegation
 modified:
 categories: 
 comments: true
 tags: [ai, rest, agents, agentic, capabilities, llm, architecture, mcp, tools, openapi, swagger, oas]
 image:
   feature:
-date: 2025-06-27T11:47:19-07:00
+date: 2025-07-28T11:47:19-07:00
 ---
 
 In this blog post, we'll walk through an [OAuth 2.0 token exchange](https://oauth.net/2/token-exchange/) and delegation to an [A2A Agent](https://a2aproject.github.io/A2A/latest/). We will focus on configuring the [A2A Agent Card](https://a2aproject.github.io/A2A/latest/specification/#5-agent-discovery-the-agent-card), implementing the agent in Python, and validating the [OAuth credentials](https://a2aproject.github.io/A2A/latest/specification/#43-clientuser-identity-authentication-process). At the end of this walk through, we'll have an A2A enabled agent that has a user's delegated/downscoped intended for specific skills of the agent. This token can be further exchanged to operate as the user including calling out to MCP tools. Source code for this demo [is on my GitHub](https://github.com/christian-posta/oauth-agent-flows/tree/main/agent_calculator). Digging into MCP Authorization is the next blog. Let's dig in.
@@ -76,7 +76,7 @@ This mechanism also makes it possible to generate **agent-specific tokens** that
 
 ### Adding Middleware to Enforce Authentication
 
-In FastAPI, the best way to add JWT bearer token checking is through [Middleware](https://fastapi.tiangolo.com/tutorial/middleware/). We can add rules to exclude auth checking for the AgentCard and properly handle scenarios when the correct Bearer token is not present. If a token is found, then we need to validate it.
+With FastAPI, one way to add JWT bearer token checking is through [Middleware](https://fastapi.tiangolo.com/tutorial/middleware/). We can add rules to exclude auth checking for the AgentCard and properly handle scenarios when the correct Bearer token is not present. If a token is found, then we need to validate it.
 
 ```python
 @app.middleware("http")
@@ -120,9 +120,9 @@ This pattern ensures your agent safely accepts only scoped, valid JWTs—paving 
 
 When sending OAuth access tokens to Agents, [we need to be very careful](https://blog.christianposta.com/agent-identity-impersonation-or-delegation/). When a user logs in and authorizes a set of permissions to an OAuth client and then proceeds to instruct agents to work on behalf of the user, you will want to limit and be selective of what permissions go to which agents, based on skills.
 
-Why? Because agents that act *on behalf of a user* can invoke tools, perform actions, and chain calls to other agents or services *as the user**. If you hand agents a token with broad scopes, you’re essentially giving them broad user access in some cases. That’s a recipe for [agentic misalignment—or worse](https://www.anthropic.com/research/agentic-misalignment), privilege escalation.
+Why? Because agents that act *on behalf of a user* can invoke tools, perform actions, and chain calls to other agents or services *as the user*. If you hand upstream agents a token with broad scopes, that’s a recipe for [agentic misalignment](https://www.anthropic.com/research/agentic-misalignment).
 
-Instead, we follow a delegation flow using [OAuth 2.0 Token Exchange](https://tools.ietf.org/html/rfc8693). You take a user’s broad-scope access token and exchange it for a **narrow, downscoped** token for a specific agent (audience) and use case.
+Instead, we follow a delegation flow using [OAuth 2.0 Token Exchange](https://tools.ietf.org/html/rfc8693). You take a user’s broad-scope access token and exchange it for a **narrow, fine-grained, downscoped** token for a specific agent (audience) and use case.
 
 For example, here’s what a downscoped token might look like:
 
@@ -136,7 +136,7 @@ For example, here’s what a downscoped token might look like:
 }
 ```
 
-This token is only valid for a specific agent (`aud = agent-calculator`) and only includes the `tax:calculate` permission. If the agent tries to do anything else—call, call another API, escalate access, etc it won’t work. The token simply doesn’t permit it.
+This token is only valid for a specific agent (`aud = agent-calculator`) and only includes the `tax:calculate` permission. If the agent tries to do anything else on behalf of the user, ie, call another API, escalate access, etc it shouldn't work. 
 
 This is how we align **security posture** with **agent capability**. By narrowing the delegation at the token level, we can safely compose powerful agentic workflows without introducing risk.
 
@@ -144,8 +144,8 @@ This is how we align **security posture** with **agent capability**. By narrowin
 
 ## Putting It All Together
 
-Once the agent receives this token, it can proceed to call MCP servers or APIs using the delegated authority. If it needs to further act on behalf of the user, it can perform another token exchange or pass that identity downstream, within the bounds of the original delegation.
+Once the agent receives this token, it can proceed to call MCP servers or APIs using the delegated authority. If it needs to further act on behalf of the user, it can perform another token exchange or pass that identity downstream, [within the bounds of the original delegation](https://blog.christianposta.com/agent-identity-impersonation-or-delegation/).
 
 This opens the door to safe, auditable **chained agent execution**, critical for enterprise use cases where human oversight, traceability, and tight auth boundaries are essential.
 
-See the full demo here: 
+See the [full demo here](https://github.com/christian-posta/oauth-agent-flows/blob/main/agent_calculator/test_a2a_auth.py).  
