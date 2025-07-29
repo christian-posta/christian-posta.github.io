@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Understanding A2A OAuth User Delegation
+title: Configuring A2A OAuth User Delegation
 modified:
 categories: 
 comments: true
