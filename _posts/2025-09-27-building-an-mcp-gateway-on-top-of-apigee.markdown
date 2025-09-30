@@ -263,7 +263,7 @@ if (eventContent.startsWith("data: ")) {
 
 ## When DIY Protocol Handling Breaks Down
 
-While our previous section explored the challenges of SSE handling in Apigee, there's an even deeper layer of complexity when implementing the Machine Context Protocol (MCP). Let's explore why attempting to handle this protocol with JavaScript policies can lead to subtle but significant issues.
+While our previous section explored the challenges of SSE handling in Apigee, there's an even deeper layer of complexity when implementing the Model Context Protocol (MCP). Let's explore why attempting to handle this protocol with JavaScript policies can lead to subtle but significant issues.
 
 ### The JSON-RPC Error Handling Trap
 
