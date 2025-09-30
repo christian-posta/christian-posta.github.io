@@ -4,7 +4,7 @@ title: Building an MCP Gateway with Apigee API Gateway
 modified:
 categories: 
 comments: true
-tags: []
+tags: [apigee, management, api, ai, rest, agents, agentic, capabilities, llm, architecture, mcp, tools, openapi, swagger, oas]
 image:
   feature:
 date: 2025-09-27T16:22:59-07:00
