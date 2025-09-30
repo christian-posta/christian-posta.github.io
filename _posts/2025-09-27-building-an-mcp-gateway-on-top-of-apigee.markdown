@@ -147,7 +147,7 @@ But for more complex message structures (tool, resource, prompt calls) this appr
 
 The Apigee `<ExtractVariable>` policy falls apart for this more realistic case:
 
-- **Multiple tool calls in arrays** - ExtractVariables can't iterate over `$.params.tool_calls[*]`
+- **Multiple tools in a list/array** - ExtractVariables can't iterate over arrays
 - **Complex nested arguments** - Deep object structures in tool arguments
 - **Dynamic argument validation** - Tool-specific argument schema validation
 
