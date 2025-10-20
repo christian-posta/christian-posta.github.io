@@ -15,7 +15,7 @@ Do you use API keys to protect your enterprise APIs? If you work in a large ente
 As you adopt AI agents, LLMs, and MCP servers, you may think using API keys for communicating to LLMs, AI agents, or MCP services is a good idea. It's a terrible idea. If you take anything away from this blog:
 
 <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; border-right: 1px solid #ffeaa7; border-top: 1px solid #ffeaa7; border-bottom: 1px solid #ffeaa7; padding: 1em 1.5em; margin: 1.5em 0; border-radius: 0 5px 5px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 1.1em; line-height: 1.6;">
-⚠️ API keys should not be used for security within the boundaries of an enterprise for <strong>LLM, AI agent, MCP tools, etc</strong> including for hosted LLM calls. API keys should be avoided altogether. There are better, more secure alternatives.
+⚠️ API keys should not be used for security within an enterprise for <strong>LLM, AI agent, MCP tools, etc</strong> including for hosted LLM calls. API keys should be avoided altogether. There are better, more secure alternatives.
 </div>
 
 ## How are API Keys Used
