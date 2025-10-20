@@ -20,21 +20,104 @@ As you adopt AI agents, LLMs, and MCP servers, you may think using API keys for 
 
 ## How are API Keys Used
 
-The way API keys are used in enterprise applications/environments is as long-lived, rarely rotated, service-to-service credentials. If an API key gives access to APIs and services, anyone/anything that possesses them can access those systems and services. They are like real "keys". If you have a key, you can unlock something. 
+The way API keys are used in enterprise applications/environments is as long-lived, rarely rotated, service-to-service credentials. If an API key gives access to APIs and services, anyone/anything that possesses them can access those systems and services. There is nothing cryptographic about them, and there is no way to prove the user of the key is the intended user of the key. They are like real "keys". If you have a key, you can unlock something. 
 
-Another fact about how API keys are used in enterprise environments is these keys are used to permit "coarse grained" access. That is, you either have access to something or you don't. Like a lock to the front door of a house. Once you're in, you have access to everything. More sophisticated implementations try to map API keys to "roles" where a role has some limited static permissions to a pre-defined group of resources. 
+Another fact about how API keys are used in enterprise environments is these keys are used to permit "coarse grained" access. That is, you either have access to something or you don't. Like a lock to the front door of a house. Once you're in, you have access to everything behind the door. More sophisticated implementations try to map API keys to "roles" where a role has some limited static permissions to a pre-defined group of resources. 
 
 ![](/images/api-keys/initial-api-key.png)
 
-The problem is, [API keys were NOT DESIGNED for security purposes](https://nordicapis.com/why-api-keys-are-not-enough/). Their intended purpose is like a "label" on HTTP requests that can be used for analytics, observability, quota/rate limiting, etc. Unfortunately, enterprises use them as security credentials. This blog from the folks at SPIRL/Defakto Security calls these types of [credentials "toxic", and they are right](https://www.defakto.security/blog/from-oauth-tokens-to-api-keys-the-toxic-data-behind-the-salesloft-drift-salesforce-breach/). 
+The problem is, [API keys were NOT DESIGNED for security purposes](https://nordicapis.com/why-api-keys-are-not-enough/). Their intended purpose is like a "label" on HTTP requests that can be used for analytics, observability, quota/rate limiting, etc. Unfortunately, enterprises use them as security credentials. This blog from the folks at SPIRL/Defakto Security calls these types of [credentials "toxic", and they are right](https://www.defakto.security/blog/from-oauth-tokens-to-api-keys-the-toxic-data-behind-the-salesloft-drift-salesforce-breach/). If you ARE using API keys internally within your enterprise for security, you are definitely doing it wrong. 
 
 ## Why should API keys not be used for AI?
 
 API keys present unique dangers in AI agent environments because AI is probabilistic. Agent decisions, dependencies, and call flows are emergent. API keys only prove possession, not legitimacy or appropriate use rights. In other words, if an agent possesses the key, how would the target API/Agent/Service know this is a legitimate use? How would the enterprise know whether any communication as a result of this is legitimate? Is the agent allowed to hold that API key? The called service/agent just sees someone with a key show up asking to do something that the key unlocks. 
 
-For AI agents in enterprise, this is particularly problematic especially for compliance. API keys grant "long standing, coarse grained privilege", that is, persistent access that remains active regardless of changing context or need. The autonomous nature of AI agents amplifies these risks. **Any permission granted via API key becomes "live and active"**: the agent will *eventually find a reason to use it*. Or worse. Agents may pass API keys between each other, store them in unexpected ways, or expose them through prompts and completions. It's already quite difficult for human developers to protect API keys and avoid revealing them unintentionally, but now we have to trust a probabilistic agent to do this right? If an agent with broad API key access delegates keys to other agents, permissions spread unpredictably and dangerously and becomes impossible to track and control.
+For AI agents in the enterprise, this is particularly problematic especially for compliance. API keys grant "long standing, coarse grained privilege", that is, persistent access that remains active regardless of changing context or need. The autonomous nature of AI agents amplifies these risks. **Any permission granted via API key becomes "live and active"**: the agent will *eventually find a reason to use it*. Let's look at a simple example. 
+
+### Example of AI Agent with API Keys
+
+Developers at an enterprise built an HR Service Desk Agent. It is intended to help employees with the following:
+
+* Answer questions about company policies and benefits
+* Help you find and complete HR forms
+* Check your PTO balance and help request time off
+* Create tickets for HR requests
+
+
+To perform these actions, the Agent needs access to the HR management system, document management system, ticketing system and of course an LLM. So the developers get an API key to the Oracle HCM system, one to the OpenText Content Server, and another to the Service Now system. 
+
+These API keys have the following permissions:
+
+| System / API | Role | Key Permissions |
+|---------------|------|-----------------|
+| **Oracle HCM** | Integration Specialist | • Read employee personal info<br>• View compensation data<br>• Retrieve org structures<br>• View benefit enrollments |
+| **OpenText Content Server** | Integration User | • See (Level 1)<br>• See Contents (Level 2)<br>• Read (Level 3)<br>• Add (Level 4)<br>• Delete (Level 5) |
+| **ServiceNow ITSM** | Integration User | • Create, read, update incidents<br>• Assign to self/others<br>• Categorize/prioritize<br>• Resolve/close incidents |
+
+
+Typical requests to this HR agent look like this:
+
+<h3>Typical Requests to the HR Agent</h3>
+
+<div style="background-color:#f9fafb; border-left:4px solid #4b9ce2; padding:1em 1.5em; margin-bottom:1em; border-radius:4px;">
+  <strong>🧑‍💼 Employee request:</strong> “What’s our company’s work from home policy?”<br>
+  <strong>🤖 Agent action:</strong> Uses the <em>Document Management System</em> API key to retrieve the current WFH policy document from the HR policies folder.
+</div>
+
+<div style="background-color:#f9fafb; border-left:4px solid #4b9ce2; padding:1em 1.5em; margin-bottom:1em; border-radius:4px;">
+  <strong>🧑‍💼 Employee request:</strong> “I need to update my home address.”<br>
+  <strong>🤖 Agent action:</strong> Uses the <em>Ticketing System</em> API key to create a ticket for the address change and the <em>Document Management System</em> API key to retrieve the appropriate form.
+</div>
+
+<div style="background-color:#f9fafb; border-left:4px solid #4b9ce2; padding:1em 1.5em; border-radius:4px;">
+  <strong>🧑‍💼 Employee request:</strong> “How many vacation days do I have left this year?”<br>
+  <strong>🤖 Agent action:</strong> Uses the <em>HR Management System</em> API key to query only that specific employee’s time-off balance.
+</div>
+
+But, there may also be questions to the agent that the company would want to restrict or apply more fine-grained policy / dynamic access:
+
+<div style="background-color:#fff5f5; border-left:4px solid #dc2626; padding:1em 1.5em; margin-bottom:1.2em; border-radius:4px;">
+  <strong>🚨 Unauthorized Compensation Access</strong><br><br>
+  <strong>🧑‍💼 Employee request:</strong> “What’s the average salary for people in my position?”<br>
+  <strong>🤖 Agent action:</strong> Uses the <em>HR Management System</em> API key to query salary data across the entire department or company, accessing compensation information for multiple employees.<br>
+  <strong>⚠️ Why it’s problematic:</strong> The HR Service Account API key has blanket read permissions to all compensation data, allowing the agent to retrieve and analyze sensitive salary information that would normally require manager-level access.
+</div>
+
+<div style="background-color:#fff5f5; border-left:4px solid #dc2626; padding:1em 1.5em; margin-bottom:1.2em; border-radius:4px;">
+  <strong>🚨 Sensitive Document Exposure</strong><br><br>
+  <strong>🧑‍💼 Employee request:</strong> “Are there any reorganization plans for my department?”<br>
+  <strong>🤖 Agent action:</strong> Uses the <em>Document Management System</em> API key to search all HR documents, including confidential executive planning documents labeled as “reorganization.”<br>
+  <strong>⚠️ Why it’s problematic:</strong> The HR Documents Service Role API key can access highly confidential documents that aren’t meant for general employee consumption, potentially revealing sensitive business plans.
+</div>
+
+<div style="background-color:#fff5f5; border-left:4px solid #dc2626; padding:1em 1.5em; border-radius:4px;">
+  <strong>🚨 Cross-Boundary Data Analysis</strong><br><br>
+  <strong>🧑‍💼 Employee request:</strong> “Why was my promotion request denied last year?”<br>
+  <strong>🤖 Agent action:</strong> Uses its API keys to retrieve the employee’s performance reviews, manager feedback notes from the document system, and related HR tickets.<br>
+  <strong>⚠️ Why it’s problematic:</strong> The combination of broad access across systems allows the agent to piece together sensitive information from multiple sources without proper authorization checks.
+</div>
+
+
 
 ![](/images/api-keys/wide-access.png)
+
+
+In each problematic scenario, the API key's static, broad permissions allow the AI agent to access information that should be restricted based on context. The systems receiving these API requests have no visibility into:
+
+* Which specific employee is making the request
+* Whether that employee should have access to that information
+* The specific intent or purpose behind the query
+
+This happens because the API keys authenticate the service (the AI assistant) rather than the actual user, creating a fundamental security disconnect. The systems only see requests coming from trusted service accounts with broad permissions, not the specific context of individual user requests.
+
+<div style="background-color: #e7f5ff; border-left: 4px solid #1c7ed6; border-right: 1px solid #d0ebff; border-top: 1px solid #d0ebff; border-bottom: 1px solid #d0ebff; padding: 1em 1.5em; margin: 1.5em 0; border-radius: 0 5px 5px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 1.05em; line-height: 1.6;">
+💡 <strong>Key Insight:</strong> You could just say “well, that’s just it, the main problem is these keys shouldn’t be so broad.”  
+And you can say that all you want — role-based access and API key security are commonplace in enterprise organizations.  
+The main point of this blog is that we should <strong>not just continue the same practices we’ve been doing all along for LLMs, AI agents, and MCP tools/APIs.</strong>
+</div>
+
+
+### What About for LLMs that Use API keys?
 
 What about for LLMs? Hosted LLM providers almost all use API keys to give access. Again, this is typically broad ranging access to multiple models and services. Enterprises need much more fine grained policy control for compliance, data leakage, privacy, and audit requirements, for example:
 
@@ -92,7 +175,7 @@ API keys are often used because they are "easy" to get started. But just because
 * Handle token enrichment: Add additional claims and context for downstream services
 
 
-## How to secure Hosted LLM providers?
+## How to Secure Hosted LLM providers?
 
 So far, we've mostly focused on securing communications and access within the enterprise and not using API keys to do so. But what about for calling external/provider hosted LLM services? Those services almost always use API keys to enable auth. In my opinion these providers take the "lowest common denominator" or "easiest for us" approach and leave the heavy lifting of making this approach secure TO YOU. 
 
