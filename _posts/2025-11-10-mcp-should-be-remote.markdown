@@ -285,6 +285,15 @@ The real opportunity for enterprises building MCP services is to invert that app
 
 Each model-oriented tool encapsulates enough of a call sequence, often calling multiple backend APIs behind the scenes, and returns information structured for decision making by the LLM, not raw data dumps. This is where enterprise MCP design shines: teams can bake in domain knowledge, guardrails, and policy enforcement directly at the tool layer. 
 
+## Drawbacks to Remote MCP Servers
+
+I don't want my suggestions to come across as a panacea. While they are an appropriate path forward for enterprise, this approach is not without some tradeoffs that must be known up front. 
+
+* **Remote MCP servers are more complex to implement.** They must be deployed into some infrastructure, you must think about high availability, scaling, persistence (if necessary) and most importantly multi-tenancy. 
+* **Guard against confused deputy** With a multi-tenant server operating on behalf of users/agents, you need to ensure credential elevation or cross-contamination cannot happen. I've previously written at length about [MCP server auth patterns](https://blog.christianposta.com/mcp-authorization-patterns-upstream-api-calls/), especially for upstream calls. 
+* **Versioning is not straight forward** You will need to consider blue/green upgrade paths vs in-place as this will have a big effect on your agents. Blue-green is a well established pattern, but is more complex. It's worth it though to control upgrade blast radius.
+* **Discovery of MCP servers** is still a problem. You will likely need some kind of registry/catalog
+
 
 ## Conclusion
 
