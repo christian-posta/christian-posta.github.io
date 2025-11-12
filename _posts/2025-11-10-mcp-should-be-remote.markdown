@@ -147,14 +147,12 @@ How is this different than the stdio approach? When using the HTTP Streamable tr
 * Control what MCP servers are allowed to run (in conjunction with an approved registry)
 * Manage upgrade cycles and overall lifecycle
 
-<strong>Here's my current recommendation given these facts:</strong>
 
-
-I can already hear you saying: 
+<strong>I can already hear you saying: </strong>
 
 _"But all of the MCP servers ARE stdio!"_
 
-That’s true: most MCP servers available today still rely on stdio transport. However, we’re beginning to see a shift. Some SaaS providers are introducing fully hosted, remote MCP services. For example:
+That’s true: most MCP servers available today still rely on stdio transport. However, we’re beginning to see a shift. Some SaaS providers are introducing fully hosted, remote MCP services. And a lot of MCP clients are able to support OAuth flows. For example:
 
 ```json
 {
@@ -180,24 +178,22 @@ Or Figma MCP:
 }
 ```
 
-These SaaS managed/hosted MCP servers usually implement the [MCP Authorization spec](https://modelcontextprotocol.io/specification/draft/basic/authorization) which is OAuth 2.1. So the MCP client will follow the OAuth consent flows. This is better from a "don't use long-lived API keys" perspective, but still [creates governance and observability issues](https://www.solo.io/blog/mcp-authorization-patterns-for-upstream-api-calls). It's very important that enterprise policy is implemented, even connecting to these remotely hosted SaaS provided MCP services. So it's better, [but still has issues](https://www.solo.io/blog/enterprise-challenges-with-mcp-adoption).  
+These SaaS managed/hosted MCP servers usually implement the [MCP Authorization spec](https://modelcontextprotocol.io/specification/draft/basic/authorization) which is OAuth 2.1. So the MCP client will follow the OAuth consent flows. This is better from a "don't use long-lived API keys" perspective, but still [creates governance and observability issues](https://www.solo.io/blog/mcp-authorization-patterns-for-upstream-api-calls). It's very important that enterprise policy is implemented, even connecting to these remotely hosted SaaS provided MCP services. So it's better, [but still has issues](https://www.solo.io/blog/enterprise-challenges-with-mcp-adoption).  But still, I concede that most available MCP servers (or guides for building MCP servers) are focused around the stdio transport. 
 
-But still, I concede that most available MCP servers (or guides for building MCP servers) are focused around the stdio transport. But that brings us to a very important point. 
+But that brings us to a very important point. 
 
 
 <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; border-right: 1px solid #ffeaa7; border-top: 1px solid #ffeaa7; border-bottom: 1px solid #ffeaa7; padding: 1em 1.5em; margin: 1.5em 0; border-radius: 0 5px 5px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 1.1em; line-height: 1.6;">
-MCP in enterprise environments is still <strong> very early days.</strong> Just because the prevailing patterns for stdio MCP servers exist, does not mean you should just ram them into production. Enterprises still care about security, observability and governance. <br><br> <strong>If you're going to adopt MCP, you still MUST fit within the enterprise expectations.</strong> The current stdio approach to MCP (stdio) is NOT suitable for enterprises.
+MCP in enterprise environments is still <strong> very early days.</strong> Just because the prevailing patterns for stdio MCP servers exist, does not mean you should just ram them into production. Enterprises still care about security, observability and governance. <br><br> <strong>If you're going to adopt MCP, you must find a way to be secure, governable, observable, and manageable.</strong> The current stdio approach to MCP (stdio) is NOT suitable for enterprises.
 </div>
 
 **Here's my current recommendation for MCP servers in an enterprise**
 
-<div style="background-color:#f9fafb; border-left:4px solid #42b983; padding:1em 1.5em; margin-bottom:1em; border-radius:4px;">
+<div style="background-color:#f9fafb; border-left:4px solid #42b983; padding:1em 1.5em; margin-bottom:1em; border-radius:4px; 1em 1.5em; margin: 1.5em 0; border-radius: 0 5px 5px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 1.1em; line-height: 1.6;">
 ⚠️ Enterprises should <strong>avoid local stdio MCP servers</strong> when the MCP server is making remote API calls that require API key or PAT (personal access token) security. These MCP servers should be implemented by remote-only MCP servers with locked down security based on enterprise practices (SSO, workload identity, etc), lifecycle management, and governance. <br><br>
 
 Local stdio MCP servers are only appropriate for simple prototyping OR when the tooling needs to operate locally (ie, filesystems, building local documents, etc). 
 </div>
-
-
 
 
 
@@ -261,6 +257,11 @@ Many of the third-party or off-the-shelf MCP servers in circulation today were b
 
 We’re seeing enterprises fall into the same trap internally: taking an existing OpenAPI specification of System APIs and auto-generating MCP tools from it. This technically “works,” but it’s semantically wrong. You end up with dozens or hundreds of narrowly scoped, low-value tools that mirror REST endpoints suitable for machine to machine calls rather than exposing meaningful context to the AI model. 
 
+<div style="background-color:#fff8e1; border-left:4px solid #ffc107; padding:1em 1.5em; margin-bottom:1em; border-radius:4px;">
+<strong>Side Note:</strong> There are some who suggest the MCP experience layer should connect directly to the data layer, bypassing other abstractions. For example, <span style="text-decoration:underline;"><a href="https://venturebeat.com/ai/intuit-learned-to-build-ai-agents-for-finance-the-hard-way-trust-lost-in" target="_blank" style="color:#1976d2;">Intuit built a dedicated data layer for their agentic workloads</a></span>.
+</div>
+
+![](/images/mcp-remote/mcp-direct-data.gif)
 
 ### Can an LLM have Cognitive Overload?
 
@@ -289,7 +290,7 @@ Each model-oriented tool encapsulates enough of a call sequence, often calling m
 
 MCP was built to make AI integration easier, but in its current form, it’s making enterprise security, observability, and governance worse. The explosion of local stdio MCP servers has quietly reintroduced the very problems enterprises spent years solving: unmanaged credentials, inconsistent policy, and zero visibility. Each new stdio MCP server running on a developer laptop (or jammed into a deployed agent) is another black box. It pushes API keys, PATs, and secrets into places they were never meant to live. For most organizations, that’s not progress it’s a serious regression.
 
-Move MCP out of the workstation and into the enterprise. Use remote, identity-aware MCP servers that enforce SSO, policy, and observability at the platform layer. Treat them like APIs: governed, secured, and monitored. And as we mature this ecosystem, focus on design, not convenience. Great MCP servers aren’t auto-wrapped APIs; they’re intentional, ergonomic interfaces that help models act safely and effectively. They abstract complexity, preserve context, and align with business logic, not endpoint lists.
+Move MCP servers out of the workstation and into the enterprise. Use remote, identity-aware MCP servers that enforce SSO, policy, and observability at the platform layer. Treat them like APIs: governed, secured, and monitored. And as we mature this ecosystem, focus on design, not convenience. Great MCP servers aren’t auto-wrapped APIs; they’re intentional, ergonomic interfaces that help models act safely and effectively. They abstract complexity, preserve context, and align with business logic, not endpoint lists.
 
 If you disagree, have alternative view points, or want to share encouragement, I would love to know!! Please share in the comments or social:  (My LinkedIn: [/in/ceposta](https://linkedin.com/in/ceposta))
 
