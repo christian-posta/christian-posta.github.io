@@ -98,7 +98,7 @@ Lastly, we can configure which clients are allowed to request these scopes. For 
 
 ## Testing MCP SSO + Entra
 
-We can run our agentgateway (see source code):
+We can run our agentgateway (see [source code](https://github.com/christian-posta/agentgateway-entra-sso)):
 
 ```bash
 agentgateway -f ./config/agentgateway.yaml
