@@ -87,9 +87,9 @@ User: <here>
 
 
 Provide your safety assessment for the above conversation in the below output JSON format:
-{{"User Safety": safe or unsafe rating for the user message, "Response Safety": safe or unsafe 
+{% raw %}{{"User Safety": safe or unsafe rating for the user message, "Response Safety": safe or unsafe 
 rating for the agent response. Omit if no agent response present. "Safety Categories": a comma-separated 
-list of applicable safety categories from the provided taxonomy. Omit if all safe.}}
+list of applicable safety categories from the provided taxonomy. Omit if all safe.}}{% endraw %}
 
 Do not include anything other than the output JSON in your response.
 Output JSON: 
