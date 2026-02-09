@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://blog.christianposta.com/sitemap.xml
+Sitemap: https://blog.christianposta.com/aauth-full-demo/sitemap.xml
+Sitemap: https://blog.christianposta.com/entra-agent-id-agw/sitemap.xml

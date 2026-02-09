@@ -1,0 +1,9 @@
+# Projects & demos - single source for nav dropdown and homepage
+
+- title: AAuth Full Demo
+  url: /aauth-full-demo/
+  description: OAuth 2.0 / OIDC flows and authentication patterns demo.
+
+- title: Entra Agent ID + AGW
+  url: /entra-agent-id-agw/
+  description: Microsoft Entra identity and Agent Gateway integration demo.

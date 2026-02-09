@@ -6,12 +6,25 @@
 		<nav role="navigation" id="site-nav" class="nav">
 		    <ul>
 		        {% for link in site.data.navigation %}
-				    {% if link.url contains 'http' %}
-				        {% assign domain = '' %}
+				    {% if link.dropdown %}
+				        <li class="nav-dropdown">
+				            <details class="nav-dropdown-details">
+				                <summary class="nav-dropdown-trigger">{{ link.title }} <i class="fa fa-caret-down"></i></summary>
+				                <ul class="nav-dropdown-menu">
+				                    {% for project in site.data.projects %}
+				                        <li><a href="{{ site.url }}{{ project.url }}">{{ project.title }}</a></li>
+				                    {% endfor %}
+				                </ul>
+				            </details>
+				        </li>
+				    {% else %}
+				        {% if link.url contains 'http' %}
+				            {% assign domain = '' %}
 				        {% else %}
-				        {% assign domain = site.url %}
+				            {% assign domain = site.url %}
+				        {% endif %}
+				        <li><a href="{{ domain }}{{ link.url }}" {% if link.url contains 'http' %}target="_blank"{% endif %}>{{ link.title }}</a></li>
 				    {% endif %}
-				    <li><a href="{{ domain }}{{ link.url }}" {% if link.url contains 'http' %}target="_blank"{% endif %}>{{ link.title }}</a></li>
 				{% endfor %}
 		    </ul>
 		</nav>

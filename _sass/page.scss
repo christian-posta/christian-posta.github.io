@@ -91,6 +91,93 @@ body {
 			}
 		}
 	}
+	/* Agent Identity dropdown - uses native details/summary, no JS needed */
+	.nav-dropdown {
+		position: relative;
+	}
+	.nav-dropdown-details {
+		display: inline-block;
+	}
+	.nav-dropdown-details summary {
+		list-style: none;
+		cursor: pointer;
+	}
+	.nav-dropdown-details summary::-webkit-details-marker {
+		display: none;
+	}
+	.nav-dropdown-details summary::-moz-list-bullet {
+		list-style-type: none;
+	}
+	.nav-dropdown-trigger {
+		display: block;
+		padding: 10px 0;
+		cursor: pointer;
+		@media #{$small} {
+			display: inline;
+			padding: 0;
+		}
+		.fa-caret-down {
+			font-size: 0.75em;
+			margin-left: 0.25em;
+		}
+	}
+	.nav-dropdown-menu {
+		display: block;
+		position: static;
+		background: transparent;
+		border: none;
+		box-shadow: none;
+		padding-left: 1em;
+		margin: 0;
+		@media #{$small} {
+			position: absolute;
+			top: 100%;
+			left: 0;
+			min-width: 180px;
+			padding: 0.5em 0;
+			margin-top: 0.5em;
+			margin-left: 0;
+			background: $bodycolor;
+			border: 1px solid lighten($black, 80%);
+			border-radius: 4px;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+			padding-left: 0;
+			z-index: 100;
+		}
+		li {
+			border-bottom: 0;
+			margin-right: 0;
+			@media #{$small} {
+				display: block;
+				padding: 0;
+			}
+		}
+		a {
+			padding: 8px 16px;
+			display: block;
+			white-space: nowrap;
+			text-transform: none;
+			@media #{$small} {
+				padding: 8px 16px;
+			}
+		}
+	}
+	/* Show dropdown menu when details is open (user clicked) */
+	@media #{$small} {
+		.nav-dropdown-details:not([open]) .nav-dropdown-menu {
+			display: none;
+		}
+		.nav-dropdown-details[open] .nav-dropdown-menu {
+			display: block;
+		}
+		/* Allow dropdown to escape overflow:hidden on parent ul */
+		.nav .nav-dropdown {
+			overflow: visible;
+		}
+		.nav .nav-dropdown .nav-dropdown-menu {
+			overflow: visible;
+		}
+	}
 }
 
 /* Animated lines for mobile nav button */
@@ -203,6 +290,7 @@ $button-size: 1.5rem;
 	overflow: hidden;
 	@media #{$small} {
 		max-height: 30em;
+		overflow: visible; /* allow dropdown to show below nav */
 	}
 }
 // Displaying the menu when the user has clicked on the button
@@ -280,6 +368,9 @@ $button-size: 1.5rem;
 		p+p {
 			text-indent: 0;
 		}
+	}
+	.projects-list {
+		text-transform: none;
 	}
 }
 

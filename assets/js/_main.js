@@ -27,7 +27,28 @@ document.onclick = function(e) {
   if(buttonStyle === 'block' && e.target !== mobileButton && new RegExp(' ' + 'active' + ' ').test(' ' + mobileButton.className + ' ')) {
     changeClass(mobileButton, 'navtoogle active', 'navtoogle');
   }
+
+  // Close dropdown when clicking outside
+  var dropdown = document.querySelector('.nav-dropdown-open');
+  if (dropdown && !dropdown.contains(e.target)) {
+    dropdown.classList.remove('nav-dropdown-open');
+  }
 };
+
+// Agent Identity dropdown: click to toggle
+document.addEventListener('DOMContentLoaded', function() {
+  var trigger = document.querySelector('.nav-dropdown-trigger');
+  if (trigger) {
+    trigger.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var parent = this.closest('.nav-dropdown');
+      if (parent) {
+        parent.classList.toggle('nav-dropdown-open');
+      }
+    });
+  }
+});
 
 /*! Plugin options and other jQuery stuff */
 
