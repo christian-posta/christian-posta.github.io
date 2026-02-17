@@ -45,7 +45,7 @@ How does it all work? I [encourage you to read the draft exploratory spec](https
 ## Full Working Prototype
 
 <div style="background-color: #e7f3ff; border-left: 4px solid #308cbc; border-right: 1px solid #b8daff; border-top: 1px solid #b8daff; border-bottom: 1px solid #b8daff; padding: 1em 1.5em; margin: 1.5em 0; border-radius: 0 5px 5px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.06); font-size: 1.05em; line-height: 1.6;">
-<strong>📖 Full working demo:</strong> I’ve put together a <a href="https://blog.christianposta.com/aauth-full-demo/" style="color: #0066aa; text-decoration: underline; font-weight: 600;">full working demo</a> with videos that walks through the entire flow with <a href="https://www.keycloak.org/" style="color: #0066aa; text-decoration: underline; font-weight: 600;">Keycloak</a>, Agentgateway, A2A, and MCP.
+<strong>📖 Full working demo:</strong> I’ve put together a <a href="https://blog.christianposta.com/aauth-full-demo/" style="color: #0066aa; text-decoration: underline; font-weight: 600;">full working demo</a> with videos that walks through the entire flow with <a href="https://www.keycloak.org/" style="color: #0066aa; text-decoration: underline; font-weight: 600;">Keycloak</a>, <a href="https://agentgateway.dev/" style="color: #0066aa; text-decoration: underline; font-weight: 600;">Agentgateway</a>, A2A, and MCP.
 </div>
 
 ![AAuth Demo Flow](/images/demo-flow.png)
