@@ -116,6 +116,21 @@ blockquote {
 }
 
 /* 
+   Callouts (emphasis box, no italics)
+   ========================================================================== */
+
+.callout {
+	margin: 1em 0;
+	padding: 1em 1.25em;
+	background-color: lighten($basecolor, 65%);
+	border-left: 8px solid $info;
+	font-style: normal;
+	p:last-child {
+		margin-bottom: 0;
+	}
+}
+
+/* 
    Footnotes
    ========================================================================== */
 
