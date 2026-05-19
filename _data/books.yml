@@ -1,0 +1,29 @@
+# Books shown in the right-rail "Books I've Written" panel.
+# Reorder freely; the panel renders in this order (newest first by default).
+#
+# Optional `cover:` is a URL to a cover image — leave empty for a
+# typographic-only card.
+
+- title: "AI Gateways in the Enterprise"
+  publisher: "O'Reilly Media (2025)"
+  blurb: "With Peter Jausovec — patterns for putting LLMs and AI agents safely into production at enterprise scale."
+  url: "https://www.oreilly.com/library/view/ai-gateways-in/9798341621381/"
+  cover:
+
+- title: "AI Agents in Kubernetes"
+  publisher: "Solo.io report"
+  blurb: "With Lin Sun — agentic workflows, security, identity, and state management for AI agents on Kubernetes."
+  url: "https://www.solo.io/resources/report/ai-agents-in-kubernetes"
+  cover:
+
+- title: "Istio in Action"
+  publisher: "Manning (2022)"
+  blurb: "With Rinor Maloku — a practical guide to the Istio service mesh — traffic, security, observability."
+  url: "https://www.manning.com/books/istio-in-action"
+  cover:
+
+- title: "Microservices for Java Developers"
+  publisher: "O'Reilly Media (2nd ed., 2018)"
+  blurb: "With Rafael Benevides — Spring Boot, MicroProfile, Docker, and Kubernetes for Java microservices."
+  url: "https://www.oreilly.com/library/view/microservices-for-java/9781492038290/"
+  cover:

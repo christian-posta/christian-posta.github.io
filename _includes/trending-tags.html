@@ -1,0 +1,41 @@
+<!-- Right-rail panel: Books (replaces Chirpy's stock "Trending Tags").
+     Source: _data/books.yml -->
+
+{% if site.data.books and site.data.books.size > 0 %}
+  <section class="books-panel">
+    <h2 class="panel-heading">
+      <i class="fas fa-book me-2"></i>Books I've Written
+    </h2>
+    <ul class="content list-unstyled ps-0 mt-3 mb-1">
+      {% for book in site.data.books %}
+        <li class="book-card d-flex align-items-start py-2">
+          {% if book.cover %}
+            <a href="{{ book.url | default: '#' }}" class="book-cover-link me-2 flex-shrink-0"
+               {% if book.url %}target="_blank" rel="noopener noreferrer"{% endif %}>
+              <img class="book-cover" src="{{ book.cover }}" alt="{{ book.title }} cover" loading="lazy">
+            </a>
+          {% endif %}
+          <div class="flex-grow-1">
+            <a class="book-title d-block fw-semibold"
+               href="{{ book.url | default: '#' }}"
+               {% if book.url %}target="_blank" rel="noopener noreferrer"{% endif %}>
+              {{ book.title }}
+            </a>
+            {% if book.publisher %}
+              <small class="book-publisher text-muted d-block">{{ book.publisher }}</small>
+            {% endif %}
+            {% if book.blurb %}
+              <small class="book-blurb d-block mt-1">{{ book.blurb }}</small>
+            {% endif %}
+            {% if book.url %}
+              <a class="btn btn-sm btn-outline-primary book-cta mt-2"
+                 href="{{ book.url }}" target="_blank" rel="noopener noreferrer">
+                View book &rarr;
+              </a>
+            {% endif %}
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+{% endif %}

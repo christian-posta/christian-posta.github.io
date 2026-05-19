@@ -8,6 +8,91 @@
 {%- endif -%}
 ';
 
+/* ----- Custom: Books panel (right sidebar) ----- */
+.books-panel {
+  .panel-heading {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+  }
+
+  .book-card {
+    border-bottom: 1px solid var(--main-border-color, rgba(0, 0, 0, 0.06));
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  .book-cover {
+    width: 60px;
+    height: auto;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  }
+
+  .book-title {
+    color: var(--text-color);
+    text-decoration: none;
+    line-height: 1.2;
+
+    &:hover {
+      color: #0a66c2 !important;
+      border-bottom: 0 !important;
+    }
+  }
+
+  .book-publisher {
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+  }
+
+  .book-blurb {
+    font-size: 0.78rem;
+    color: var(--text-muted-color, #6c757d);
+    line-height: 1.35;
+  }
+
+  .book-cta {
+    font-size: 0.75rem;
+    padding: 0.15rem 0.55rem;
+  }
+}
+
+/* ----- Custom: brand colors for sidebar social icons ----- */
+#sidebar .sidebar-bottom a {
+  transition: transform 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  .fa-linkedin {
+    color: #0a66c2;
+  }
+
+  .fa-github {
+    color: var(--sidebar-active-color, #1d1d1d);
+  }
+
+  .fa-x-twitter,
+  .fa-twitter {
+    color: #000;
+  }
+
+  .fa-stack-overflow {
+    color: #f48024;
+  }
+
+  .fa-envelope {
+    color: #d44638;
+  }
+
+  .fa-rss {
+    color: #ee802f;
+  }
+}
+
 /* ----- Custom: Latest posts panel (right sidebar) ----- */
 .latest-posts-panel {
   .panel-heading {

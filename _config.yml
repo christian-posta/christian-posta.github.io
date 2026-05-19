@@ -14,9 +14,9 @@ timezone:
 # jekyll-seo-tag settings › https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
 # ↓ --------------------------
 
-title: ceposta Technology Blog
+title: Christian Posta
 
-tagline: Cloud-native, service mesh, API gateways, and AI agent infrastructure
+tagline: Field CTO @ Solo.io | AI Agent IAM, AAuth, MCP, A2A | Cloud Networking | Author | International Speaker
 
 description: >-
   Christian Posta's blog on Istio, Envoy, API gateways, MCP, and the
