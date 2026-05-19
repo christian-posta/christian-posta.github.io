@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "How a Service Mesh Can Help With Microservices Security"
-modified:
-categories: 
-comments: true
-tags: []
-image:
-  feature:
 date: 2018-03-22T16:12:59-07:00
+categories: [Service Mesh]
+tags: [istio, microservices, security, service-mesh]
 ---
 
 I see lots of customers moving to microservices, (whether they [should or not is a topic for a different post](http://blog.christianposta.com/microservices/when-not-to-do-microservices/)), and in doing so they are attempting to solve some difficult organizational scaling problems. The details of going to microservice architecture often trades some old problems for new ones, however. Most of the customers I speak with have a strategy of having both an on-premise as well as public cloud deployment of their architecture. Breaking applications into smaller services AND having multi deployment sites/platforms creates some major challenges. In my opinion, service mesh implementations like [Istio](https://istio.io) aim to solve some of these challenges. I [actually have a lot to say about Istio and Service Mesh](http://blog.christianposta.com) in general, so please feel free to [follow along @christianposta](https://twitter.com/christianposta) to participate and stay up with the latest. 

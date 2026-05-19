@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Moving on From Red Hat"
-modified:
-categories: 
-comments: true
-tags: []
-image:
-  feature:
 date: 2018-12-18T06:04:45-07:00
+categories: [General]
+tags: []
 ---
 
 This week before the Christmas break is my last week at [Red Hat](https://www.redhat.com/), the company I've been with for the last 6.5 years. Actually, I joined a small start up close to 7 years ago that was quickly acquired by Red Hat (see [FuseSource acquisition](https://www.redhat.com/en/about/press-releases/red-hat-to-acquire-fusesource)), but I tend to count all of that time together. 

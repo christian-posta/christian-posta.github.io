@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Advanced Traffic-shadowing Patterns for Microservices With Istio Service Mesh"
-modified:
-categories: microservices
-comments: true
-tags: [microservices, istio, envoy, service mesh, resilience, sidecar, deployment, shadowing, advanced]
-image:
-  feature:
 date: 2018-02-21T06:26:30-07:00
+categories: [Service Mesh]
+tags: [istio, microservices, service-mesh]
 ---
 
 Microservices allow us [to go faster and reduce our time to value](https://www.slideshare.net/ceposta/microservices-journey-summer-2017). However, we cannot just naively [move fast and break things](https://www.cnet.com/news/zuckerberg-move-fast-and-break-things-isnt-how-we-operate-anymore/). We need a way to reduce the risk of making changes and in doing so, make it safer to bring new changes to production. A powerful pattern that helps lower risk of bringing changes into production is to shadow production traffic into a test cluster or a new release of our software and test it for issues **before** we direct live (aka customer) traffic to it. This allows us to send real-life usecases and obscure useage to our code that our tests in non-production simulations may not catch. I wrote about [how Istio Service Mesh has a nice feature for mirroring traffic](http://blog.christianposta.com/microservices/traffic-shadowing-with-istio-reduce-the-risk-of-code-release/) in my previous post. I [actually have a lot to say about Istio and Service Mesh](http://blog.christianposta.com) in general, so please feel free to [follow along @christianposta](https://twitter.com/christianposta) to participate and stay up with the latest. Now on to the main course:

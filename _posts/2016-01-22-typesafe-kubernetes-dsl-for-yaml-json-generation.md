@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Typesafe Kubernetes-manifest DSL for JVM-based apps"
-modified:
-categories: 
-comments: true
-tags: []
-image:
-  feature:
 date: 2016-01-22T06:01:29-07:00
+categories: [Kubernetes]
+tags: [kubernetes]
 ---
 
 Managing a cluster of Docker/Rocket containers (or anything) in a production environment is rife with distributed-systems challenges. Luckily, a compelling and very vibrant community around the [Kubernetes](http://kubernetes.io) project is working on those challenges, using years of experience at Google, Red Hat, and startups to guide the way for others. If you haven't tried [Kubernetes](http://kubernetes.io) for managing your Docker containers, you should get on it!

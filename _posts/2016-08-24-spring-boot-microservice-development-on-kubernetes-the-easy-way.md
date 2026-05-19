@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Spring Boot Microservice Development on Kubernetes: The Easy Way"
-modified:
-categories: microservices
-comments: true
-tags: [microservices, spring boot, kubernetes, fabric8, cloud, docker]
-image:
-  feature:
 date: 2016-08-24T08:20:25-07:00
+categories: [Kubernetes, Microservices]
+tags: [kubernetes, microservices]
 ---
 
 Ever wondered how to create, build, deploy new [Spring Boot](http://projects.spring.io/spring-boot/) microservices on [Kubernetes](http://kubernetes.io) What if you had integrated tooling in whatever IDE you used (IntelliJ, Eclipse, NetBeans, CLI, web, whatever) that can bootstrap a Spring Boot microservice app for you. What if you could easily build a docker image out of it and deploy to Kubernetes or [OpenShift](https://www.openshift.org)?

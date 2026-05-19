@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Why Microservices Should Be Event Driven: Autonomy vs Authority"
-modified:
-categories: microservices
-comments: true
-tags: [kafka, microservices, debezium, autonomy]
-image:
-  feature:
 date: 2016-05-27T05:40:01-07:00
+categories: [General]
+tags: [microservices]
 ---
 
 

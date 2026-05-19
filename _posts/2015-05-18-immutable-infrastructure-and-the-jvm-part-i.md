@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Immutable Infrastructure, hotdeploys, and the JVM"
-modified:
-categories: immutable
-comments: true
-tags: [JVM, immutable, docker, OSGI, classloaders]
-image:
-  feature:
 date: 2015-05-18T18:57:43-07:00
+categories: [General]
+tags: []
 ---
 
 Do you deploy and undeploy your JVM-based applications (regardless of JVM container/no-container) in production? ie, when you have new versions of an app or service, do you mutate the running JVM by "undeploying" and "hot deploying" the new, updated version of that app? Or, do you try to "move" a deployment of your application from one JVM to another at runtime?

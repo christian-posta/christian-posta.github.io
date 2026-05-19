@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Application Safety and Correctness Cannot Be Offloaded to Istio or Any Service Mesh"
-modified:
-categories: microservices
-comments: true
-tags: [microservices, istio, envoy, service mesh, resilience, sidecar]
-image:
-  feature:
 date: 2018-08-10T06:18:34-07:00
+categories: [Service Mesh]
+tags: [istio, service-mesh]
 ---
 
 I've recently [started giving a talk](https://www.slideshare.net/ceposta/evolution-of-integration-and-microservices-patterns-with-service-mesh-107786281) about the evolution of integration and the adoption of service mesh, specifically Istio. I've been excited about [Istio](http://istio.io) ever since I first heard about it back in January 2017; in fact I've been [excited about this new wave of technology helping to ](http://blog.christianposta.com/microservices/microservices-2-0/) make microservices and cloud-native architectures a possibility for organizations. Maybe you can tell, as I've been writing a lot about it ([follow along for the latest @christianposta](twitter.com/christianposta):

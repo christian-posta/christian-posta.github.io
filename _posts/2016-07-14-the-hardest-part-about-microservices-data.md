@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "The Hardest Part About Microservices: Your Data"
-modified:
-categories: microservices 
-comments: true
-tags: [microservices, data, debezium, CQRS, distributed systems, popular]
-image:
-  feature:
 date: 2016-07-14T11:21:07-04:00
+categories: [General]
+tags: [microservices]
 ---
 
 Continuing on with my series about microservices implementations (see "[Why Microservices Should Be Event Driven](http://blog.christianposta.com/microservices/why-microservices-should-be-event-driven-autonomy-vs-authority/)", "[Three things to make your microservices more resilient](http://blog.christianposta.com/microservices/3-easy-things-to-do-to-make-your-microservices-more-resilient/)", "[Carving the Java EE Monolith: Prefer Verticals, not Layers](http://blog.christianposta.com/microservices/carving-the-java-ee-monolith-into-microservices-perfer-verticals-not-layers/)" for background) we're going to explore probably the hardest problem when creating and developing microservices. Your data. Using Spring Boot/Dropwizard/Docker doesn't mean you're doing microservices. Taking a hard look at your domain and your data will help you get to microservices.

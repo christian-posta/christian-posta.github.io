@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "My Sessions at Red Hat Summit in San Francisco"
-modified:
-categories: [conference]
-comments: true
-tags: [Red Hat Summit, conference, speaking, microservices, Istio]
-image:
-  feature:
 date: 2018-04-30T16:30:25-07:00
+categories: [General]
+tags: [sessions]
 ---
 
 I'm fortunate to have a few sessions at [Red Hat Summit](https://www.redhat.com/en/summit/2018) next week (May 8-10) in San Francisco! I'll be speaking/co-presenting with some fantastic presenters about microservices, service mesh, Istio, serverless, and integration. Really hope to see you there! Reach out to me ([@christianposta](http://twitter.com/christianposta)) if you'd like to meet up to discuss any of these topics!

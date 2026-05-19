@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "The Real Success Story of Microservices Architectures"
-modified:
-categories: [microservices]
-comments: true
-tags: [design, microservices, REST, event-driven-architecture, rant]
-image:
-  feature:
 date: 2015-06-25T18:07:26-07:00
+categories: [General]
+tags: [microservices]
 ---
 
 We [hear the benefits of microservices architectures][mytalk] loud and clear; we hear the constant drum beat of how/why/by all means/etc you should be doing microservices; we know companies such as [Amazon][amz], [Netflix][nflx] and [Gilt][gilt] have successful microservices architectures.

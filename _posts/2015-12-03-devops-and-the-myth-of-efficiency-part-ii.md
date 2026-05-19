@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "DevOps and the Myth of Efficiency, Part II"
-modified:
-categories: devops
-comments: true
-tags: [devops, team-of-teams, microservices, organization, culture]
-image:
-  feature:
 date: 2015-12-03T20:10:08-07:00
+categories: [DevOps]
+tags: [devops]
 ---
 
 In the [previous post][previous] post, I outlined why [DevOps is not about efficiency][previous], and how our old ways of looking at "complicated" problems by solving for efficiency first is actually not effective or flexible in our now very [complex world][complex]. In fact, **letting go of our century-long instincts to apply reductionist management theories** to create efficient workplaces may lead to building complex systems a little more *effectively* with room for flexibility and innovation. And at the end of the day [innovation powers our companies forward, not efficiently protecting what we already have][efficiency-myth]. To voice an opinion, let me know [@christianposta][twitter]

@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "3 Easy Things to Do to Make Your Microservices More Resilient"
-modified:
-categories: microservices
-comments: true
-tags: [microservices, resiliency, architecture, cqrs, popular]
-image:
-  feature:
 date: 2016-05-24T13:22:16-07:00
+categories: [General]
+tags: [microservices]
 ---
 
 One of the advantages of building distributed systems as [microservices][microservices] is the ability of the system as a whole to withstand faults and unexpected failures of components, networks, compute resources, etc.  These systems are resilient even in the face of faults. The idea behind this resiliency seems simple: if our monolith fails, everything for which it's responsible fails along with it; so let's break things into smaller chunks so we can withstand individual pieces of our app failing without affecting the entire system. This sounds great in theory, but does simply breaking things into smaller chunks give us this?

@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "See You at DevNexus in Atlanta!"
-modified:
-categories: conference
-comments: true
-tags: [conference, devnexus]
-image:
-  feature:
 date: 2015-03-04T19:03:58-07:00
+categories: [General]
+tags: []
 ---
 
 

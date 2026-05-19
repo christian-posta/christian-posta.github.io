@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Message Durability in ActiveMQ 5.x"
-modified:
-categories: activemq
-comments: true
-tags: [activemq, messaging, durability, jms]
-image:
-  feature:
 date: 2016-05-20T09:41:04-07:00
+categories: [Integration]
+tags: [activemq, integration]
 ---
 
 I get asked quite a bit to explain the basics of how ActiveMQ works with respect to how it stores messages (or doesn't in some cases). Here's the high level explanation of it. Note, the context is within JMS. If you use ActiveMQ's non JMS clients (ie, STOMP, AMQP, MQTT, etc) then the behavior may be different in some cases.  

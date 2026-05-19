@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "My Book Has Been Released! Microservices for Java Developers"
-modified:
-categories: 
-comments: true
-tags: []
-image:
-  feature:
 date: 2016-06-28T07:41:14-07:00
+categories: [Books & Talks]
+tags: [books, microservices]
 ---
 
 

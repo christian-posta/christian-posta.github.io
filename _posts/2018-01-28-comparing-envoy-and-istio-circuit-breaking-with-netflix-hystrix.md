@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Comparing Envoy and Istio Circuit Breaking With Netflix OSS Hystrix"
-modified:
-categories: microservices
-comments: true
-tags: [microservices, istio, envoy, service mesh, resilience, sidecar]
-image:
-  feature:
 date: 2018-01-28T19:40:25-07:00
+categories: [Service Mesh]
+tags: [envoy, istio]
 ---
 
 When we build services architectures (Service Oriented Architecture, Microservices, the next incarnation, etc), we end up making a lot more calls over the network. The [network is perilous][perilous-network]. We try to build redundancy into our services so that we can experience failures in our system and still move forward and process customer requests. An important part of this puzzle of building redundant, resilient systems is smart, application-aware load balancing. [Matt Klein][mklein] recently [wrote an awesome piece on modern load balancing][modern-load-balancing] that you should probably stop and go read right now.

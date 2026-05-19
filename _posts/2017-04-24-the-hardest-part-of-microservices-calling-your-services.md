@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "The Hardest Part of Microservices: Calling Your Services"
-modified:
-categories: microservices  
-comments: true
-tags: [microservices, network, distributed systems, circuit breaker, tracing, security]
-image:
-  feature:
 date: 2017-04-24T20:33:49-07:00
+categories: [General]
+tags: [microservices]
 ---
 
 You're probably saying "Wait. You already wrote a blog [telling me the hardest part of microservices was my data](http://blog.christianposta.com/microservices/the-hardest-part-about-microservices-data/). So what is the hardest part? That? or Calling your services?"

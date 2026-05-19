@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Microservices Patterns With Envoy Sidecar Proxy: The series"
-modified:
-categories: microservices
-comments: true
-tags: [microservices, istio, envoy, service mesh, resilience, sidecar]
-image:
-  feature:
 date: 2017-05-26T05:34:38-07:00
+categories: [Service Mesh]
+tags: [envoy, istio, microservices]
 ---
 
 I've blogged in the past about ["how I'm excited for a '2.0' microservices stack"](http://blog.christianposta.com/microservices/microservices-2-0/) and what some of that entails. I even tried to lay out why [service interaction/conversations and the network](http://blog.christianposta.com/microservices/the-hardest-part-of-microservices-calling-your-services/) are the hardest parts of a practical microservices implementation. In this (and a next series of posts) post, I'd like to start to go a bit deeper.

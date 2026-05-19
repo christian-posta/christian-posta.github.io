@@ -1,0 +1,9 @@
+# Hand-curated "Most popular" posts shown in the right-rail sidebar panel.
+# Each entry's `slug` must match a post filename (without date prefix and .md).
+# Reorder freely — the order here is the display order.
+
+- slug: do-we-even-need-agent-identity
+- slug: enterprise-challenges-with-mcp-adoption
+- slug: mcp-should-be-remote
+- slug: api-keys-are-a-bad-idea-for-enterprise-llm-agent-and-mcp-access
+- slug: explaining-on-behalf-of-for-ai-agents

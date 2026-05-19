@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Logging Into a Kubernetes Cluster With Kubectl"
-modified:
-categories: kubernetes
-comments: true
-tags: [docker, kubernetes, how-to, openshift, containers, cloud, PaaS, CaaS]
-image:
-  feature:
 date: 2015-10-29T16:27:56-07:00
+categories: [Kubernetes]
+tags: [kubernetes]
 ---
 
 The `kubectl` command line client is a versatile way to interact with a [Kubernetes](http://kubernetes.io) cluster, including managing multiple clusters. I've not found a good way to login to multiple Kubernetes clusters (well, actually I have: using the [OpenShift oc command-line client, which has a login command](https://docs.openshift.com/enterprise/3.0/cli_reference/get_started_cli.html#basic-setup-and-login) which basically automates all of the below) out of the box, so here's a quick intro to the `kubectl` command-line `config` commands that let us configure our different cluster credentials, users, and namespaces to quickly switch between clusters or namespaces within a cluster:

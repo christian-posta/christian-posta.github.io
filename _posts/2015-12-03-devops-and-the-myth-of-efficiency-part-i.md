@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "DevOps and the Myth of Efficiency, Part I"
-modified:
-categories: devops
-comments: true
-tags: [devops, team-of-teams, microservices, organization, culture]
-image:
-  feature:
 date: 2015-12-03T20:10:04-07:00
+categories: [DevOps]
+tags: [devops]
 ---
 
 This post is for those of you working in large companies or "enterprises" and are exploring what "DevOps" really means and why you're struggling with it. I've decided to split this into a [two-part post][second-part] to make it easy to digest some of the thoughts here; I suspect I'll be writing a lot here and build upon some [of my other posts][my-posts]. Hit me on twitter [@christianposta][twitter] to voice disagreements. 

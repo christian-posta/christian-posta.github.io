@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Microservices Day in NYC"
-modified:
-categories: microservices 
-comments: true
-tags: [microservices, kubernetes, docker, platform, camel, google, integration, architecture]
-image:
-  feature:
 date: 2015-10-12T20:12:54-07:00
+categories: [General]
+tags: [microservices]
 ---
 
 Everyone wants to talk about microservices. Everyone even wants to do them, although they're not really sure how -- [Martin Fowler's initial write up](http://martinfowler.com/articles/microservices.html) left more questions than answers. Some of us have been designing light-weight distributed systems for years and I guess they finally have a name, but that doesn't make them any easier. Whenever you take large monolithic behemoths (whether applications, ESBs, databases, or entire organizations) and start to rearrange them to manage complexity, you have to accept that it's an iterative evolution but well worth it. Although technology alone is not the answer, a lot of new technology is emerging as a result of the microservices movement from linux containers, to management fabrics, to light-weight process technology. 

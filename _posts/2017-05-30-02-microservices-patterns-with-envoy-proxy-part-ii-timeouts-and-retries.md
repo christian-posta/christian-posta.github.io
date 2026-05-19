@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Microservices Patterns With Envoy Proxy, Part II: Timeouts and Retries"
-modified:
-categories: microservices
-comments: true
-tags: [microservices, istio, envoy, service mesh, resilience, sidecar]
-image:
-  feature:
 date: 2017-05-30T05:02:14-07:00
+categories: [Service Mesh]
+tags: [envoy, istio, microservices]
 ---
 
 

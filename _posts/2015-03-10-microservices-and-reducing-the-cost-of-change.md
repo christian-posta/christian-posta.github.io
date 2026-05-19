@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Microservices, DevOps, and the cost of change?"
-modified:
-categories: microservices
-comments: true
-tags: [microservices, design, agile]
-image:
-  feature:
 date: 2015-03-10T12:02:24-07:00
+categories: [DevOps]
+tags: [devops, microservices]
 ---
 
 As developers, we all love shiny new things. New technologies (Docker, Kubernetes), new languages (Golang, NodeJS), new hyped conversation starters (Microservices, DevOps, Cloud). And everyone seems to have an opinion about why you should do this architecture, or why you should use that language. At the end of the day, your employer is expecting you to deliver using a means to an end, but what is that end?

@@ -1,0 +1,25 @@
+<!-- Right-rail panel: hand-curated "Most popular" posts.
+     Source: _data/popular.yml (entries by slug). -->
+
+{% if site.data.popular and site.data.popular.size > 0 %}
+  <section id="access-lastmod" class="latest-posts-panel">
+    <h2 class="panel-heading">
+      <i class="fas fa-fire-flame-curved me-2"></i>Most popular
+    </h2>
+    <ul class="content list-unstyled ps-0 pb-1 ms-1 mt-2">
+      {% for entry in site.data.popular %}
+        {% assign matched = site.posts | where_exp: 'p', 'p.url contains entry.slug' | first %}
+        {% if matched %}
+          <li class="latest-post-item lh-sm py-2">
+            <a class="d-block fw-semibold post-title-link" href="{{ matched.url | relative_url }}">{{ matched.title }}</a>
+            <small class="text-muted d-block mt-1">
+              <i class="far fa-calendar-alt me-1"></i>
+              <time datetime="{{ matched.date | date_to_xmlschema }}">{{ matched.date | date: "%b %-d, %Y" }}</time>
+            </small>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </section>
+  <!-- #access-lastmod -->
+{% endif %}

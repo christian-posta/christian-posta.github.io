@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Traffic Shadowing With Istio: Reducing the Risk of Code Release"
-modified:
-categories: microservices
-comments: true
-tags: [microservices, istio, envoy, service mesh, resilience, sidecar]
-image:
-  feature:
 date: 2018-02-07T05:52:40-07:00
+categories: [Service Mesh]
+tags: [istio]
 ---
 We've [been](http://blog.christianposta.com/microservices/comparing-envoy-and-istio-circuit-breaking-with-netflix-hystrix/) [talking](http://blog.christianposta.com/microservices/deep-dive-envoy-and-istio-workshop/) [about Istio](http://blog.christianposta.com/microservices/low-risk-monolith-to-microservice-evolution-part-iii/) [and service mesh recently](http://blog.christianposta.com/microservices/application-network-functions-with-esbs-api-management-and-now-service-mesh/) (follow along [@christianposta](http://twitter.com/christianposta) for the latest) but one aspect of Istio can be glossed over.
 One of the most important aspects of [Istio.io][istio-service-mesh] is its ability to [control the routing of traffic between services][istio-control-routing]. With this fine-grained control of application-level traffic, we can do interesting resilience things like routing around failures, routing to different availability zones when necessary etc. IMHO, more importantly, we can also control the flow of traffic for our deployments so we can reduce the risk of change to the system. 

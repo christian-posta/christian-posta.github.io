@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Deep Dive Envoy and Istio Workshop"
-modified:
-categories: microservices
-comments: true
-tags: [microservices, istio, envoy, service mesh, resilience, sidecar]
-image:
-  feature:
 date: 2017-12-11T19:01:31-07:00
+categories: [Service Mesh]
+tags: [envoy, istio]
 ---
 
 Just getting back from KubeCon 2017 and I can tell you the excitement about [Istio](https://istio.io) and service mesh in general is through the roof! There were lots of talks about Istio/service mesh (including a panel with [Matt Klein](https://twitter.com/mattklein123), [Jason McGee](https://twitter.com/jrmcgee), [Lin Sun](https://twitter.com/linsun_unc), [William Morgan](https://twitter.com/wm), Sven Mawson and myself).

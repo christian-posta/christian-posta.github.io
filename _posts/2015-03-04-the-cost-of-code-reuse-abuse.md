@@ -1,11 +1,8 @@
 ---
-layout: post
 title: "The Cost of Code Reuse Abuse"
-modified:
-categories: design
-comments: true
-tags: [microservices, design, code-reuse, DDD]
 date: 2015-03-04T06:32:02-07:00
+categories: [General]
+tags: []
 ---
 
 Oddly enough, while I'm sleeping or in some zombie state while attempting to sleep, I often feel like the ideas I have while in that state are the best thing ever and could possibly solve all the worlds problems. But then I wake up, and try to recall those thoughts and realize... nope, just shit.

@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Speaking About Microservices, Apache Camel, and CI/CD at Red Hat Summit"
-modified:
-categories: [conference]
-comments: true
-tags: [DevNation, Red Hat Summit, conference, speaking, microservices, camel, DevOps]
-image:
-  feature:
 date: 2015-06-16T08:14:40-07:00
+categories: [Integration, DevOps]
+tags: [camel, devops, integration, microservices, talks]
 ---
 
 I'm looking forward to speaking at [DevNation 2015](http://www.devnation.org) and [Red Hat Summit 2015](http://www.redhat.com/summit/) next week in Boston, as well as meeting some of you in person! If you'll be going and wish to meet up, tweet me [@christianposta](https://twitter.com/christianposta). There's plenty of beer to be shared :)

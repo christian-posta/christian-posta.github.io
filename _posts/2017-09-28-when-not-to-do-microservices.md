@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "About When Not to Do Microservices"
-modified:
-categories: microservices  
-comments: true
-tags: [microservices, network, distributed systems, circuit breaker, tracing, security]
-image:
-  feature:
 date: 2017-09-28T10:45:36-07:00
+categories: [General]
+tags: [microservices]
 ---
 
 Quick interlude to my last blog. As part of [my last blog on low-risk monolith to microservice architecture](http://blog.christianposta.com/microservices/low-risk-monolith-to-microservice-evolution/), I made this statement about microservices and not doing them: 

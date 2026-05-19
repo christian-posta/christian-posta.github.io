@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Integration Testing JBoss Fuse 6.x With Pax Exam, Part I"
-modified:
-categories: testing
-comments: true
-tags: [jboss-fuse, pax-exam, integration-testing, fabric8]
-image:
-  feature:
 date: 2015-04-28T22:35:06-07:00
+categories: [Integration]
+tags: [integration]
 ---
 
 [JBoss Fuse][fuse] is a powerful distributed integration platform with built in features for centralized configuration management, service discovery, versioning, API gateway, load balancing, failover, etc for your integration-focused microservice deployments. JBoss Fuse 6.x is built on top of the [Fabric8 1.x](http://fabric8.io/gitbook/index.html) opensource project.  This blog is the first part in a two-part series on integration testing when building integration microservices on top of JBoss Fuse.

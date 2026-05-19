@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Microservices Patterns With Envoy Proxy, Part III: Distributed Tracing"
-modified:
-categories: microservices
-comments: true
-tags: [microservices, istio, envoy, service mesh, resilience, sidecar]
-image:
-  feature:
 date: 2017-06-05T21:01:08-07:00
+categories: [Service Mesh]
+tags: [envoy, istio, microservices]
 ---
 
 This blog is [part of a series](http://blog.christianposta.com/microservices/00-microservices-patterns-with-envoy-proxy-series/) looking deeper at [Envoy Proxy](https://www.envoyproxy.io) and  [Istio.io](https://www.theregister.co.uk/2017/05/24/google_lyft_ibm_mix_microservices_into_management_mesh/) and how it enables a more elegant way to connect and manage microservices.  Follow me [@christianposta](http://twitter.com/christianposta) to stay up with these blog post releases. 

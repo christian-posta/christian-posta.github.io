@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Excited about a '2.0' tech stack for microservices"
-modified:
-categories: microservices 
-comments: true
-tags: [microservices, data, debezium, CQRS, distributed systems]
-image:
-  feature:
 date: 2017-02-24T12:24:56-07:00
+categories: [General]
+tags: [microservices]
 ---
 
 Technology moves fast! At the same time, the old becomes new. 

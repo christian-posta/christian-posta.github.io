@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Netflix OSS, Spring Cloud, or Kubernetes? How About All of Them!"
-modified:
-categories: microservices
-comments: true
-tags: [spring, microservices, netflix, kubernetes, fabric8, openshift, popular]
-image:
-  feature:
 date: 2016-06-02T07:57:04-07:00
+categories: [Kubernetes]
+tags: [kubernetes]
 ---
 
 Some of this I cover in my book "Microservices for Java Developers" O'Reilly June 2016 (launching soon!), but I want to give a more specific treatment of it here. I get questions from folks about NetflixOSS (it's awesome) and how it might run in Kubernetes (it's awesome too!) and where the overlap is for some of the  components. Let me try to explain _some_ of it. 

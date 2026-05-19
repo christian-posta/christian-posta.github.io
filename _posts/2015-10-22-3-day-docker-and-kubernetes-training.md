@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "4-day Docker and Kubernetes Training"
-modified:
-categories: [kubernetes]
-comments: true
-tags: [openshift, kubernetes, docker, training, PaaS, cloud, containers, popular]
-image:
-  feature:
 date: 2015-10-22T16:10:41-07:00
+categories: [Kubernetes, Containers]
+tags: [containers, docker, kubernetes]
 ---
 
 I just delivered a 4-day deep-dive training course on Docker and Kubernetes to a customer in Atlanta. In true open-source spirit, I'd like to [publish the source/slides](https://github.com/RedHatWorkshops/docker-kubernetes-workshop) and allow other people to benefit from it and contribute to making it better. Kubernetes is such an awesome project, and I learned a lot by doing this training. If you're interested in hearing how awesome kubernetes is, and how we've made it even better with openshift, get a hold of me (@christianposta)!

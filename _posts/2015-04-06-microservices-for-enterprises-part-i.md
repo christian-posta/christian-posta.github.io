@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Microservices for Enterprises Part I"
-modified:
-categories: 
-comments: true
-tags: [microservices, design, agile, IaaS, PaaS, cloud]
-image:
-  feature:
 date: 2015-04-06T16:38:17-07:00
+categories: [General]
+tags: [enterprise, microservices]
 ---
 
 Technology is the foundation of differentiation whether you're a large enterprise or the small startup. If businesses fail to embrace that fact, they run the risk of losing marketshare and ultimately headed for the history books. Providing new services, products, or innovative creativity to improve the experience of existing services all have a foundation in technology and IT can help you deliver that. For IT groups, however, the task is daunting: support a rapidly changing and innovating business, keep up with the latest technologies that bring value, and at the same time provide stable and secure environments for existing assets.

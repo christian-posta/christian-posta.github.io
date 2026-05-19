@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Blue-green Deployments, A/B Testing, and Canary Releases"
-modified:
-categories: deploy
-comments: true
-tags: [immutable, docker, openshift, deployment, blue-green, canary, testing, popular]
-image:
-  feature: blue_green.jpg
 date: 2015-08-03T14:02:49-07:00
+categories: [General]
+tags: []
 ---
 
 A lot of teams I talk to recently are very interested in "DevOps" (whatever that means... seems to mean different things to different people?) and when we sit down and talk about what that really means, the direction of the conversation can go down many interesting paths. And some times, the path it goes down makes people feel **very uncomfortable**.  I was talking with a team a while back about deployment best practices, hot deployments, rollbacks etc and when I mentioned [blue-green deployments][bgd], they became a bit queasy. Another team couldn't understand why doing something they've always done [was not such a very good thing][immutable]. 

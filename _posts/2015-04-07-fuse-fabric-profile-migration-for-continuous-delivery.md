@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Fuse Fabric Profile Migration for Continuous Delivery"
-modified:
-categories: fabric8
-comments: true
-tags: [fabric8, continuous delivery, maven, jboss fuse]
-image:
-  feature:
 date: 2015-04-07T11:50:28-07:00
+categories: [Integration]
+tags: [integration]
 ---
 
 

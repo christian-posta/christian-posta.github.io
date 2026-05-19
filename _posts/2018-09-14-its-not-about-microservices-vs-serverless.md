@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Be as serverless as you can, but not more than that"
-modified:
-categories: serverless
-comments: true
-tags: [serverless, microservices]
-image:
-  feature:
 date: 2018-09-14T13:54:43-07:00
+categories: [General]
+tags: [microservices]
 ---
 
 No doubt, if you've been paying attention to technology trends, you've seen the rise in interest of "serverless". In some accounts, "serverless" is billed as the "next application architecture" style. I've even heard people say "you don't need technology X because serverless is the way of the future" or that "technology X is a red herring because serverless", etc. In this installment, we see why it's not about "microservices vs serverless". 

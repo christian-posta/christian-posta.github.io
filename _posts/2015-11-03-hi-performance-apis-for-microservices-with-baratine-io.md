@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "High Performance APIs for Microservices With Baratine.io"
-modified:
-categories: microservices
-comments: true
-tags: [microservices, barantine, APIs, non-blocking]
-image:
-  feature:
 date: 2015-11-03T05:44:52-07:00
+categories: [General]
+tags: [microservices]
 ---
 
 

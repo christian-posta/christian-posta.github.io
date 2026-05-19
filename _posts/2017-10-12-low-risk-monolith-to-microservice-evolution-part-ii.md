@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Low-risk Monolith to Microservice Evolution Part II"
-modified:
-categories: microservices  
-comments: true
-tags: [microservices, network, distributed systems, circuit breaker, tracing, security]
-image:
-  feature:
 date: 2017-10-12T20:40:09-07:00
+categories: [Microservices]
+tags: [microservices]
 ---
 
 Let's dive right in! In [the previous post (part I)](http://blog.christianposta.com/microservices/low-risk-monolith-to-microservice-evolution/) we set up the context for this blog. Basically, as we introduce a strategy to bring microservices to our architecture, we cannot and should not disrupt the current request flows. Our "monolith" applications typically provide a lot of value for the business and we must drive down the risk of negatively impacting these systems as we iterate and expand. This leads us to a often-overlooked fact: when we start to explore a monolith to microservice journey we're going to quickly run into the undesirable, sometimes nasty parts that we cannot just wish away. I encourage you to [go back and read the first part if you haven't yet](http://blog.christianposta.com/microservices/low-risk-monolith-to-microservice-evolution/). Also go read the part about [when NOT do microservices](http://blog.christianposta.com/microservices/when-not-to-do-microservices/). 

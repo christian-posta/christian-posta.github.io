@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Cold hard truth about Microservices -- vJBUG"
-modified:
-categories: 
-comments: true
-tags: []
-image:
-  feature:
 date: 2015-09-07T08:13:43-07:00
+categories: [General]
+tags: [microservices]
 ---
 
 

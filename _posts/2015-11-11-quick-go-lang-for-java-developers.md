@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Quick Go-lang for Java Developers"
-modified:
-categories: programming
-comments: true
-tags: [java, golang, learning]
-image:
-  feature:
 date: 2015-11-11T17:40:23-07:00
+categories: [General]
+tags: []
 ---
 
 [Golang][golang] seems to be getting quite popular as its the programming language of choice for some cool new

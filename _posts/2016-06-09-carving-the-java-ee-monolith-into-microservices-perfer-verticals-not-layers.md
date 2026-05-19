@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Carving the Java EE Monolith Into Microservices: Prefer Verticals Not Layers"
-modified:
-categories: microservices
-comments: true
-tags: [microservices, monlith, wildfly-swarm, docker, kuberetes, openshift, architecture]
-image:
-  feature:
 date: 2016-06-09T16:27:52-07:00
+categories: [General]
+tags: [microservices]
 ---
 
 Following  my [introduction blog about why microservices should be event-driven](http://blog.christianposta.com/microservices/why-microservices-should-be-event-driven-autonomy-vs-authority/), I'd like to take another few steps and blog about it while I prep for a bunch of talks I've got coming up (See you at [jBCNconf](http://www.jbcnconf.com/2016/infoSpeaker.html?ref=cposta) and [Red Hat Summit in San Francisco](https://rh2016.smarteventscloud.com/connect/search.ww?sc_cid=701600000011iJjAAI#loadSearch-searchPhrase=Posta&searchType=speaker&tc=0&sortBy=)). Follow me on twitter @christianposta for updates on this project. In this article we discuss the first parts of carving up a monolith. 

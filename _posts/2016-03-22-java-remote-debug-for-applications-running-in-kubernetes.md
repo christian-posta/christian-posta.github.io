@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Java Remote Debug for Applications Running in Kubernetes"
-modified:
-categories: [kubernetes]
-comments: true
-tags: [Kubernetes, debugging, docker]
-image:
-  feature:
 date: 2016-03-22T06:09:42-07:00
+categories: [Kubernetes]
+tags: [kubernetes]
 ---
 
 

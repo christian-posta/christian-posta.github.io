@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Cloud Native Camel riding With JBoss Fuse and OpenShift"
-modified:
-categories: 
-comments: true
-tags: [apache, camel, activemq, microservices, docker, kubernetes, openshift, cloud]
-image:
-  feature:
 date: 2016-02-02T08:52:57-07:00
+categories: [Kubernetes, Integration]
+tags: [camel, integration, kubernetes]
 ---
 
 Red Hat [recently released a Microservices integration toolkit](https://www.openshift.com/enterprise/middleware-services.html) for running our microservices in a Docker and Kubernetes environment on [OpenShift v3][openshift]. To help people understand this a little bit better, I've migrated the [Rider Auto application](https://github.com/RedHatWorkshops/rider-auto-osgi), which has been around for a while for demoing Apache Camel and JBoss Fuse, into a set of microservices that you can run on OpenShift/Kubernetes via Docker containers. This blog details some background on that and points to specific examples of "how-to" for a mostly non-trivial app. I'll also do a set of videos demonstrating this so follow this blog ([http://blog.christianposta.com][blog]) for updates or follow me on twitter [@christianposta][twitter-ceposta].

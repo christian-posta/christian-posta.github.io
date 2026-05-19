@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Application Network Functions With ESBs, API Management, and Now.. Service Mesh?"
-modified:
-categories: microservices  
-comments: true
-tags: [microservices, network, distributed systems, circuit breaker, tracing, security]
-image:
-  feature:
 date: 2017-08-03T18:08:48-07:00
+categories: [Service Mesh]
+tags: [istio, service-mesh]
 ---
 
 I've [talked quite a bit](http://blog.christianposta.com/microservices/the-hardest-part-of-microservices-calling-your-services/) recently about the evolution of microservices patterns and how [service proxies like Envoy from Lyft](http://blog.christianposta.com/microservices/00-microservices-patterns-with-envoy-proxy-series/) can help push the responsibility of resilience, service discovery, routing, metrics collection, etc down a layer below the application. Otherwise we risk hoping and praying that the various applications will correctly implement these critical functionalities or depend on language-specific libraries to make this happen. Interestingly, this service mesh idea is related to other concepts that our customers in the enterprise space know about, and I've gotten a lot of questions about this relationship. Specifically, how does a service mesh relate to things like ESBs, Message Brokers, and API Management? There definitely is overlap in these concepts, so lets dig in. Feel free to follow along [@christianposta on Twitter](https://twitter.com/christianposta) for more on this topic!

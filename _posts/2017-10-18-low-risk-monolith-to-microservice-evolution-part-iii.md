@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Low-risk Monolith to Microservice Evolution Part III"
-modified:
-categories: microservices  
-comments: true
-tags: [microservices, network, distributed systems, circuit breaker, tracing, security]
-image:
-  feature:
 date: 2017-10-18T11:44:08-07:00
+categories: [Microservices]
+tags: [microservices]
 ---
 
 In [the first part (part I)](http://blog.christianposta.com/microservices/low-risk-monolith-to-microservice-evolution/) we introduced a strategy to bring microservices to our architecture without disrupting the current request flows and business value by looking at a concrete example. [In the second part](http://blog.christianposta.com/microservices/low-risk-monolith-to-microservice-evolution-part-ii/), we started looking at accompanying technology that aligns with our architectural strategy and goals. In this third part, we continue the solution from part II by focusing on what to do about adding a new service that may need to share data with the monolith (at least initially) and into some more complex deployment scenarios. We also explore consumer contract testing with [Arquillian Algeron](http://arquillian.org/arquillian-algeron/) and how we can use that to get a handle on API changes in our services architecture.    

@@ -1,0 +1,19 @@
+#  The contact options.
+
+- type: linkedin
+  icon: "fab fa-linkedin"
+  url: "https://www.linkedin.com/in/ceposta"
+
+- type: github
+  icon: "fab fa-github"
+
+- type: twitter
+  icon: "fa-brands fa-x-twitter"
+
+- type: stack-overflow
+  icon: "fab fa-stack-overflow"
+  url: "https://stackoverflow.com/users/ceposta"
+
+- type: rss
+  icon: "fas fa-rss"
+  noblank: true

@@ -1,13 +1,8 @@
 ---
-layout: post
 title: "Using Spring-data With Apache Camel"
-modified:
-categories: 
-comments: true
-tags: [spring, spring-data, camel, apache, integration, examples]
-image:
-  feature:
 date: 2015-12-02T19:05:21-07:00
+categories: [Integration]
+tags: [camel, integration]
 ---
 
 [Spring Data][spring-data] saves you a lot of time by creating smart DAOs that you can basically get for free without writing any code. It basically follows the [Repository Pattern][repo-pattern] from [Eric Evans' DDD book][ddd-book] and treats entities as collections. It has a great convention that allows you to specify criteria for complex queries, and even leverage the [JPA Criteria API][jpa-criteria] or the [QueryDSL fluent APIs][query-dsl] for even more complex queries/specifications. The best part is the abstraction works not just for JPA, but [many other providers][many-others]. There are [some great examples][examples] using spring-data within the spring ecosystem like [Spring Boot][boot] but some times you want to use it outside the magical, enchanted world of Spring Boot. 
