@@ -25,6 +25,7 @@ docker run --rm -it \
   -v "$PROJECT_DIR:/srv/jekyll" \
   -p 4001:4000 \
   -p 35729:35729 \
+  -e JEKYLL_ENV=production \
   ruby:3.3-slim \
   bash -c '
     set -e
