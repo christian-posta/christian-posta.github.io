@@ -41,11 +41,15 @@ This process obscures 4 big assumptions that break with AI agents:
 
 Microservice developers translate the business requirements to code. The "intent" of the service is defined explicitly in code. You can test it and verify it under various scenarios. 
 
+![](/images/microservices-aiagents/intent.png)
+
 AI agents are very different. They are given some kind of "natural language" prompt and pass that to an AI model to decipher it. Intent and end-goal is interpreted at run time. The same inputs over multiple runs are likely to produce different results. And any additional context included may influence the result. This kind of "application" cannot be "audited" ahead of time. 
 
 ### Fixed paths vs exploration
 
 Microservices know what if-else/while loop, for loop expressions and paths the code can take because they baked them into the code, statically. 
+
+![](/images/microservices-aiagents/explore.png)
 
 AI agents, again, are very different. AI agents use the intent/goal they've interprted for a task and explore their abilities/tools/APIs etc at runtime. It does things to "optimize" its path forward and may do things a human didn't even think of. This is very important because it significantly closes the gap between what permissions an app has been given and what actually gets exercised. 
 
@@ -55,9 +59,11 @@ An excellent illustration of this illustration is Codex finding a workaround to 
 
 To be clear: this is not a prvilege execution or anything nefarious. This is either an oversight or simply an example of how an agent would explore far more sophisticated that a human would. 
 
-### Fixed dependencies vs runtim discovery 
+### Fixed dependencies vs runtime discovery 
 
 Developers spend a lot of time "integrating" with other systems over APIs, remote procedure calls, etc. Identifying API contracts, requesting scopes/permissions defined a head of time for access, etc. Each RPC/API call is explicitly coded. 
+
+![](/images/microservices-aiagents/discover.png)
 
 AI agents can dynamically discover APIs, tools, and system access as part of its exploration or tool access. Tools are looked up from registries, APIs are found and invoked dynamically, and the authority surface itself may be negotiated mid-execution, including human approvals that happen inline, consent prompts, step-up authorization. The scope of what the agent can reach isn't knowable until it's already reaching. Authorizatio systems weren't really built for this.
 
@@ -65,6 +71,8 @@ AI agents can dynamically discover APIs, tools, and system access as part of its
 ### Delegated authority
 
 Microservices typically run with their own authority: that is, they are provisioned service accounts with permissions and the authority to execute is baked into the code. Again, statically and well known ahead of time. These calls may take users into account, but the calls are usually done "service to service".
+
+![](/images/microservices-aiagents/delegate.png)
 
 Agents on the other head are designed from the ground up to act for a user. Agents carry human authority through a principal chain that wasn't defined at deploy time. The authority a user grants must be well scoped (scoped down), approved by an enterprise, and live within constraints (for this purpose, with these limitations, time bounded, etc). An AI agent may need to spawn its own sub-agent or call out to another agent. Does the authrity extend to these delegations? e request. Any decisions that get made, or actions that happen as a result of these delgations must recognize the user as the origin authority and attribute the actions to the chain not just the last hop. 
 
