@@ -1,0 +1,6 @@
+{
+  "issuer": "https://blog.christianposta.com",
+  "jwks_uri": "https://blog.christianposta.com/.well-known/jwks.json",
+  "client_name": "christian-posta",
+  "logo_uri": "https://avatars.githubusercontent.com/u/53201?v=4"
+}

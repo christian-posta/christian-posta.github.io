@@ -1,0 +1,16 @@
+{
+  "keys": [
+    {
+      "crv": "Ed25519",
+      "x": "sPwcdCJmzZKJ2R57ZVLUgi2ChA7r5sfGf8hM4EvONG0",
+      "kty": "OKP",
+      "kid": "2026-06-18_6bc",
+      "alg": "EdDSA",
+      "use": "sig",
+      "aauth": {
+        "device": "postamaclab.lan",
+        "created": "2026-06-18"
+      }
+    }
+  ]
+}
