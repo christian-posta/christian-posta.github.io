@@ -13,7 +13,7 @@ description:
 ---
 
 
-In previous posts, I've covered the [reasons why an AI agent needs an identity][need-agent-identity]. I recommend reading that first. In this post I want to nail down "what is agent identity" because I've seen a lot of different interpretations from smart people such as "[use OAuth](https://mayakaczorowski.com/blogs/ai-agent-authentication)" to "[it's just workload identity](https://www.linkedin.com/pulse/agentic-identity-control-framework-you-already-have-pieces-o-dell-61b5e/?trackingId=h6%2FLz63kR%2BCX8UZDsycg3Q%3D%3D)", and [new protocols cropping up](https://www.aauth.dev), etc. But what "is" an agent identity in concrete terms?
+In previous posts, I've covered the [reasons why an AI agent needs an identity](https://blog.christianposta.com/do-we-even-need-agent-identity/). I recommend reading that first. In this post I want to nail down "what is agent identity" because I've seen a lot of different interpretations from smart people such as "[use OAuth](https://mayakaczorowski.com/blogs/ai-agent-authentication)" to "[it's just workload identity](https://www.linkedin.com/pulse/agentic-identity-control-framework-you-already-have-pieces-o-dell-61b5e/?trackingId=h6%2FLz63kR%2BCX8UZDsycg3Q%3D%3D)", and [new protocols cropping up](https://www.aauth.dev), etc. But what "is" an agent identity in concrete terms?
 
 An **AI agent** is something a legal person commissions with a reason for existence e.g., an expense-report agent, supply-chain optimizer, personal assistant, etc. It can be described with a name, rich description, models it may use, skills/capabilities it offers, approved tools, admin-consented permissions, and the policies it operates under. Those details live in a registry somewhere. But at runtime, when the agent is making decisions about how to accomplish a task and actually executing calls, we need a stable, verifiable principal. This principal is used to make authorization decisions, attribute actions to the agent and lastly to revoke an agent. How do we get from the rich definition of an AI agent to verifiable runtime identity? 
 
@@ -27,25 +27,25 @@ The answer to both questions simultaneously is "yes" .... but how can that be?
 
 ## Agent Identity as Workload Identity
 
-The truth is, an AI agent "is" an executable piece of software. It runs somewhere. If you look at what identity primitives are available in common execution environments (Kubernetes, containers in general, VMs, etc), SPIFFE/WIMSE/Workload Identity is a natural fit. SPIFFE implementations attest a running workload using attributes of the workload, trusting its runtime platform, and then issuing an x509 certificate or JWT-SVID/WIT. For example, in Kubernetes, it's a common practice for a SPIFFE implementation to trust the Kubernetes platform, service account tokens, and exchange those for SPIFFE credentials. 
+The truth is, an AI agent "is" an executable piece of software. It runs somewhere. If you look at what identity primitives are available in common execution environments (Kubernetes, containers in general, VMs, etc) some form of workload identity is usually available. SPIFFE/WIMSE is a form of workload identity and is a natural fit. SPIFFE implementations attest a running workload using attributes of the workload, trusting its runtime platform, and then issuing an x509 certificate or JWT-SVID/WIT. For example, in Kubernetes, it's a common practice for a SPIFFE implementation to trust the Kubernetes platform, service account tokens, and exchange those for SPIFFE credentials. 
 
 For a microservice (ie, `payment-service` with SPIFFE ID `spiffe://cluster.local/ns/payments/sa/payment-service-sa`) **the deployment itself is the binding**. A microservice gets deployed 1:1 with a pod (ie, one service per pod), may scale up/down its replicas, and each replica is exactly the same as the next. Any time a `payment-service` Pod gets scheduled, it will have the same stable and cryptographically verifiable identity as determined by the runtime attestations and SPIFFE.
 
-How does this work for AI agents? If you deploy your AI agent 1:1 with a Kubernetes Deployment (ie, Pods), then this "workload identity == agent identity" probably works fine. In fact, this is how the [kagent open-source project is built](https://kagent.dev). Think of kagent as like AWS Agent Core but for Kubernetes-native deployments on any Kubernetes/cloud. In kagent, an agent is a single deployment, with a stable identity based on SPIFFE (from [Istio Ambient Mesh](https://ambientmesh.io)), and all agent executions, user contexts, memory, etc is handled by the agent framework within those worklods. The binding is owned by the agent runtime (kagent in this case).
+How does this work for AI agents? If you deploy your AI agent 1:1 with a Kubernetes Deployment (ie, Pods), then this "workload identity == agent identity" probably works fine. This is what the Uber team [recently shared with us](https://www.uber.com/us/en/blog/solving-the-agent-identity-crisis/). In fact, this is also how the [kagent open-source project is built](https://kagent.dev). Think of kagent as like AWS Agent Core but for Kubernetes-native deployments on any Kubernetes/cloud. In kagent, an agent is a single deployment, with a stable identity based on SPIFFE (from [Istio Ambient Mesh](https://ambientmesh.io)), and all agent executions, user contexts, memory, etc is handled by the agent framework within those worklods. The binding is owned by the agent runtime (kagent in this case).
 
 But the reality is, an agent doesn't have to be bound to a specific workload. 
 
-The challenge is, in practice, AI agents don't behave like long-lived server/microservice workloads. They are bursty. They are ephemeral. They churn, sometimes violently. They pause/resume. They spawn sub-agents or tools. And in the kagent community, we have experienced pressure from our users to pursue more light-weight alternatives to Kubernetes Pods, and to bind executions for individual users in more hardened execution environments (sandboxing). 
+The challenge is, in practice, AI agents don't behave like long-lived server/microservice workloads. They are bursty. They are ephemeral. They churn across workloads/clusters/clouds. They pause/resume. They spawn sub-agents or tools. And in the kagent community, we have experienced pressure from our users to pursue more light-weight alternatives to Kubernetes Pods, and to bind executions for individual users in more hardened execution environments (sandboxing). 
 
 This starts to look like "actors" more than Kubernetes pods. 
 
-With a model like this, agent identity _starts to look like a layer on top of workload identity_. 
+With a model like this, actors have an agent identity that  _starts to look like a layer on top of workload identity_. 
 
 ## Agent Identity as a Separate Layer
 
 Let's look at a concrete example. At [Solo.io](https://solo.io), we recently contributed to [kagent support for a new actor sandboxing project](https://www.solo.io/blog/agent-substrate-powers-kubernetes-agents-with-kagent) released by Google, called [agent substrate](https://github.com/agent-substrate/substrate/). Agent substrate solves some of the aforementioned pressure from kagent users. I'll give a quick overview here, but it may be useful to review the [agent substrate architecture docs](https://github.com/agent-substrate/substrate/blob/main/docs/architecture.md) or a [companion deep-dive learning site](https://learn.agentsubstrate.dev). 
 
-Agent substrate uses two Kubernetes custom resources (CRs) and implements a new control layer on top of Kubernetes. The `WorkerPool` CR defines a template for what a set of generic pre-warmed "workers" (pods) looks like. The `ActorTemplate` defines what an agent/actor "class" looks like. At runtime, agent substrates schedules actor instances wrapped in hardened sandboxes (Firecracker/microVM/gVisor/etc) into the pre-warmed workers. These actors align with the lifecycle of an AI agent including bursty-ness/pause/suspend, etc. Substrate can snapshot the actor's entire sandbox/memory to durable storage. It can then remove the actor from the workload when they suspend which clears the worker for another actor to be scheduled/resumed into. Substrate tracks this actor:worker mapping in its registry which is able to handle millions of suspend/resume operations and boot actors significantly faster that what the Kuberentes control plan can for pods. This model allows to run orders of magnitude more actors/agents than workers by multi-plexing them into worker pods at runtime. 
+Agent substrate uses two Kubernetes custom resources (CRs) and implements a new control layer on top of Kubernetes. The `WorkerPool` CR defines a template for what a set of generic pre-warmed "workers" (pods) looks like. The `ActorTemplate` defines what an agent/actor "class" looks like. At runtime, agent substrate schedules actor instances wrapped in hardened sandboxes (Firecracker/microVM/gVisor/etc) into the pre-warmed workers. These actors align with the lifecycle of an AI agent including bursty-ness/pause/suspend, etc. Substrate can snapshot the actor's entire sandbox/memory to durable storage. It can then remove the actor from the workload when they suspend which clears the worker for another actor to be scheduled/resumed into. Substrate tracks this actor:worker mapping in its registry which is able to handle millions of suspend/resume operations and boot actors significantly faster that what the Kuberentes control plan can for pods. This model allows to run orders of magnitude more actors/agents than workers by multi-plexing them into worker pods at runtime. 
 
 ![](/images/identity/substrate.png)
 
@@ -64,84 +64,31 @@ And what you're seeing through both eyes is correct.
 If you own the infrastructure, within a trust domain and can control the following invariants, you can collapse agent identity into workload identity:
 
 1. One-to-one mapping agent/actor to workload
-2. A registry which maps agents/actors to workloads at runtime; becomes the source of truth
+2. A registry which maps agents/actors to workloads at runtime; becomes the identity source of truth
 3. Agent/actor identity continuity across restarts/resumes/reschedules regardless of workload
+
+Otherwise, agent identity will feel like a layer on top of workload identity.
 
 ## Other Examples?
 
-This pattern of "an agent/worklkoad identity on TOP of workloads" is not unique to Kubernetes, kagent, or agent substrate. In fact it's a very common pattern across implementations. 
+This pattern of "an agent/worlkoad identity on TOP of workloads" is not unique to what we feel in the kagent and agent substrate projects. In fact it's a very common pattern across implementations. 
 
-Agent Core does something similar to what kagent/substrate just that AWS owns the complete stack. When you deploy an agent to Agent Core, it runs in a container in a hardened sandboxed microVM (Firecracker?). Under the covers, this sandbox has a real "workload identity" similar to the substrate generic worker pod identity, but it's never exposed to the user (it's probably used for AWS tenant isolation and underlay policy enforcement). In fact this underlying workload could churn (e.g. every 900s if inactive) but you don't see it because what you see is the Agent's "workload ARN". What Agent Core calls "workload identity" in its docs is not really the microVM/sandbox, it's the singular agent ARN such as:
+Agent Core does something similar to what kagent/substrate except that AWS owns the complete stack. When you deploy an agent to Agent Core, it runs in a container in a hardened sandboxed microVM (Firecracker?). Under the covers, this sandbox has a real "workload identity" similar to the substrate worker pod, but in Agent Core, this workload is never exposed directly to the user (it's probably used for AWS tenant isolation and underlay policy enforcement). In fact this underlying workload could churn (e.g. every 900s if inactive) but you don't see it because what you see is the Agent's "workload ARN". What Agent Core calls "workload identity" in its docs is not really the microVM/sandbox, it's the singular agent ARN such as:
 
 `arn:aws:bedrock-agentcore:us-west-2:111122223333:workload-identity-directory/default/workload-identity/my-agent-a1b2c3d4e5`
 
-Yes it has the word "workload identity" in it, but it's really a more stable identity that continues along with an Agent Core agent regardless of what underlying container/microVM it runs in. You can even get this Agent identity through the Metadata Service running within the micrVM -- it'll be the agent's identity, not the container's workload identity. The point here is: it's a layer on top of the underlying infrastructure and, critically, the Agent Core control plane maintains the mapping and issuance/attestation and continuity of identity to the runtime.
+Yes it has the word "workload identity" in it, but it's really a more stable identity that continues along with an Agent Core agent regardless of what underlying container/microVM it runs in. You can even get this Agent identity through the Metadata Service running within the microVM -- it'll be the agent's identity, not the container's workload identity. The point here is: it's a layer on top of the underlying infrastructure and, critically, the Agent Core control plane maintains the mapping and issuance/attestation and continuity of identity to the runtime. This all lives within a single system (ie, AWS), built on AWS's IAM mechanisms.
 
-Microsoft Entra Agent ID is also a layer on top of the workload. I've written a significant mutli-part "Entra Agent ID on Kubernetes" series of posts. I [highly recommend reviewing that](https://blog.christianposta.com/entra-agent-id-agw/). 
-
-Lastly for this section, Karl McGuiness has done an excellent job writing up the need for "actors" in the OAuth world. OAuth has the notion of "clients" but it's a generic "class" of Agent if using it for agent identity. Agents likely need a more fine-grained primitive such as an "actor" and have that mapped into its tokens. Again, this would be a layer on top of workload identity (but if you squint, could be mapped again direclty to workload identity with SPIFFE support for Oauth clients like some IdPs)
-
-Let's call out the main point clearly: In kagent with agent-per-pod, we see workload identity and agent identity collapse. With kagent+substrate the layer is visibly distinct, but since it holds to the three invariants (1:1, registry, continuity), you can still treat it as workload identity (its an available mental model, but not "automatic"). In the AgentCore/Entra/OAuth examples, the agent identity is a layer above the running workload identity.  
-
->> need to think about this seam point, how to rephrase it and set up the next section / blog ?
-What every one of these still shares: a single control plane maintains that continuity, inside a single trust domain. The agent identity separates from the workload — but it doesn't yet leave home. The harder problem starts the moment an agent has to act somewhere its issuing platform doesn't reach.
+Microsoft Entra Agent ID is also a layer on top of the workload. I've written a significant mutli-part "Entra Agent ID on Kubernetes" series of posts. I [highly recommend reviewing that](https://blog.christianposta.com/entra-agent-id-agw/). In this case, Entra Agent ID is an extension of Entra ID (ie, it's a specialized service principal) and lives nicely within a single system (ie, Microsoft) built on Microsoft's IAM mechanisms (Entra). It can be [federated with workload identity](https://blog.christianposta.com/entra-agent-id-agw/PART-4.html) but is itself a separate thing. 
 
 
+Lastly, we see a new protocol [Agent Auth (AAuth)](https://www.aauth.dev) from Dick Hardt which introduces a cloud-agnostic agent identity model (along with dynamic discovery, person-based delegation and auth, rich resource definitions, mission intent, built with no bearer tokens). This is also built as a layer on top of workload identity, but just like Entra Agent ID, can integrate nicely with workload identity to bootstrap agent identity. 
 
 
-Okay .... note time...
+## It's a separate layer, but can be collapsed. Until it can't. 
 
-so far we've covered closed systems. Our own kubernetes platforms. Aws Agent Core, etc. We concede that within closed agent systems, agent identity can be collapsed to workload identity and be fine. Even where layers start to emerge like agent substrate, the actual undelrying object looks like a workload, so keep it with the same ideas we have for workload identity.
+Let's call out the main point clearly: In agent-per-pod scenarios, like in Uber's architecture or kagent, we see workload identity and agent identity collapse. With kagent+substrate the layer is visibly distinct, but since it holds to the three invariants (1:1, registry, continuity), you can still collapse to workload identity (its an available mental model, but not "automatic"). In the AgentCore/Entra/AAuth examples, the agent identity is a layer above the running workload identity.  
 
-But the goal is a more open ecosystem. <-- here we need to dig into this.... where the workload identity pattern breaks down. And this is squarely where AAuth is trying to play. 
-
-Example, an "expense report agent" doens't have an identity if it needs to talk to 10 different oauth protected APIs/tools and each IdP requires it to have a separate client id. this is not an agent identity. this is fragmented agent identity. 
-
-And we need to continue to dig into the auto-discovery/registration aspect. Maybe check Dick Hardt's recent intervew. Maybe he touches on that? 
-
-Extending this outside of the trusted domain becomes tricky. Here's where ahead of time registration/trust establishment is needed. How do we do this with all of the intermediate signers?
-
-A true "open" agent identity and authorization protocol may be appropriate here. Here's where AAuth fits into the picture.
-
-Describe AAuth capabiliteis here in detail.
-
-So bottom line: yes, if you preserve the following invariants:
-- list 
-- goes
-- here
-Then you can collapse agent identity into workload identity 
-
-But as you build more sophisitcated systems, the reality that agent identity IS a layer on top of traditional workload identity will become apparent.
-
-- Open questions: how to account for the delegation aspects? how does this factor into the design of the identity mechanism?
-- How does the "binding" fit into the picture? this is probably crucial: binding of an agent description to a key / actor
-- How are we describing the agent? what does a registry look like?
-- How do "actors' vs "class/client-id" fit into the picture? <-- make sure we get this right because Karl will rip it apart
-- inside enterprise vs outside open internet world
-- say something about spinning up tools/sub agents in substrate/sandbox
-- need to link to Uber implemenattion and run it against this framing -- and even leave "open todo" items for uber in the blog
-- each of the examples (AWS agent core, entra agent id, etc) are actually another layer on TOP of workload identity; agent core ties back into their IAM roles.... entra agent id ties back into their service principal which is more closely linked with OAuth (which closely ties into Karl's framing)
-- so the conclusion i have at the moment about "it;s all workload identity" is not the case...or maybe i need to clarify:
-- workload identity can be agent identity if certian properties hold (1:1 actor/agent to workload, lifetime continuity invariant, fully owned control/registry/attestation layer, etc)
-- but in those other examples, continutiy is maintined on top  ... but by a trusted registry and attestation process 
-- we need to directly address the "under one control / trust domain/ boundary" argument which sets up AAuth
+What every one of these still shares: a single control plane maintains that continuity, inside a single trust domain. The harder problem starts the moment an agent has to act somewhere its issuing platform doesn't reach. Agents are more and more given access to registries where they can discover tools, APIs, and other agents. The more we build for an open-ecosystem of AI agents, and expand beyond a single-trust domain, integrating across organizations/trust boundaries, the more the invariants for workload==agent identity start to strain. In the next blog post, we take a closer look at agent identity in an open ecosystem and what options we have. 
 
 
-Any others you're thinking about? [Follow / Connect](https://www.linkedin.com/in/ceposta) to stay up on this series. 
-
-
-
-[need-agent-identity]: https://blog.christianposta.com/do-we-even-need-agent-identity/
-[impersonation-delegation]: https://blog.christianposta.com/agent-identity-impersonation-or-delegation/
-[explore-permissions]: https://www.defakto.security/blog/ais-security-problem-isnt-ai-its-everything-around-it/
-
-Stash paragraphs, may want to come back to this:
-
----
-In an enterprise, it's not just the user that decides authority delegation: the enterprise sets the outer boundaries and allowable delegations. So they're constrained even further. Policy governs what agents are eleigble to receive delegation, live within scope claims, where admin/user must consent, etc. Delegation and grants are addressed to stable, verifiable principals. Enterprises need to know "who" is acting. 
----
-Agents act in two modes. The first mode is "on behalf of a person". That is, a user which has permissions and can decide to invoke their "authority" to complete a task by delegating a limited form of it to an agent. The second mode is "autonomous". That is, a person deploys an agent to respond and react to an environment (events, messages, etc) as itself (ie, with its own grants, authority, permissions, etc). 
-
-These two modes have different implications for identity. Autonomous mode is the simpler case: the agent acts as itself, needs a stable credential, and authorization decisions are made against it directly. This maps reasonably well onto workload identity. On-behalf-of mode is harder: the agent is carrying delegated authority, constrained by enterprise policy, potentially handed across a chain of agents and needs to prove not just *who it is*, but *what it's been authorized to do on someone else's behalf* at every hop. That chain has to be verifiable and tamper-evident.
-
-This distinction turns out to show the crux of the question. Within a closed system such as an internal platform, a single cloud, etc you can often paper over it. But when delegation chains need to cross organizational boundaries, the on-behalf-of mode is where workload identity starts to strain. We'll return to this. 
