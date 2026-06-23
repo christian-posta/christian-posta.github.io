@@ -8,9 +8,18 @@ permalink: /agent-identity/
 
 # Agent Identity Series
 
-Deep-dive walkthroughs on **identity and access management for AI agents** — how
-caller authentication, agent identity, delegation, and consent actually work
-under the hood, with running demos.
+Deep dives on **identity and access management for AI agents** — conceptual essays,
+protocol walkthroughs, and running demos.
+
+## Thinking Out Loud: Identity in Agentic Systems
+
+Essays on what agent identity *is*, when workload identity is enough, and where
+single-trust-domain models break down.
+
+- [**Latest:** What 'is' Agent Identity? →](/what-is-agent-identity/)
+- [Part 1: Do AI Agents Need Their Own Identity? →](/do-we-even-need-agent-identity/)
+
+---
 
 ## Exploring AAuth — Agent Identity & Access Management
 
