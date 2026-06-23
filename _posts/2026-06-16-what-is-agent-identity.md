@@ -5,6 +5,7 @@ date: 2026-06-16T02:35:18Z
 categories: []  
 tags: []
 description:
+canonical_url: https://www.solo.io/blog/what-is-agent-identity-human-workload-a-new-layer
 # Uncomment if this post includes Mermaid diagrams:
 # mermaid: true
 # Uncomment to add a feature image:
