@@ -4,7 +4,7 @@ date: 2026-07-13T01:05:21Z
 categories: [AI Agents, Identity]
 tags: [id-jag, xaa, okta, keycloak, saml, oauth]
 mermaid: true
-description: "A working Okta SAML → ID-JAG → Keycloak access-token path for Cross-App Access, including the two-leg SAML exchange, Okta AI Agent wiring, and resource-side JWT bearer grant."
+description: "A working Okta SAML/SSO → ID-JAG → Keycloak access-token path for Cross-App Access"
 ---
 
 The [Identity Assertion JWT Authorization Grant (ID-JAG)](https://datatracker.ietf.org/doc/draft-ietf-oauth-identity-assertion-authz-grant/) draft, which is the core of [Cross-App Access (XAA)](https://xaa.dev), standardizes how enterprises broker access to APIs and MCP resources across identity boundaries (think "SaaS" APIs and MCP servers).
@@ -83,21 +83,8 @@ Okta has early access to XAA in its enterprise product and in free [Integrator a
 
 Okta needs **three objects** plus I use a local signing key (instead of client secrets). Here's a flow diagram of the pieces:
 
-```text
-  user logs in ─SAML SSO▶  SAML app  (requesting / SSO app)
-                                  │
-                                  │ Delegation: "User sign-on" caller
-                                  ▼
-                           AI Agent  (OAuth client for token exchange)
-                                  │    Credentials: your public JWK (RS256)
-                                  │    → agent client_id
-                                  │
-                                  │ Resource connection (Application)
-                                  ▼
-                           Resource app (OIDC)
-                           Resource Server tab: Enable XAA + Issuer URL
-                           → becomes the ID-JAG `aud` (Keycloak realm)
-```
+![Demo login screen](/images/okta-xaa/okta-clients.png)
+
 
 | Okta object | Role | Key fields |
 |---|---|---|
@@ -265,13 +252,13 @@ That last hop is the point of XAA: Okta brokered cross-domain API access using t
 <div style="background-color: #e7f3ff; border-left: 4px solid #308cbc; border-right: 1px solid #b8daff; border-top: 1px solid #b8daff; border-bottom: 1px solid #b8daff; padding: 1em 1.5em; margin: 1.5em 0; border-radius: 0 5px 5px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.06); font-size: 1.05em; line-height: 1.6;">
 <strong>Gotchas that ate the most time</strong>
 <ul>
-<li>The token-exchange client must be the <strong>AI Agent</strong> with <code>private_key_jwt</code>. A normal OIDC Web/API app tends to land in On-Behalf-Of and fail with <code>actor_token missing</code>.</li>
-<li><code>audience</code> must be a <strong>distinct, reachable</strong> resource AS issuer (RFC 8414). Never Okta's own org AS — that yields <code>invalid_target</code>.</li>
-<li>Okta rejects a <code>resource</code> parameter on this exchange even when draft examples show one.</li>
+<li>The token-exchange client must be the <strong>AI Agent</strong> ... we use <code>private_key_jwt</code> to identify the client (instead of client secret). If you try to use a normal OIDC Web/API, the Okta flow tends to land in On-Behalf-Of and fail with <code>actor_token missing</code>.</li>
+<li>Okta rejects a <code>resource</code> parameter on this token exchange even when draft examples show one.</li>
+<li><code>audience</code> must be a <strong>distinct, reachable</strong> resource AS issuer (RFC 8414).</li>
 <li>SAML <code>subject_token</code> is <strong>standard base64</strong>, not base64url.</li>
 <li>Keycloak must advertise an <code>https</code> issuer (e.g. set <code>KC_HOSTNAME</code> to the ngrok URL) or Okta will not accept it as the XAA resource.</li>
 <li>Pre-provision the Keycloak user with federated identity keyed on the Okta <code>sub</code>, or redemption fails with <code>User not found</code>.</li>
-<li>ID-JAG lifetime on Okta is short (~300s) — redeem promptly.</li>
+<li>ID-JAG lifetime on Okta is short (~300s) ...  redeem promptly.</li>
 </ul>
 </div>
 
