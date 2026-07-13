@@ -201,6 +201,8 @@ Read that carefully:
 - `client_id` is the client that will present the grant at Keycloak (`idjag-demo-client`), not the Okta AI Agent client id.
 - `scope` values are resource-domain scopes, decided by Okta policy / resource connection.
 - `act` attributes the exchange to the AI Agent acting on the user's behalf.
+- `sub` Okta user id
+- `sub_profile` from the new [Entity Profiles draft](https://www.ietf.org/archive/id/draft-mora-oauth-entity-profiles-01.html#name-entity-profiles)
 - This is a **grant**, not an access token. It cannot call the API directly; it only exists to be redeemed.
 
 
