@@ -188,6 +188,7 @@ An annotated shape of what Okta minted in this run (values shortened):
   "aud": "https://…/realms/idjag-resource",               // Keycloak realm issuer
   "client_id": "idjag-demo-client",                       // client that will redeem at Keycloak
   "sub": "00u…",                                          // Okta user id
+  "sub_profile": "user",                                  // entity profile, "user" (or "ai_agent")
   "email": "mcpuser@example.org",                         // from SAML NameID / profile
   "act": { "sub": "wlp…", "sub_profile": "ai_agent" },    // the AI Agent that did the exchange
   "scope": "demo:read demo:write",                        // scopes for the *resource* domain
