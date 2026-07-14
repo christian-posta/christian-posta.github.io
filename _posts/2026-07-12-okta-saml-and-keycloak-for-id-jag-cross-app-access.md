@@ -7,20 +7,20 @@ mermaid: true
 description: "A working Okta SAML/SSO → ID-JAG → Keycloak access-token path for Cross-App Access"
 ---
 
-The [Identity Assertion JWT Authorization Grant (ID-JAG)](https://datatracker.ietf.org/doc/draft-ietf-oauth-identity-assertion-authz-grant/) draft, which is the core of [Cross-App Access (XAA)](https://xaa.dev), standardizes how enterprises broker access to APIs and MCP resources across identity boundaries (think "SaaS" APIs and MCP servers).
+The [Identity Assertion JWT Authorization Grant (ID-JAG)](https://datatracker.ietf.org/doc/draft-ietf-oauth-identity-assertion-authz-grant/) draft, which is the core of [Cross-App Access (XAA)](https://xaa.dev), standardizes how enterprises broker access to APIs and MCP resources across identity boundaries (think "calling from enterprise apps to SaaS APIs and MCP servers").
 
-Enterprises already use their Enterprise IdP for SSO, but SSO only identifies the user. It says nothing about that user's permissions on GitHub, Asana, Figma, and so on. You might say "we already use SSO on those apps" ... and you do, for login (usually to some UI). Those apps still need *scoped OAuth access tokens* for API access, not just an identity assertion. ID-JAG is the bridge: convert enterprise user identity into those scoped tokens, under IdP policy.
+Enterprises already use their Enterprise IdP for SSO, but SSO only identifies the user. It says nothing about that user's service-specific permissions on GitHub, Asana, Figma, and so on. You might say "we already use SSO on those apps, why is that not enough" ... and you do, for login (usually to some UI). Those apps still need *scoped OAuth access tokens* for API access, not just an identity assertion. ID-JAG is the bridge: convert enterprise user identity into those scoped tokens, under IdP policy.
 
 The flow looks like this:
 
-1. The user signs into the requesting app via SSO (OIDC ID Token or SAML assertion), so the app knows who they are.
+1. The user signs into enterprise app/agent via SSO (OIDC ID Token or SAML assertion), so the app knows who they are.
 2. When the app needs to call an external resource (SaaS API, MCP server, etc.), it exchanges that identity assertion at the enterprise IdP for an intermediate **ID-JAG** via [OAuth 2.0 Token Exchange](https://datatracker.ietf.org/doc/html/rfc8693). This is where the enterprise decides whether to allow the access, what scopes to grant, and how to manage the authorization lifecycle.
 3. The app presents the ID-JAG to the resource authorization server as a [JWT authorization grant](https://datatracker.ietf.org/doc/html/rfc7523) and receives a provider-scoped access token.
 4. The app uses that access token to call the resource (MCP tools, APIs, etc.).
 
 The user never sees an OAuth consent screen at the SaaS app. Access is pre-decided by the enterprise IdP and controlled by admin policy.
 
-I recently dug into a working example with Okta and Keycloak. Since ID-JAG is an open OAuth draft / spec, the most important part of the story is interoperability. And to take it one step further: although the happy path in the draft is OIDC for user identity assertions, enterprises still standardize around SAML. So let's build an Okta SAML-based requesting app, follow the ID-JAG SAML profile, and redeem that grant at a *different* identity domain — Keycloak standing in for the resource authorization server.
+I recently dug into a working example with Okta as the enterprise IdP and Keycloak as the resource/service IdP. Since ID-JAG is an open OAuth draft / spec, the most important part of the story is interoperability. And to take it one step further: although the happy path in the draft primarily uses OIDC for user identity assertions, enterprises still standardize around SAML. So let's build an Okta SAML-based requesting app, follow the ID-JAG SAML profile in the draft, and redeem that grant at a *different* identity domain: Keycloak standing in for the resource authorization server.
 
 Everything here is reproducible from [christian-posta/okta-saml-idjag](https://github.com/christian-posta/okta-saml-idjag).
 
@@ -41,7 +41,7 @@ The requesting app and the Okta AI Agent are related but not the same object. Th
 
 ## The end-to-end path (including the SAML hop)
 
-OIDC-shaped XAA is often drawn as one token exchange at the IdP, then a JWT bearer grant at the resource. With SAML, the draft adds a pre-step: turn the SAML assertion into a refresh token first, then exchange that refresh token for the ID-JAG.
+OIDC-shaped XAA is often drawn as one token exchange at the IdP, then a JWT bearer grant at the resource. With SAML, the draft adds a pre-step: turn the SAML assertion into a `refresh token` first, then exchange that `refresh token` for the ID-JAG.
 
 ```mermaid
 sequenceDiagram
