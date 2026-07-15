@@ -26,7 +26,7 @@ Everything here is reproducible from [christian-posta/okta-saml-idjag](https://g
 
 TL;DR here is a demo video of this blog:
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/fWyTzxvadQg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://youtu.be/bwUbtXhUtDE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 
 ## Actors in this demo
