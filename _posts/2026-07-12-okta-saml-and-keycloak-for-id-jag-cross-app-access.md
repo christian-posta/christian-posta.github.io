@@ -24,6 +24,11 @@ I recently dug into a working example with Okta as the enterprise IdP and Keyclo
 
 Everything here is reproducible from [christian-posta/okta-saml-idjag](https://github.com/christian-posta/okta-saml-idjag).
 
+TL;DR here is a demo video of this blog:
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/fWyTzxvadQg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+
 ## Actors in this demo
 
 Worth naming explicitly up front, because "app" and "agent" blur quickly:
