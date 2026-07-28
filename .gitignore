@@ -1,5 +1,7 @@
 # Bundler cache
 .bundle
+.bundle-native
+.gem-native
 vendor
 
 # Jekyll cache
