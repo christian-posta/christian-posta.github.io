@@ -1,5 +1,5 @@
 ---
-title: "Credential Brokering Patterns for AI Agents Part 2: Protecting the Vault"
+title: "Credential Brokering Patterns for AI Agents Part 2: Protecting the Vault with AWS KMS"
 date: 2026-08-04T09:00:00-07:00
 categories: [AI Agents, Identity]
 tags: [agentgateway, mcp, kms, credential-broker, enterprise]
