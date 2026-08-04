@@ -1,13 +1,15 @@
 ---
 title: "Credential Brokering Patterns for AI Agents Part 2: Protecting the Token Vault with AWS KMS"
-date: 2026-08-04T09:00:00-07:00
+date: 2026-08-03T09:00:00-07:00
 categories: [AI Agents, Identity]
 tags: [agentgateway, mcp, kms, credential-broker, enterprise]
 mermaid: true
 description: A credential broker fixes the agent's credential problem by concentrating credentials somewhere else. Here's how we keep that concentration from becoming a single point of total failure.
 ---
 
-In [part 1](/credential-brokering-patterns-for-ai-agent-egress/) I made the case that the only credential brokering model from [the CB4A paper](https://www.ietf.org/archive/id/draft-hartman-credential-broker-4-agents-00.html) that really works for AI agents today is the one where the agent never holds a credential at all. The agent uses its identity/OBO, calls through the proxy, the proxy injects the real token just in time, and the agent's memory never contains any credential. The agent can't be tricked to exfiltrate (or willingly hand over) any credentials.
+![CB4A Flow](/images/cb4a/cb4a-part2.gif)
+
+In [part 1](/credential-brokering-patterns-for-ai-agent-egress/), I made the case that the only credential brokering model from [the CB4A paper](https://www.ietf.org/archive/id/draft-hartman-credential-broker-4-agents-00.html) that really works for AI agents today is the one where the **agent never holds a credential at all**. The agent uses its identity/OBO, calls through the proxy, the proxy injects the real token just in time, and the agent's memory never contains any credential. The agent can't be tricked to exfiltrate (or willingly hand over) any credentials.
 
 Although the agent doesn't see the real tokens, we didn't really _get rid of them_. We just moved them. The proxy's token store now holds every user's GitHub token, every Slack token, every upstream API key in the environment. The CB4A draft is blunt about this: the broker ["is the highest-value target in the architecture."](https://www.ietf.org/archive/id/draft-hartman-credential-broker-4-agents-00.html#name-security-considerations) If the broker/controller/etc is compromised its blast radius is all of the credentials.
 
@@ -22,6 +24,8 @@ Let's look at three different approaches to securing this broker, and the answer
 ## Who holds what
 
 In Solo.io Enterprise for agentgateway, two components are core to an agentic call to an external resource/LLM/API/MCP. The **agentgateway** (the Rust dataplane) terminates the agent's MCP connection, enforces policy, and calls token exchange to get an upstream credential. The **controller** runs the Secure Token Service (STS) which does RFC 8693 token exchange and owns the token vault. The controller/STS is responsible for encrypting the database rows holding user credentials.
+
+![](/images/cb4a/section01.png)
 
 The controller (aka STS, but I'll refer to it as controller) is the blast radius center. It holds the ciphertext, it does the decrypt, and it hands the plaintext credential back to the gateway. It's the component that *has* to touch plaintext, which is exactly what makes it interesting. One assumption held constant throughout: the gateway is inside the confidentiality boundary for the specific token a live request is servicing. It has to be. It's the thing putting that token on the wire to GitHub for example. What we're protecting is **the rest of the store**: everyone else's credentials, and this user's other credentials, at the moment of compromise.
 
@@ -49,6 +53,8 @@ That binding is the same in all three modes below. What changes is **who authent
 
 To start off, we have to answer **who holds the KEK, and what it takes to unwrap a DEK?**
 
+![](/images/cb4a/dek-kek.png)
+
 ## Mode 1 — KEK in a Kubernetes Secret
 
 Agentgateway can run in a Kubernetes cluster (preferred enterprise deployment -- though it can run standalone as well). Storing the KEK in a Kubernetes secret is an obvious default or baseline. A 32-byte KEK lives in a Kubernetes Secret and is read once at pod startup. It's used to wrap and unwrap DEKs via local AES-GCM calls inside the controller. 
@@ -66,6 +72,8 @@ If we evaluate this against the main question of this blog, what is the blast ra
 - **DB dump theft?** On its own, not a real problem. A stolen `encrypted_tokens` table is ciphertext. Nobody can do anything with it. 
 - **Controller compromise?** If this happens, you have a catastrophic failure. The KEK lives in the same trust domain as the thing you're worried about. Anyone who can read that Secret (the controller's ServiceAccount, any cluster-admin, an etcd backup, a node with the projected token) gets the master key and decrypts **the entire store, offline, forever**. The attacker doesn't even have to stay around/online. Steal the KEK once and every current *and future* row is readable off-box, at leisure.
 - **Residual:** everything. No audit trail, because these are in-process calls and they're invisible. No revocation, because you can't un-leak a key. 
+
+![](/images/cb4a/mode1.png)
 
 So the answer to the main question: "All of the store, all credentials, all users". Not good. You should not do this for anything other a very simple demo environment. This should not be used in production under any circumstances. 
 
@@ -94,6 +102,8 @@ But I want to be really clear about something, because although this is a step i
 
 The controller still holds **standing `kms:Decrypt`**. A live compromised process can sit there and call KMS in a loop until it's walked the whole table. KMS makes that burst visible and lets you pull the key, but it does not *prevent* it. Symmetric decrypt quotas are high and rate limiting can be a weak throttle. Exfiltration can outrun your incident response.
 
+![](/images/cb4a/mode2.png)
+
 What you've really done is convert a smash-and-grab into a live, throttleable, observable operation. That's a genuinely different posture, and for a lot of deployments it's the honest place to stop: master key custody, plus audit, plus revocation, with loud CloudTrail alerting on decrypt-rate anomalies and a few honeytoken rows planted in the store. If "detectable and revocable" is good enough for your threat model, you're good to stop here.
 
 - **DB theft?** Survives.
@@ -120,6 +130,8 @@ tokenExchange:
 ```
 
 The broker runs as a separate Deployment with its own ServiceAccount and its own IAM identity. It's configured with the IdP it re-verifies subject tokens against, a policy expression for allow/deny, the shared key it uses to derive `owner`, an audit sink, and the AWS parameters for minting grants. What it is emphatically *not* configured with is a database, a KEK, or any path to ciphertext.
+
+![](/images/cb4a/mode3a.png)
 
 Here's the flow:
 
@@ -157,7 +169,7 @@ sequenceDiagram
 ```
 
 
-### "Why not just let KMS authorize each call?"
+## "Why not just let KMS authorize each call?"
 
 This is a common question.
 
@@ -174,5 +186,7 @@ Mode 3 is a tradeoff, of course. It's more latency, more code, more operational 
 ## The Main Point
 
 Line the three modes up against the one question we started with, and what you're really watching is the "yes" to decrypt moving further away from the component holding the ciphertext. Mode 1: the controller says yes to itself, silently, forever. Mode 2: the controller still says yes, but now it has to say it out loud to KMS, on the record, every single time. Mode 3: the controller can't say yes at all. It has to bring a broker along, and the broker has to re-verify the human and "which credential" behind the request before it'll mint anything. By the end, reading a credential requires two things that are never true at once for an attacker who only owns the controller: the ciphertext, and a grant nobody but the broker can issue.
+
+![](/images/cb4a/part2-wrapup.png)
 
 But AWS KMS is just one way to answer "who holds the KEK, and who's allowed to unwrap it." It's not the only way, and a lot of enterprises aren't on AWS, or already run a Vault/OpenBAO cluster doing this exact job for everything else in the environment. Part 3 of this blog series stays focused on Mode 3 -- the broker-gated grant model -- and rebuilds it on Vault/OpenBAO instead of KMS. In Mode 3 the KEK lives in the transit engine, and the grant becomes a Vault-issued, single-use, time-boxed token instead of an IAM grant. Follow along / [connect on LinkedIn](https://linkedin.com/in/ceposta) if you are working through credential isolation for agent egress in your own stack. Stay tuned!!
