@@ -1,5 +1,5 @@
 ---
-title: "Credential Brokering Patterns for AI Agents Part 2: Protecting the Vault with AWS KMS"
+title: "Credential Brokering Patterns for AI Agents Part 2: Protecting the Token Vault with AWS KMS"
 date: 2026-08-04T09:00:00-07:00
 categories: [AI Agents, Identity]
 tags: [agentgateway, mcp, kms, credential-broker, enterprise]
@@ -21,7 +21,7 @@ Let's look at three different approaches to securing this broker, and the answer
 
 ## Who holds what
 
-In Solo.io Enterprise for agentgateway, two components are core to an agentic call to an external resource. The **gateway** (the Rust dataplane) terminates the agent's MCP connection, enforces policy, and calls token exchange to get an upstream credential. The **controller** runs the Secure Token Service (STS) which does RFC 8693 token exchange and owns the token vault. The controller/STS is responsible for encrypting the database rows holding user credentials.
+In Solo.io Enterprise for agentgateway, two components are core to an agentic call to an external resource/LLM/API/MCP. The **agentgateway** (the Rust dataplane) terminates the agent's MCP connection, enforces policy, and calls token exchange to get an upstream credential. The **controller** runs the Secure Token Service (STS) which does RFC 8693 token exchange and owns the token vault. The controller/STS is responsible for encrypting the database rows holding user credentials.
 
 The controller (aka STS, but I'll refer to it as controller) is the blast radius center. It holds the ciphertext, it does the decrypt, and it hands the plaintext credential back to the gateway. It's the component that *has* to touch plaintext, which is exactly what makes it interesting. One assumption held constant throughout: the gateway is inside the confidentiality boundary for the specific token a live request is servicing. It has to be. It's the thing putting that token on the wire to GitHub for example. What we're protecting is **the rest of the store**: everyone else's credentials, and this user's other credentials, at the moment of compromise.
 
@@ -34,7 +34,7 @@ Every stored credential gets two nested AES-256-GCM layers.
 | **Inner** | the token JSON (access, refresh, id token) | a per-write **DEK** | the controller, in-process — in every mode |
 | **Outer** | the 32-byte DEK | the **KEK** | whoever holds the KEK |
 
-A **DEK** (data encryption key) is generated fresh on every write, so a token refresh rotates it. The DEK encrypts the payload locally, then the DEK itself gets **wrapped** (encrypted) under a **KEK** (key encryption key). Reading a credential means unwrapping its DEK first, then decrypting the payload with it. Why bother with two layers? Because the KEK only ever encrypts and decrypts 32-byte DEKs, never application data — so it can live somewhere the application can't reach.
+A **DEK** (data encryption key) is generated fresh on every write, so a token refresh rotates it. The DEK encrypts the payload locally, then the DEK itself gets **wrapped** (encrypted) under a **KEK** (key encryption key). Reading a credential means unwrapping its DEK first, then decrypting the payload with it. Why bother with two layers? Because the KEK only ever encrypts and decrypts 32-byte DEKs, never STS/credential data, so it can live somewhere the STS can't reach.
 
 Both layers bind their ciphertext to context using **AAD**, additional authenticated data. AAD isn't encrypted and isn't secret. It gets mixed into the GCM authentication tag. Present different AAD at decrypt time and the tag fails, so ciphertext can't be moved between rows or between users.
 
@@ -45,15 +45,13 @@ owner    = HMAC(user_id)          # <-- this one does the real work later
 resource = e.g. https://api.github.com
 ```
 
-That binding is the same in all three modes below. What changes is **who authenticates it**: either a local AES-GCM tag the controller computes itself, or a KMS `EncryptionContext` that KMS checks on every wrap and unwrap and records in CloudTrail. Same binding, different referee, and the referee turns out to be the whole story.
-
-One consequence worth stating up front: `owner` and `resource` are also kept as plain columns, because the binding has to be reproducible at decrypt time. That's what lets an authorization decision happen *before* any decrypt. You can read who owns a credential without unwrapping it.
+That binding is the same in all three modes below. What changes is **who authenticates it**: either a local AES-GCM tag the controller computes itself, or a KMS `EncryptionContext` that KMS checks on every wrap and unwrap and records in CloudTrail. 
 
 To start off, we have to answer **who holds the KEK, and what it takes to unwrap a DEK?**
 
 ## Mode 1 — KEK in a Kubernetes Secret
 
-This is an obvious default or baseline. A 32-byte KEK lives in a Kubernetes Secret, read once at pod startup. Wrap and unwrap are local AES-GCM calls inside the controller.
+Agentgateway can run in a Kubernetes cluster (preferred enterprise deployment -- though it can run standalone as well). Storing the KEK in a Kubernetes secret is an obvious default or baseline. A 32-byte KEK lives in a Kubernetes Secret and is read once at pod startup. It's used to wrap and unwrap DEKs via local AES-GCM calls inside the controller. 
 
 ```yaml
 tokenExchange:
@@ -63,11 +61,11 @@ tokenExchange:
       provider: k8s-secret      # default
 ```
 
-If we evaluate this against our main question of this blog, what is the blast radius if the controller is compromised:
+If we evaluate this against the main question of this blog, what is the blast radius if the controller is compromised? 
 
 - **DB dump theft?** On its own, not a real problem. A stolen `encrypted_tokens` table is ciphertext. Nobody can do anything with it. 
 - **Controller compromise?** If this happens, you have a catastrophic failure. The KEK lives in the same trust domain as the thing you're worried about. Anyone who can read that Secret (the controller's ServiceAccount, any cluster-admin, an etcd backup, a node with the projected token) gets the master key and decrypts **the entire store, offline, forever**. The attacker doesn't even have to stay around/online. Steal the KEK once and every current *and future* row is readable off-box, at leisure.
-- **Residual:** everything. No audit trail, because these are in-process AES calls and they're invisible. No revocation, because you can't un-leak a key. 
+- **Residual:** everything. No audit trail, because these are in-process calls and they're invisible. No revocation, because you can't un-leak a key. 
 
 So the answer to the main question: "All of the store, all credentials, all users". Not good. You should not do this for anything other a very simple demo environment. This should not be used in production under any circumstances. 
 
@@ -110,7 +108,7 @@ The controller keeps the ciphertext and its role as an KMS **grantee**, and lose
 
 Decryption now requires **two independent trust domains**. The broker has to authorize, *and* the controller has to be the grantee holding the ciphertext. Neither one alone can read a credential. Although this is not EXACTLY the implementation [proposed by the CB4A paper](https://www.ietf.org/archive/id/draft-hartman-credential-broker-4-agents-00.html), it does align with its principals: separate out into different trust domains the "policy" or grant from the thing that can issue/mint. 
 
-For example, in Solo.io Enterprise for Agentgateway, the controller's config is Mode 2 plus a pointer at the broker and an `enforce` mode:
+For example, the controller's config is Mode 2 and a new config for the broker and an `enforce` mode:
 
 ```yaml
 # controller — same as Mode 2, plus:
@@ -161,11 +159,11 @@ sequenceDiagram
 
 ### "Why not just let KMS authorize each call?"
 
-This is the obvious objection and it deserves a straight answer, because the answer is what makes the broker structurally *necessary* instead of just recommended.
+This is a common question.
 
 The cheaper idea goes like this: keep the controller's standing access, and let the managed service authorize per key on every call. KMS has `kms:EncryptionContext:*` policy conditions. Vault has per-secret ACLs. Why not just use those?
 
-Because of **which identity the managed service authenticates**. When the controller calls KMS, KMS authenticates *the controller's IAM role*. It never sees the end user. And a key policy is **static**: it can pin the encryption context to a *constant*, but it can't express "`owner` must equal whoever is authenticated on *this* request," because nothing in that path knows who that is. A controller with `kms:Decrypt` decrypts every row. Vault is the same story. If the controller can read the mount, it reads every secret in it. Vault's templated per-entity policies only help when *the user* is the authenticating identity, and here the controller acts on behalf of users who never authenticate to Vault at all.
+Because of **which identity the managed service authenticates**. When the controller calls KMS, KMS authenticates *the controller's IAM role*. It never sees the end user. And a key policy is **static**: it can pin the encryption context to a *constant*, but it can't express "`owner` must equal whoever is authenticated on *this* request," because nothing in that path knows who that is. A controller with `kms:Decrypt` decrypts every row. Vault is the same story. If the controller can read the mount, it reads every secret in it. Vault's templated per-entity policies only help when *the user* is the authenticating identity, and here the controller acts on behalf of users who never authenticate to Vault at all. For Vaul/OpenBAO specifically, we will address directly in Part 3 of this blog. 
 
 The only KMS mechanism for dynamic, per-request, per-user scoping is a **grant**: short-lived, `EncryptionContextSubset`-scoped, minted **by a separate principal**. And that principal has to re-verify the user before it mints, or the scoping means nothing.
 
@@ -175,7 +173,6 @@ Mode 3 is a tradeoff, of course. It's more latency, more code, more operational 
 
 ## The Main Point
 
-Line the three modes up against the one question we started with, and what you're really watching is the "yes" to decrypt moving further away from the component holding the ciphertext. Mode 1: the controller says yes to itself, silently, forever. Mode 2: the controller still says yes, but now it has to say it out loud to KMS, on the record, every single time. Mode 3: the controller can't say yes at all. It has to bring a broker along, and the broker has to re-verify the human behind the request before it'll mint anything. By the end, reading a credential requires two things that are never true at once for an attacker who only owns the controller: the ciphertext, and a grant nobody but the broker can issue.
+Line the three modes up against the one question we started with, and what you're really watching is the "yes" to decrypt moving further away from the component holding the ciphertext. Mode 1: the controller says yes to itself, silently, forever. Mode 2: the controller still says yes, but now it has to say it out loud to KMS, on the record, every single time. Mode 3: the controller can't say yes at all. It has to bring a broker along, and the broker has to re-verify the human and "which credential" behind the request before it'll mint anything. By the end, reading a credential requires two things that are never true at once for an attacker who only owns the controller: the ciphertext, and a grant nobody but the broker can issue.
 
-But AWS KMS is just one way to answer "who holds the KEK, and who's allowed to unwrap it." It's not the only way, and a lot of enterprises aren't on AWS, or already run a Vault/OpenBAO cluster doing this exact job for everything else in the environment. Part 3 of this blog series stays focused on Mode 3 -- the broker-gated grant model -- and rebuilds it on Vault/OpenBAO instead of KMS. In Mode 3 the KEK lives in the transit engine, and the grant becomes a Vault-issued, single-use, time-boxed token instead of an IAM grant. Stay tuned!!
-
+But AWS KMS is just one way to answer "who holds the KEK, and who's allowed to unwrap it." It's not the only way, and a lot of enterprises aren't on AWS, or already run a Vault/OpenBAO cluster doing this exact job for everything else in the environment. Part 3 of this blog series stays focused on Mode 3 -- the broker-gated grant model -- and rebuilds it on Vault/OpenBAO instead of KMS. In Mode 3 the KEK lives in the transit engine, and the grant becomes a Vault-issued, single-use, time-boxed token instead of an IAM grant. Follow along / [connect on LinkedIn](https://linkedin.com/in/ceposta) if you are working through credential isolation for agent egress in your own stack. Stay tuned!!
