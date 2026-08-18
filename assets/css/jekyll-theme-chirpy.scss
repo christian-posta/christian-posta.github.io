@@ -5,7 +5,7 @@
 @use 'main';
 
 /* ----- Custom: Books panel (right sidebar) ----- */
-.books-panel {
+#panel-wrapper .books-panel {
   .panel-heading {
     display: flex;
     align-items: center;
@@ -30,6 +30,7 @@
   .book-title {
     color: var(--text-color);
     text-decoration: none;
+    border-bottom: 0;
     line-height: 1.2;
 
     &:hover {
@@ -52,6 +53,11 @@
   .book-cta {
     font-size: 0.75rem;
     padding: 0.15rem 0.55rem;
+    border-bottom: var(--bs-btn-border-width) solid var(--bs-btn-border-color);
+
+    &:hover {
+      border-bottom-color: var(--bs-btn-hover-border-color);
+    }
   }
 }
 

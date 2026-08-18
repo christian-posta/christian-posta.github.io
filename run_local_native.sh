@@ -28,8 +28,13 @@ gem install bundler --no-document --conservative >/dev/null
 bundle config set --local path "$PROJECT_DIR/.bundle-native"
 bundle install
 
+JEKYLL_PREVIEW_FLAGS=(--drafts --future --unpublished)
+
+echo "Performing full initial build..."
+bundle exec jekyll build "${JEKYLL_PREVIEW_FLAGS[@]}"
+
 echo "Starting Jekyll/Chirpy on http://localhost:4000 (livereload: 35729)"
-bundle exec jekyll serve \
+bundle exec jekyll serve "${JEKYLL_PREVIEW_FLAGS[@]}" \
   --livereload \
   --livereload-port 35729 \
   --incremental
