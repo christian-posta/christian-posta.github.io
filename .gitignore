@@ -25,3 +25,6 @@ package-lock.json
 # Misc
 _sass/vendors
 assets/js/dist
+
+# Agent skills are symlinked from the private skills repo; do not publish
+.claude/
