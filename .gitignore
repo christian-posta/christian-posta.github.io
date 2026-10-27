@@ -28,3 +28,6 @@ assets/js/dist
 
 # Agent skills are symlinked from the private skills repo; do not publish
 .claude/
+
+# Private working notes; do not publish
+_notes/
