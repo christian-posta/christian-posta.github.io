@@ -1,6 +1,6 @@
 ---
 
-title: "Credential Brokering Patterns for AI Agents Part 3: Protecting the Token Vault with OpenBAO"
+title: "Credential Brokering Patterns for AI Agents Part 3: Protecting the Token Vault with OpenBao"
 date: 2026-10-27T09:00:00-07:00
 categories: [AI Agents, Identity]
 hidden: true
@@ -46,13 +46,13 @@ Both designs keep the ciphertext in the application database.
 
 ## Design 1: let the gateway log in as the user
 
-This design starts from the fact that the broker only exists because KMS can't authenticate the end user (it only ever sees the controller's IAM role), but OpenBao's JWT auth method *can*. So let OpenBao verify the user directly, and the broker's authorize step becomes a built-in, audited, fail-closed auth mount with no custom code. [Mesut Özdil](https://github.com/moezdil) sent me this design as a [working demo](https://github.com/moezdil/openbao-credential-broker-demo) shortly after part 2, and a lot of it holds up (in a few places, e.g. token TTL, rewrap, and fail-closed audit, it's better than what we built on KMS).
+This design starts from the fact that the broker only exists because KMS can't authenticate the end user (it only ever sees the controller's IAM role), but OpenBao's JWT auth method *can*. So let OpenBao verify the user directly, and the broker's authorize step becomes a built-in, audited, fail-closed auth mount with no custom code. [Mesut Özdil](https://github.com/moezdil) sent me this design as a [working demo](https://github.com/moezdil/openbao-credential-broker-demo) shortly after part 2, and a lot of it holds up (in a few places, e.g. token TTL and fail-closed audit, it's better than what we built on KMS).
 
 On a live request, the gateway logs in to OpenBao with the user's subject token, and OpenBao verifies it against the IdP JWKS and returns a short-lived OpenBao token whose policy is templated to that user's Transit key. That token carries no key material, just permission to call Transit. Each user has their own Transit key (created with `derived=true`), and each row's `context` derives a different subkey from it, so a wrapped DEK only unwraps with its own row's context. The gateway hands it to the controller, which sends the row's wrapped DEK and `context` to `transit/decrypt`, gets back the plaintext DEK, and decrypts the upstream token locally, so OpenBao never sees the credential itself.
 
 ![Design 1: the gateway logs in to OpenBao as the user](/images/cb4a/part3-design1.png)
 
-So who gets to call `auth/jwt/login`? That's the first thing to get right. Vault auth assumes a human is present, and in agent egress the user may well be asleep while a machine replays their token, so the identity is real but nothing in the token says a request is actually happening. The controller has to hold the subject token (it's the [RFC 8693](https://www.rfc-editor.org/rfc/rfc8693) token-exchange input), so if it can reach the login path, a compromised controller can do this.
+So who gets to call `auth/jwt/login`? That's the first thing to get right. A JWT login proves who the user is, not that they're making a request right now, and in agent egress the user may well be asleep while a machine replays their token. The controller has to hold the subject token (it's the [RFC 8693](https://www.rfc-editor.org/rfc/rfc8693) token-exchange input), so if it can reach the login path, a compromised controller can do this.
 
 ```
 t=0      alice makes a real MCP call. The compromised controller keeps her subject JWT.
@@ -62,7 +62,7 @@ t=+40m   no traffic anywhere. Controller calls auth/jwt/login with the stored JW
          Repeat for every JWT it harvested this hour.
 ```
 
-Every check passed exactly the way it's supposed to, and liveness went from a 30-second single-use proof to about an hour of replay. `token_bound_cidrs` doesn't help, since it pins where the token is *used*. What does help is letting only the gateway call `auth/jwt/login` (over mTLS, every other caller denied), so the only OpenBao tokens the controller ever sees are the ones the gateway hands it during a live request.
+Every check passed exactly the way it's supposed to, and liveness went from a short-lived token minted during a live request to about an hour of replay. `token_bound_cidrs` doesn't help, since OpenBao checks the same list at login and on every use, so it can't let the gateway log in while the controller uses the token. What does help is letting only the gateway call `auth/jwt/login` (over mTLS, every other caller denied), so the only OpenBao tokens the controller ever sees are the ones the gateway hands it during a live request.
 
 With the login path locked down, this is a good design. There's no broker to run or compromise, nothing writes OpenBao policy at runtime, and every authorization rule is OpenBao config your Vault team can review in git.
 
@@ -143,6 +143,6 @@ The port works, and it works two ways. OpenBao can be the key custodian with the
 
 Which design comes down to how far you want one live request to reach. If per-row scoping matters for your users, run the broker as an approver on OpenBao 2.7 control groups, keep its policy to `sys/control-group/*`, and install no JWT auth mount (and don't give the broker policy-write anywhere in OpenBao, since that turns it into an effective admin). If you're on Vault or can't run OpenBao 2.7 yet, port the broker-unwrap variant from [part 2.5](/credential-brokering-mode-3-at-scale/) instead (the broker gets a static `transit/decrypt/user-*` policy, computes the `context` itself, and hands back the DEK), and accept that the broker holds a standing decrypt like it does on KMS. If per-row scoping doesn't matter, start with the vault login and lock the login path down. Either way, ship the audit log somewhere none of your components can reach.
 
-The last question that I'll be investigating is: can we still do better? We are still trying to solve for "if the component that holds the token vault gets compromised, what is the blast radius"? Separating out the components that encrypt/decrypt and attaching to liveness/user/identity/policy checks follows the CB4A paper. But the fact is, if the gateway gets compromised, we still have a dwell/trickle blas radius. If we can just piggy back on that, and make THAT the blast radius for everything, maybe we can improve the design. 
+The last question that I'll be investigating is: can we still do better? We are still trying to solve for "if the component that holds the token vault gets compromised, what is the blast radius"? Separating out the components that encrypt/decrypt and attaching to liveness/user/identity/policy checks follows the CB4A paper. But the fact is, if the gateway gets compromised, we still have a dwell/trickle blast radius. If we can just piggy back on that, and make THAT the blast radius for everything, maybe we can improve the design. 
 
 Thanks to [Mesut Özdil](https://github.com/moezdil) for the [OpenBao demo](https://github.com/moezdil/openbao-credential-broker-demo) and review feedback. Discussing it in detail is what produced most of this post, the vault-login design is his suggestion, and he's the one who broke the per-row policy approach and pointed at control groups. If you're working through credential isolation for agent egress on Vault/OpenBao in your own stack, or you think I've weighed the two designs wrong, [connect on LinkedIn](https://linkedin.com/in/ceposta) and tell me!!
