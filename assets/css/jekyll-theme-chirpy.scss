@@ -128,7 +128,7 @@
   }
 }
 
-/* ----- Custom: Agent Identity featured panel on homepage ----- */
+/* ----- Custom: featured series panel on homepage ----- */
 .featured-series-card {
   border-left: 4px solid #0a66c2;
   background: linear-gradient(
@@ -173,12 +173,14 @@
   }
 }
 
-/* ----- Custom: highlight the Agent Identity tab in the sidebar ----- */
-#sidebar .nav-item a[href$="/agent-identity/"] {
+/* ----- Custom: highlight the featured series tabs in the sidebar ----- */
+#sidebar .nav-item a[href$="/agent-identity/"],
+#sidebar .nav-item a[href$="/credential-brokering/"] {
   position: relative;
   font-weight: 600;
 
-  .fa-fingerprint {
+  .fa-fingerprint,
+  .fa-key {
     color: #0a66c2;
   }
 

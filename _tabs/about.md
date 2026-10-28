@@ -1,7 +1,7 @@
 ---
 # the default layout is 'page'
 icon: fas fa-info-circle
-order: 5
+order: 6
 ---
 
 I'm Christian Posta — Global Field CTO at [solo.io](https://solo.io). I work with
