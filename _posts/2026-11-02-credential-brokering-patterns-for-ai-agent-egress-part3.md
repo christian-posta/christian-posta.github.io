@@ -1,10 +1,8 @@
 ---
 
 title: "Credential Brokering Patterns for AI Agents Part 3: Protecting the Token Vault with OpenBao"
-date: 2026-10-27T09:00:00-07:00
+date: 2026-11-02T21:00:00-07:00
 categories: [AI Agents, Identity]
-hidden: true
-sitemap: false
 tags: [agentgateway, mcp, vault, openbao, credential-broker, enterprise]
 description: Parts 2 and 2.5 built broker-gated envelope encryption for agentgateway's token store on AWS KMS. Lots of orgs can't or won't put that key in a hyperscaler, so here are two ways to run Mode 3 on Vault/OpenBao, side by side, what each one costs you, and how I'd pick between them.
 ---

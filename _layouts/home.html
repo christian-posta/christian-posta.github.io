@@ -49,57 +49,76 @@ layout: default
 {% if paginator.page == 1 %}
 <section id="featured-series" class="card-wrapper card mb-4 featured-series-card">
   <div class="card-body">
-    <div class="d-flex align-items-center mb-2">
-      <i class="fas fa-fingerprint featured-series-icon me-2"></i>
-      <h2 class="card-title m-0">Agent Identity Series</h2>
-      <span class="badge featured-series-badge ms-2">Featured</span>
-    </div>
-    <p class="text-muted mb-3">
-      Deep dives on <strong>identity and access management for AI agents</strong> —
-      conceptual essays, protocol walkthroughs, and running demos.
-    </p>
-
-    <div class="series-latest series-card p-3 rounded border mb-3">
-      <span class="badge featured-series-badge mb-2">Latest</span>
-      <h3 class="h6 mb-1">
-        <a href="{{ '/what-is-agent-identity/' | relative_url }}">
-          What &lsquo;is&rsquo; Agent Identity? Human? Workload? A new Layer?
-        </a>
-      </h3>
-      <p class="small text-muted mb-2">
-        Workload identity, agent substrate, Agent Core, Entra, and AAuth — when agent identity
-        collapses into workload identity, and when it can&rsquo;t.
-      </p>
-      <a class="btn btn-sm btn-primary" href="{{ '/what-is-agent-identity/' | relative_url }}">
-        Read the latest &rarr;
-      </a>
-      <span class="small text-muted ms-2">
-        Start from the beginning:
-        <a href="{{ '/do-we-even-need-agent-identity/' | relative_url }}">Part 1</a>
-      </span>
+    <div class="d-flex align-items-center mb-3">
+      <i class="fas fa-star featured-series-icon me-2"></i>
+      <h2 class="card-title m-0">Featured Series</h2>
     </div>
 
     <div class="row g-3">
       <div class="col-md-6">
-        <div class="series-card h-100 p-3 rounded border">
-          <h3 class="h6 mb-1"><a href="https://blog.christianposta.com/aauth-full-demo/">Exploring AAuth</a></h3>
-          <p class="small text-muted mb-2">Agent identity &amp; access management — the protocol, the flows, and a working demo.</p>
-          <a class="btn btn-sm btn-outline-primary" href="https://blog.christianposta.com/aauth-full-demo/">Open series &rarr;</a>
+        <div class="series-latest series-card h-100 p-3 rounded border d-flex flex-column">
+          <div class="d-flex align-items-center mb-2">
+            <i class="fas fa-fingerprint featured-series-icon me-2"></i>
+            <h3 class="h6 m-0"><a href="{{ '/agent-identity/' | relative_url }}">Agent Identity</a></h3>
+          </div>
+          <p class="small text-muted mb-2">
+            Identity and access management for AI agents: conceptual essays, protocol walkthroughs, and running demos.
+          </p>
+          <span class="badge featured-series-badge align-self-start mb-1">Latest</span>
+          <h4 class="h6 mb-1">
+            <a href="{{ '/what-is-agent-identity/' | relative_url }}">
+              What &lsquo;is&rsquo; Agent Identity? Human? Workload? A new Layer?
+            </a>
+          </h4>
+          <p class="small text-muted mb-2">
+            When agent identity collapses into workload identity, and when it can&rsquo;t.
+          </p>
+          <p class="small mb-3">
+            Also: <a href="https://blog.christianposta.com/aauth-full-demo/">Exploring AAuth</a>
+            &middot; <a href="https://blog.christianposta.com/entra-agent-id-agw/">Entra Agent ID on Kubernetes</a>
+          </p>
+          <div class="mt-auto">
+            <a class="btn btn-sm btn-primary" href="{{ '/what-is-agent-identity/' | relative_url }}">Read the latest &rarr;</a>
+            <span class="small text-muted ms-2">
+              <a href="{{ '/do-we-even-need-agent-identity/' | relative_url }}">Part 1</a>
+              &middot; <a href="{{ '/agent-identity/' | relative_url }}">Full index</a>
+            </span>
+          </div>
         </div>
       </div>
+
       <div class="col-md-6">
-        <div class="series-card h-100 p-3 rounded border">
-          <h3 class="h6 mb-1"><a href="https://blog.christianposta.com/entra-agent-id-agw/">Microsoft Entra Agent ID on Kubernetes</a></h3>
-          <p class="small text-muted mb-2">5-part guide: workload identity, LLM + MCP integration, on-behalf-of, wired up with Agentgateway.</p>
-          <a class="btn btn-sm btn-outline-primary" href="https://blog.christianposta.com/entra-agent-id-agw/">Open series &rarr;</a>
+        <div class="series-latest series-card h-100 p-3 rounded border d-flex flex-column">
+          <div class="d-flex align-items-center mb-2">
+            <i class="fas fa-key featured-series-icon me-2"></i>
+            <h3 class="h6 m-0"><a href="{{ '/credential-brokering/' | relative_url }}">Credential Brokering</a></h3>
+          </div>
+          <p class="small text-muted mb-2">
+            Keeping credentials out of the agent&rsquo;s hands, and keeping the broker that holds them from becoming the new single point of failure.
+          </p>
+          <span class="badge featured-series-badge align-self-start mb-1">Latest</span>
+          <h4 class="h6 mb-1">
+            <a href="{{ '/credential-brokering-patterns-for-ai-agent-egress-part3/' | relative_url }}">
+              Part 3: Protecting the Token Vault with OpenBao
+            </a>
+          </h4>
+          <p class="small text-muted mb-2">
+            Two ways to run Mode 3 on OpenBao when the key can&rsquo;t live in a hyperscaler, side by side.
+          </p>
+          <p class="small mb-3">
+            Also: <a href="{{ '/credential-brokering-patterns-for-ai-agent-egress-part2/' | relative_url }}">Part 2 on AWS KMS</a>
+            &middot; <a href="{{ '/credential-brokering-mode-3-at-scale/' | relative_url }}">Part 2.5 at scale</a>
+          </p>
+          <div class="mt-auto">
+            <a class="btn btn-sm btn-primary" href="{{ '/credential-brokering-patterns-for-ai-agent-egress-part3/' | relative_url }}">Read the latest &rarr;</a>
+            <span class="small text-muted ms-2">
+              <a href="{{ '/credential-brokering-patterns-for-ai-agent-egress/' | relative_url }}">Part 1</a>
+              &middot; <a href="{{ '/credential-brokering/' | relative_url }}">Full index</a>
+            </span>
+          </div>
         </div>
       </div>
     </div>
-
-    <p class="small text-muted mt-3 mb-0">
-      Full index on the <a href="{{ '/agent-identity/' | relative_url }}">Agent Identity Series page</a>
-      — essays, guides, and demos.
-    </p>
   </div>
 </section>
 {% endif %}
