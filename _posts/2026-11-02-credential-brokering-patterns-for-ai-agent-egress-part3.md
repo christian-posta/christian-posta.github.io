@@ -13,7 +13,7 @@ In [part 1](/credential-brokering-patterns-for-ai-agent-egress/) I looked at the
 
 But part 2 and [part 2.5](/credential-brokering-mode-3-at-scale/) was built around AWS KMS, and a lot of the organizations that care most about credential concentration can't, or won't, put the key that guards every user's credentials in a hyperscaler's hands.
 
-So why Vault/[OpenBao](https://openbao.org/)? Some of it is "sovereignty" and "hold your own key" buzzwords, but a few concrete reasons keep coming up.
+So why Vault/[OpenBao](https://openbao.org/)? Some of it is "sovereignty" and "hold your own key" buzzwords, but based on the questions that keep coming up, these also:
 
 - **Where you run.** On-prem, air-gapped, or a sovereign/regional cloud where AWS KMS isn't an option.
 - **Multi-cloud and portability.** One key service, one policy model, and one audit trail across AWS/Azure/GCP/on-prem, and if you move a workload to another datacenter, region, or cloud, the keys move with it instead of staying locked in one provider's KMS.
@@ -22,9 +22,9 @@ So why Vault/[OpenBao](https://openbao.org/)? Some of it is "sovereignty" and "h
 
 I'll use OpenBao (the community fork after HashiCorp [moved Vault to the BSL](https://www.hashicorp.com/en/blog/hashicorp-adopts-business-source-license) in 2023) but it applies to Vault too.
 
-There are two reasonable ways to do "Mode 3" on OpenBao with agentgateway. Either let the gateway log in to OpenBao as the user, or keep the broker from part 2 and point it at OpenBao (I'm calling that Mode 3b). I don't think either one wins outright. The vault login is simpler, but the decrypt token it hands out is scoped to the user, so a live request for one of alice's credentials can open whichever of them the controller picks. The broker scopes each decrypt to the one row the request is for, and you pay for that with another component on the request path.
+There are two reasonable ways to do "Mode 3" on OpenBao with agentgateway. Either let the gateway log in to OpenBao as the user, or keep the broker from part 2 and point it at OpenBao (I'm calling that Mode 3b). I don't think either one wins outright. The vault login is simpler, but the decrypt token it hands out is scoped to the user, so a live request for one of alice's credentials can open whichever of them the controller picks. Alternatively, the broker scopes each decrypt to the one row the request is for, and you pay for that with another component on the request path.
 
-## Who holds what, quickly
+## Who holds what?
 
 Every mode in this series comes down to who holds the key and what has to say yes before a decrypt happens. Envelope encryption is the foundation. A per-row DEK encrypts the token payload and the KEK only wraps and unwraps DEKs, so the KEK can live somewhere the controller can't reach. Mode 3 then takes the "yes" away from the controller, so reading one credential needs the ciphertext from the controller and a yes from the broker for that one row (a KMS grant in part 2).
 
@@ -34,13 +34,12 @@ Every mode in this series comes down to who holds the key and what has to say ye
 | **user verifier + authorizer** (broker) | the yes on each decrypt (a grant on KMS, an approval on OpenBao), IdP JWKS, policy, the owner-HMAC key | ciphertext, DB, DEKs |
 | **key custodian** (KMS / OpenBao)       | the KEK                                                                            | application data                    |
 
-The key custodian is whatever holds the KEK and does the unwrap, KMS in part 2 and OpenBao Transit here. The two designs in this post differ on who plays the "user verifier + authorizer" role, ie, who checks the user's subject token and then says "yes" to a decrypt. In Design 1 that "yes" is a short-lived OpenBao token (which I'll call the decrypt token), and in Design 2 it's an approval of one specific decrypt request.
+The key custodian (ie, whatever holds the KEK and does the unwrap) is KMS in part 2 and [OpenBao Transit](https://openbao.org/docs/secrets/transit/) here. The two designs in this post differ on who plays the "user verifier + authorizer" role, ie, who checks the user's subject token and then says "yes" to a decrypt. In Design 1 that "yes" is a short-lived OpenBao token (which I'll call the decrypt token), and in Design 2 it's an approval of one specific decrypt request.
 
 In **Design 1 (vault login)** there's no broker, and OpenBao plays both the user verifier + authorizer role and the key custodian role. On each live request the gateway calls OpenBao's `auth/jwt/login` with the user's subject token, OpenBao verifies it against the IdP and returns the decrypt token, and the gateway passes it to the controller. Since the gateway is the only thing allowed to call that login, a decrypt token only exists while a real request is in flight.
 
 In **Design 2 (Mode 3b, broker)** the broker from part 2 keeps the user verifier + authorizer role, but it doesn't mint anything. The controller asks OpenBao for the decrypt, OpenBao holds the request instead of running it, and the broker checks the subject token and approves that one request, so OpenBao only plays key custodian.
 
-Both designs keep the ciphertext in the application database. 
 
 ## Design 1: let the gateway log in as the user
 
@@ -137,9 +136,7 @@ Both designs stop a compromised controller from mass-decrypting the store, and i
 
 ## Is there a Part 4?
 
-The port works, and it works two ways. OpenBao can be the key custodian with the same three roles and the same two independent checks, so if you're on-prem or on a sovereign cloud because you're worried about credential concentration, you can get the same prevent-not-detect property against a compromised token store.
-
-Which design comes down to how far you want one live request to reach. If per-row scoping matters for your users, run the broker as an approver on OpenBao 2.7 control groups, keep its policy to `sys/control-group/*`, and install no JWT auth mount (and don't give the broker policy-write anywhere in OpenBao, since that turns it into an effective admin). If you're on Vault or can't run OpenBao 2.7 yet, port the broker-unwrap variant from [part 2.5](/credential-brokering-mode-3-at-scale/) instead (the broker gets a static `transit/decrypt/user-*` policy, computes the `context` itself, and hands back the DEK), and accept that the broker holds a standing decrypt like it does on KMS. If per-row scoping doesn't matter, start with the vault login and lock the login path down. Either way, ship the audit log somewhere none of your components can reach.
+"Which design" comes down to how far you want one live request to reach. If per-row scoping matters for your users, run the broker as an approver on OpenBao 2.7 control groups, keep its policy to `sys/control-group/*`, and install no JWT auth mount (and don't give the broker policy-write anywhere in OpenBao, since that turns it into an effective admin). If you're on Vault or can't run OpenBao 2.7 yet, port the broker-unwrap variant from [part 2.5](/credential-brokering-mode-3-at-scale/) instead (the broker gets a static `transit/decrypt/user-*` policy, computes the `context` itself, and hands back the DEK), and accept that the broker holds a standing decrypt like it does on KMS. If per-row scoping doesn't matter, start with the vault login and lock the login path down. Either way, ship the audit log somewhere none of your components can reach.
 
 The last question that I'll be investigating is: can we still do better? We are still trying to solve for "if the component that holds the token vault gets compromised, what is the blast radius"? Separating out the components that encrypt/decrypt and attaching to liveness/user/identity/policy checks follows the CB4A paper. But the fact is, if the gateway gets compromised, we still have a dwell/trickle blast radius. If we can just piggy back on that, and make THAT the blast radius for everything, maybe we can improve the design. 
 
